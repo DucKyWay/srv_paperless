@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Users\niji-elitebook\scoop\apps\flutter\3.35.7"
+export "FLUTTER_ROOT=C:\Users\niji-elitebook\fvm\versions\3.38.5"
 export "FLUTTER_APPLICATION_PATH=C:\Users\niji-elitebook\git\ku\342-flutter\srv_paperless"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
