@@ -14,6 +14,7 @@ enum Division{
   final String label;
   const Division({required this.label});
 }
+
 enum EmployeeStatus{
   director(label: 'ผู้อำนวยการ/ผู้บริหาร'),
   deputyDirector(label: 'รองผู้อำนวยการ/รองผู้บริหาร'),
@@ -33,16 +34,20 @@ enum EmployeeStatus{
 class User{
   final String _id;
   final String _username;
-  final String _fullname;
-  final AcademicDepartment _academicDepartment;
-  final Division _division;
-  final String _homeroomClass;
-  final EmployeeStatus _employeeStatus;
+  String _image;
+  String _fullname;
+  String _phone;
+  AcademicDepartment _academicDepartment;
+  Division _division;
+  String _homeroomClass;
+  EmployeeStatus _employeeStatus;
 
   User(
     this._id,
     this._username,
+    this._image,
     this._fullname,
+    this._phone,
     this._academicDepartment,
     this._division,
     this._homeroomClass,
@@ -50,11 +55,20 @@ class User{
   );
 
   String get id => _id;
+  String get image => _image;
+  String get phone => _phone;
   String get username=>_username;
   String get fullname =>_fullname;
   AcademicDepartment get academicDepartment => _academicDepartment;
   Division get division => _division;
   String get homeroomClass => _homeroomClass;
   EmployeeStatus get employeeStatus => _employeeStatus;
-
+  
+  set setImage(String value) => _image = value;
+  set setPhone(String value) =>_phone = value;
+  set setFullname(String value) => _fullname = value;
+  set setAcademicDepartment(AcademicDepartment value) => _academicDepartment = value;
+  set setDivision(Division value) => _division = value;
+  set setHomeroomClass(String value) => _homeroomClass = value;
+  set setEmployeeStatus(EmployeeStatus value) => _employeeStatus = value;
 }
