@@ -39,4 +39,7 @@ class AuthNotifier extends Notifier<AuthState> {
       state = state.copyWith(isLoading: false, error: "Username หรือ Password ผิด");
     }
   }
+  void logout() {
+    state = AuthState();
+  }
 }

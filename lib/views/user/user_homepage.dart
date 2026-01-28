@@ -7,7 +7,13 @@ class UserHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: "หน้าหลัก",
+      title:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("ระบบโครงการออนไลน์",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 14,color: Colors.white),),
+          Text("นโยบายและแผนงาน โรงเรียนสารวิทยา",style:TextStyle(fontSize: 12,color: Colors.white),)
+        ],
+      ) ,
       child: Center(child: Text("ยินดีต้อนรับ")),
     );
   }
