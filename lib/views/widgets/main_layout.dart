@@ -24,7 +24,9 @@ class MainLayout extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.account_circle_outlined),
                 title: const Text("โปรไฟล์"),
-                onTap: () {},
+                onTap: () {
+                    Navigator.pushNamed(context, '/user_profile');
+                },
               ),
               const Spacer(),
               const Divider(),

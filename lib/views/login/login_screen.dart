@@ -4,7 +4,6 @@ import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/views/widgets/custom_button.dart';
 import 'package:srv_paperless/views/widgets/custom_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,20 +14,25 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  void _handleLogin() async {
+void _handleLogin() async {
     final authNotifier = ref.read(authProvider.notifier);
     
     await authNotifier.login(usernameController.text, passwordController.text);
     
-    // เช็คผลลัพธ์จาก State หลัง Login เสร็จ
     final authState = ref.read(authProvider);
-    if (authState.role == "admin") {
-      Navigator.pushReplacementNamed(context, '/user_home');
-    } else if (authState.role == "user") {
+
+    // เช็คว่ามีข้อมูล User หรือไม่
+    if (authState.currentUser != null) {
+      // สามารถแยกหน้าตามเงื่อนไขที่ต้องการ เช่น เช็คจาก username หรือ status
+      // แต่เบื้องต้นส่งไปที่หน้าหลักเหมือนกันตามที่คุณออกแบบไว้
       Navigator.pushReplacementNamed(context, '/user_home');
     } else if (authState.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authState.error!)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authState.error!),
+          backgroundColor: Colors.red, // เพิ่มสีแดงเพื่อให้เด่นชัดว่าเป็นข้อผิดพลาด
+        ),
+      );
     }
   }
 

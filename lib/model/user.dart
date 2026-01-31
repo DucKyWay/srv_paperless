@@ -31,44 +31,30 @@ enum EmployeeStatus{
   const EmployeeStatus({required this.label});
 }
 
-class User{
-  final String _id;
-  final String _username;
-  String _image;
-  String _fullname;
-  String _phone;
-  AcademicDepartment _academicDepartment;
-  Division _division;
-  String _homeroomClass;
-  EmployeeStatus _employeeStatus;
+class User {
+  final String id;        // ตัวแปรที่เป็น final ไม่ต้องมี _ ก็นำหน้าได้ถ้าไม่ซีเรียสเรื่อง private
+  final String username;
+  String image;
+  String fullname;
+  String phone;
+  AcademicDepartment academicDepartment;
+  Division division;
+  String homeroomClass;
+  EmployeeStatus employeeStatus;
 
-  User(
-    this._id,
-    this._username,
-    this._image,
-    this._fullname,
-    this._phone,
-    this._academicDepartment,
-    this._division,
-    this._homeroomClass,
-    this._employeeStatus
-  );
+  User({
+    required this.id,
+    required this.username,
+    this.image = "user.png",
+    required this.fullname,
+    required this.phone,
+    required this.academicDepartment,
+    required this.division,
+    required this.homeroomClass,
+    required this.employeeStatus,
+  });
 
-  String get id => _id;
-  String get image => _image;
-  String get phone => _phone;
-  String get username=>_username;
-  String get fullname =>_fullname;
-  AcademicDepartment get academicDepartment => _academicDepartment;
-  Division get division => _division;
-  String get homeroomClass => _homeroomClass;
-  EmployeeStatus get employeeStatus => _employeeStatus;
-  
-  set setImage(String value) => _image = value;
-  set setPhone(String value) =>_phone = value;
-  set setFullname(String value) => _fullname = value;
-  set setAcademicDepartment(AcademicDepartment value) => _academicDepartment = value;
-  set setDivision(Division value) => _division = value;
-  set setHomeroomClass(String value) => _homeroomClass = value;
-  set setEmployeeStatus(EmployeeStatus value) => _employeeStatus = value;
+  // ใช้ setter แบบสากล
+  set phoneNo(String value) => phone = value;
+  set name(String value) => fullname = value;
 }
