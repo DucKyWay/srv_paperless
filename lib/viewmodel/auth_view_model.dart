@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/db_manager.dart';
-import 'package:srv_paperless/model/user.dart';
+import 'package:srv_paperless/data/model/user.dart';
 
-import '../data/services/user_services.dart';
+import '../data/repositories/user_repo.dart';
 import '../services/password_services.dart';
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
   return AuthNotifier();

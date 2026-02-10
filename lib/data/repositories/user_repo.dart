@@ -1,6 +1,6 @@
 import 'package:srv_paperless/data/db_manager.dart';
 
-import '../../model/user.dart';
+import '../model/user.dart';
 
 final db = DbManager();
 

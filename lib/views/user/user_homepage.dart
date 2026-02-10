@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:srv_paperless/views/widgets/main_layout.dart';
+import 'package:srv_paperless/widgets/main_layout.dart';
 
 class UserHomePage extends StatelessWidget {
   const UserHomePage({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
-import 'package:srv_paperless/views/widgets/custom_text_field.dart';
-import 'package:srv_paperless/views/widgets/main_layout.dart';
+import 'package:srv_paperless/widgets/custom_text_field.dart';
+import 'package:srv_paperless/widgets/main_layout.dart';
 
 class UserProfile extends ConsumerStatefulWidget {
   const UserProfile({super.key});

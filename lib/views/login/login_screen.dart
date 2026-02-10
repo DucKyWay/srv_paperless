@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:srv_paperless/utils/screen_size.dart';
+import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
-import 'package:srv_paperless/views/widgets/custom_button.dart';
-import 'package:srv_paperless/views/widgets/custom_text_field.dart';
+import 'package:srv_paperless/widgets/custom_button.dart';
+import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -116,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   CustomButton(
                     height: 55,
                     text: authState.isLoading
-                        ? SizedBox( 
+                        ? SizedBox(
                       height: 25,
                       width: 25,
                       child: CircularProgressIndicator(
