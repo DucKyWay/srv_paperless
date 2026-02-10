@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/services/auth_state.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/model/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/model/user_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/user_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/user_repo.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/auth.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/auth_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/auth_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/auth_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/srv_paperless.iml" beforeDir="false" afterPath="$PROJECT_DIR$/srv_paperless.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/model/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/model/user_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,8 +33,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Dart File" />
         <option value="Class" />
+        <option value="Dart File" />
       </list>
     </option>
   </component>
@@ -114,5 +110,16 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

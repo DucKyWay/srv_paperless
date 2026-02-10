@@ -16,7 +16,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.currentUser;
-  final TextEditingController phoneController = TextEditingController();
+    final TextEditingController phoneController = TextEditingController();
     if (user == null) {
       return MainLayout(
         title: Column(
@@ -79,23 +79,27 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsGeometry.all(24),
+                padding: EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    info("ชื่อ-นามสกุล:", "${user.firstname} ${user.lastname}"),
+                    info("ชื่อ-นามสกุล:", user.fullname),
+                    const SizedBox(height: 8),
+                    info("ตำแหน่ง:", user.employeeStatus.label),
                     const SizedBox(height: 8),
                     info("กลุ่มสาระ:", user.academicDepartment.label),
                     const SizedBox(height: 8),
-                    info("แผนงาน:", user.division.label),
+                    info("ฝ่ายงาน:", user.division.label),
                     const SizedBox(height: 8),
                     info(
                       "ประจำชั้น:",
                       user.homeroomClass,
-                    ), // แก้เป็น homeroomClass นะครับ
-                    const SizedBox(height: 8),
-                    info("ตำแหน่ง:", user.employeeStatus.label),
-                          SizedBox(height: 45,),
-              CustomTextField(label: "เบอร์โทร", hint:user.phone, controller: phoneController)
+                    ),
+                    SizedBox(height: 45),
+                    CustomTextField(
+                      label: "เบอร์โทร",
+                      hint: user.phone,
+                      controller: phoneController,
+                    ),
                   ],
                 ),
               ),
@@ -110,10 +114,20 @@ class _UserProfileState extends ConsumerState<UserProfile> {
 Widget info(String topic, String info) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(topic, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-      SizedBox(width: 4),
-      Text(info, style: TextStyle(fontSize: 16)),
+      Text(
+          topic,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          info,
+          style: const TextStyle(fontSize: 16),
+          softWrap: true,
+        ),
+      ),
     ],
   );
 }

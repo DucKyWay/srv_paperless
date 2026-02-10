@@ -1,9 +1,10 @@
 import 'package:srv_paperless/services/password_services.dart';
 
 enum AcademicDepartment {
-  science(label:'วิทยาศาสตร์และเทคโนโลยี'),
   math(label: 'คณิตศาสตร์'),
-  language(label: 'ภาษาต่างประเทศ'),
+  science(label:'วิทยาศาสตร์และเทคโนโลยี'),
+  thai(label: 'ภาษาไทย'),
+  foreign(label: 'ภาษาต่างประเทศ'),
   social(label:'สังคมศาสตร์'),
   art(label: 'ศิลปะ'),
   physical(label: 'สุขศึกษา');
@@ -13,8 +14,11 @@ enum AcademicDepartment {
 }
 
 enum Division {
-  budget(label:'ฝั่งงบประมาณ');
-  // TODO: มีเยอะกว่านี้แต่ยังคิดไม่ออก
+  general(label: 'กลุ่มบริหารงานทั่วไป'),
+  academic(label: 'กลุ่มบริหารงานวิชาการ'),
+  budget(label: 'กลุ่มบริหารงานงบประมาณ'),
+  human(label: 'กลุ่มบริหารงานบุคคล');
+
   final String label;
   const Division({required this.label});
 }
