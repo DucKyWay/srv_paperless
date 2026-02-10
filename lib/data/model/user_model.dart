@@ -48,7 +48,7 @@ class User {
   String lastname;
   String phone;
   AcademicDepartment academicDepartment;
-  Division division;
+  Division divisions;
   String homeroomClass;
   EmployeeStatus employeeStatus;
   final String role; // admin, user
@@ -62,7 +62,7 @@ class User {
     required this.lastname,
     required this.phone,
     required this.academicDepartment,
-    required this.division,
+    required this.divisions,
     required this.homeroomClass,
     required this.employeeStatus,
     required this.role
@@ -77,7 +77,7 @@ class User {
     required String lastname,
     required String phone,
     required AcademicDepartment academicDepartment,
-    required Division division,
+    required Division divisions,
     required String homeroomClass,
     required EmployeeStatus employeeStatus,
     required String role
@@ -92,7 +92,7 @@ class User {
       image: image,
       phone: phone,
       academicDepartment: academicDepartment,
-      division: division,
+      divisions: divisions,
       homeroomClass: homeroomClass,
       employeeStatus: employeeStatus,
       role: role
@@ -109,7 +109,7 @@ class User {
       lastname: map['lastname'],
       phone: map['phone'],
       academicDepartment: AcademicDepartment.values.firstWhere((e) => e.name == map['academic_department']),
-      division: Division.values.firstWhere((e) => e.name == map['division']),
+      divisions: Division.values.firstWhere((e) => e.name == map['divisions']),
       homeroomClass: map['homeroom_class'] ?? '',
       employeeStatus: EmployeeStatus.values.firstWhere((e) => e.name == map['employee_status']),
       role: map['role'] ?? "user",
@@ -126,7 +126,7 @@ class User {
       'lastname': lastname,
       'phone': phone,
       'academic_department': academicDepartment.name,
-      'division': division.name,
+      'divisions': divisions.name,
       'homeroom_class': homeroomClass,
       'employee_status': employeeStatus.name,
     };

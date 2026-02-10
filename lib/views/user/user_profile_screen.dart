@@ -88,7 +88,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                     const SizedBox(height: 8),
                     info("กลุ่มสาระ:", user.academicDepartment.label),
                     const SizedBox(height: 8),
-                    info("ฝ่ายงาน:", user.division.label),
+                    info("ฝ่ายงาน:", user.divisions.label),
                     const SizedBox(height: 8),
                     info(
                       "ประจำชั้น:",
