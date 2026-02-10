@@ -14,33 +14,38 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-void _handleLogin() async {
+
+  void _handleLogin() async {
+    if(ref.read(authProvider).isLoading) return;
+
     final authNotifier = ref.read(authProvider.notifier);
-    
     await authNotifier.login(usernameController.text, passwordController.text);
-    
+
+    if(!mounted) return;
     final authState = ref.read(authProvider);
 
-    // เช็คว่ามีข้อมูล User หรือไม่
     if (authState.currentUser != null) {
-      // สามารถแยกหน้าตามเงื่อนไขที่ต้องการ เช่น เช็คจาก username หรือ status
-      // แต่เบื้องต้นส่งไปที่หน้าหลักเหมือนกันตามที่คุณออกแบบไว้
-      Navigator.pushReplacementNamed(context, '/user_home');
+      final user = authState.currentUser!;
+      if(user.isAdmin) {
+        Navigator.pushReplacementNamed(context, '/user_home'); //TODO: admin home
+      } else {
+        Navigator.pushReplacementNamed(context, '/user_home');
+      }
     } else if (authState.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authState.error!),
-          backgroundColor: Colors.red, // เพิ่มสีแดงเพื่อให้เด่นชัดว่าเป็นข้อผิดพลาด
+          backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
     final height = context.screenHeight;
+    final authState = ref.watch(authProvider);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -82,7 +87,6 @@ void _handleLogin() async {
               ),
             ),
 
-        
             Padding(
               
               padding: EdgeInsets.symmetric(
@@ -111,7 +115,16 @@ void _handleLogin() async {
                   const SizedBox(height: 40),
                   CustomButton(
                     height: 55,
-                    text: const Text(
+                    text: authState.isLoading
+                        ? SizedBox( 
+                      height: 25,
+                      width: 25,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                        : Text(
                       "เข้าสู่ระบบ",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -119,11 +132,11 @@ void _handleLogin() async {
                         color: Colors.white,
                       ),
                     ),
-                    onPressed: () {
-                    _handleLogin();
-                    },
+                    onPressed: authState.isLoading ? null : _handleLogin,
                     border: 15,
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: authState.isLoading
+                        ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6)
+                        : Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ],
               ),

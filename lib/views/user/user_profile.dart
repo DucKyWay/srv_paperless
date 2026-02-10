@@ -82,7 +82,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                 padding: EdgeInsetsGeometry.all(24),
                 child: Column(
                   children: [
-                    info("ชื่อ-นามสกุล:", user.fullname),
+                    info("ชื่อ-นามสกุล:", "${user.firstname} ${user.lastname}"),
                     const SizedBox(height: 8),
                     info("กลุ่มสาระ:", user.academicDepartment.label),
                     const SizedBox(height: 8),

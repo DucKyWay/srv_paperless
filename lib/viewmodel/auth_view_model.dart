@@ -1,5 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/data/db_manager.dart';
 import 'package:srv_paperless/model/user.dart';
+
+import '../data/services/user_services.dart';
+import '../services/password_services.dart';
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
   return AuthNotifier();
 });
@@ -17,52 +21,38 @@ class AuthState {
       error: error ?? this.error,
     );
   }
-  
 }
 
 class AuthNotifier extends Notifier<AuthState> {
+
   @override
   AuthState build() => AuthState();
 
   Future<void> login(String username, String password) async {
     state = state.copyWith(isLoading: true, error: null);
 
-    await Future.delayed(const Duration(seconds: 1)); // ลดเวลาลงหน่อยจะได้ไม่รอนาน
+    try {
+      final user = await fetchUserByUsername(username);
 
-    if (username == "admin" && password == "1234") {
-      // ตัวอย่าง User ระดับบริหาร/งบประมาณ
-      final adminUser = User(
-        id: "USR001",
-        username: "admin",
-        fullname: "ดร.สมชาย ใจดี",
-        phone: "0812345678",
-        academicDepartment: AcademicDepartment.science,
-        division: Division.budget,
-        homeroomClass: "-",
-        employeeStatus: EmployeeStatus.director,
-      );
-      state = state.copyWith(isLoading: false, currentUser: adminUser);
-      
-    } else if (username == "user" && password == "1234") {
-      // ตัวอย่าง User คุณครู
-      final teacherUser = User(
-        id: "USR002",
-        username: "user",
-        fullname: "นางสาวสมศรี เรียนดี",
-        phone: "0898765432",
-        academicDepartment: AcademicDepartment.science,
-        division: Division.budget,
-        homeroomClass: "ม.5/1",
-        employeeStatus: EmployeeStatus.civilServant,
-      );
-      state = state.copyWith(isLoading: false, currentUser: teacherUser);
-      
-    } else {
-      state = state.copyWith(isLoading: false, error: "Username หรือ Password ผิด");
+      if (user == null) {
+        state = state.copyWith(isLoading: false, error: "ไม่พบชื่อผู้ใช้นี้");
+        return;
+      }
+
+      final isMatch = await PasswordService.verifyPassword(password, user.password);
+
+      if (isMatch) {
+        state = state.copyWith(isLoading: false, currentUser: user);
+      } else {
+        print("Password from DB length: ${user.password.length}");
+        state = state.copyWith(isLoading: false, error: "รหัสผ่านไม่ถูกต้อง");
+      }
+
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: "เกิดข้อผิดพลาด: $e");
+      print("Login Error: $e");
     }
-    
   }
 
   void logout() => state = AuthState();
-  
 }
