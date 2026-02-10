@@ -1,30 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:srv_paperless/data/db_manager.dart';
-import 'package:srv_paperless/data/model/user.dart';
+import '../services/auth_service.dart';
+import '../services/auth_state.dart';
 
-import '../data/repositories/user_repo.dart';
-import '../services/password_services.dart';
-final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
-  return AuthNotifier();
-});
-class AuthState {
-  final bool isLoading;
-  final User? currentUser; // เปลี่ยนจาก String? role
-  final String? error;
-
-  AuthState({this.isLoading = false, this.currentUser, this.error});
-
-  AuthState copyWith({bool? isLoading, User? currentUser, String? error}) {
-    return AuthState(
-      isLoading: isLoading ?? this.isLoading,
-      currentUser: currentUser ?? this.currentUser,
-      error: error ?? this.error,
-    );
-  }
-}
+final authProvider =
+NotifierProvider<AuthNotifier, AuthState>(() => AuthNotifier());
 
 class AuthNotifier extends Notifier<AuthState> {
-
   @override
   AuthState build() => AuthState();
 
@@ -32,27 +13,27 @@ class AuthNotifier extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final user = await fetchUserByUsername(username);
+      final authService = ref.read(authServiceProvider);
+      final user = await authService.login(username, password);
 
-      if (user == null) {
-        state = state.copyWith(isLoading: false, error: "ไม่พบชื่อผู้ใช้นี้");
-        return;
-      }
-
-      final isMatch = await PasswordService.verifyPassword(password, user.password);
-
-      if (isMatch) {
-        state = state.copyWith(isLoading: false, currentUser: user);
-      } else {
-        print("Password from DB length: ${user.password.length}");
-        state = state.copyWith(isLoading: false, error: "รหัสผ่านไม่ถูกต้อง");
-      }
-
+      state = state.copyWith(
+        isLoading: false,
+        currentUser: user,
+      );
+    } on AuthException catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.message,
+      );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: "เกิดข้อผิดพลาด: $e");
-      print("Login Error: $e");
+      state = state.copyWith(
+        isLoading: false,
+        error: "เกิดข้อผิดพลาดบางอย่าง",
+      );
     }
   }
 
-  void logout() => state = AuthState();
+  void logout() {
+    state = AuthState();
+  }
 }
