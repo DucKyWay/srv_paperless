@@ -1,5 +1,5 @@
 class Divisions {
-  final String id;
+  final int id;
   final String key;
   final String label;
 
@@ -7,9 +7,9 @@ class Divisions {
 
   factory Divisions.fromMap(Map<String, dynamic> map) {
     return Divisions(
-      id: map['division_id'],
-      key: map['division_key'],
-      label: map['division_label'],
+      id: map['division_id'] as int,
+      key: map['division_key'].toString(),
+      label: map['division_label'].toString(),
     );
   }
 

@@ -3,10 +3,9 @@ import 'package:srv_paperless/data/db_manager.dart';
 import 'package:srv_paperless/data/model/academic_department_model.dart';
 
 abstract class AcademicDepartmentRepository {
-  Future<List<AcademicDepartment>> getAllAcademicDepartments();
-  Future<AcademicDepartment?> getAcademicDepartmentById(int id);
-  Future<AcademicDepartment?> getAcademicDepartmentByKey(String key);
-  Future<AcademicDepartment?> getAcademicDepartmentByLabel(String label);
+  Future<List<AcademicDepartment>> fetchAllAcademicDepartments();
+  Future<AcademicDepartment?> fetchAcademicDepartmentById(int id);
+  Future<AcademicDepartment?> fetchAcademicDepartmentByKey(String key);
 }
 
 class AcademicDepartmentRepositoryImpl implements AcademicDepartmentRepository {
@@ -15,10 +14,10 @@ class AcademicDepartmentRepositoryImpl implements AcademicDepartmentRepository {
   AcademicDepartmentRepositoryImpl(this.db, this.ref);
 
   @override
-  Future<AcademicDepartment?> getAcademicDepartmentById(int id) async {
+  Future<AcademicDepartment?> fetchAcademicDepartmentById(int id) async {
     final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_id = ?",
-      [id]
+      "SELECT a_department_id, a_department_key, a_department_label FROM academic_department WHERE a_department_id = ?",
+      [id],
     );
 
     if (maps.isNotEmpty) {
@@ -28,10 +27,10 @@ class AcademicDepartmentRepositoryImpl implements AcademicDepartmentRepository {
   }
 
   @override
-  Future<AcademicDepartment?> getAcademicDepartmentByKey(String key) async {
+  Future<AcademicDepartment?> fetchAcademicDepartmentByKey(String key) async {
     final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_key = ?",
-      [key]
+      "SELECT a_department_id, a_department_key, a_department_label FROM academic_department WHERE a_department_key = ?",
+      [key],
     );
 
     if (maps.isNotEmpty) {
@@ -41,29 +40,32 @@ class AcademicDepartmentRepositoryImpl implements AcademicDepartmentRepository {
   }
 
   @override
-  Future<AcademicDepartment?> getAcademicDepartmentByLabel(String label) async {
-    final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_label = ?",
-      [label]
+  Future<List<AcademicDepartment>> fetchAllAcademicDepartments() async {
+    final List<Map<String, dynamic>> maps = await db.query(
+      'academic_department',
     );
 
-    if (maps.isNotEmpty) {
-      return AcademicDepartment.fromMap(maps.first);
-    }
-    return null;
-  }
-
-  @override
-  Future<List<AcademicDepartment>> getAllAcademicDepartments() async {
-    final List<Map<String, dynamic>> maps = await db.query('academic_department');
-    
     return List.generate(maps.length, (i) {
       return AcademicDepartment.fromMap(maps[i]);
     });
   }
 }
 
-final academicDepartmentRepoProvider = Provider<AcademicDepartmentRepository>((ref) {
+final academicDepartmentRepoProvider = Provider<AcademicDepartmentRepository>((
+  ref,
+) {
   final db = DbManager();
   return AcademicDepartmentRepositoryImpl(db, ref);
+});
+
+// ===== Provider =====
+
+final getAllDepartments = FutureProvider<List<AcademicDepartment>>((ref) async {
+  final repo = ref.watch(academicDepartmentRepoProvider);
+  return await repo.fetchAllAcademicDepartments();
+});
+
+final getDepartmentByKey = FutureProvider.family<AcademicDepartment?, String>((ref, key) async {
+  final repo = ref.watch(academicDepartmentRepoProvider);
+  return await repo.fetchAcademicDepartmentByKey(key);
 });

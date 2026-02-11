@@ -1,5 +1,5 @@
 class AcademicDepartment {
-  final String id;
+  final int id;
   final String key;
   final String label;
 
@@ -11,9 +11,9 @@ class AcademicDepartment {
 
   factory AcademicDepartment.fromMap(Map<String, dynamic> map) {
     return AcademicDepartment(
-      id: map['a_department_id'],
-      key: map['a_department_key'],
-      label: map['a_department_label'],
+      id: map['a_department_id'] as int,
+      key: map['a_department_key'].toString(),
+      label: map['a_department_label'].toString(),
     );
   }
 

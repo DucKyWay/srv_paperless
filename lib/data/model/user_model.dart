@@ -1,43 +1,6 @@
-import 'package:srv_paperless/services/password_services.dart';
-
-enum AcademicDepartment {
-  math(label: 'คณิตศาสตร์'),
-  science(label:'วิทยาศาสตร์และเทคโนโลยี'),
-  thai(label: 'ภาษาไทย'),
-  foreign(label: 'ภาษาต่างประเทศ'),
-  social(label:'สังคมศาสตร์'),
-  art(label: 'ศิลปะ'),
-  physical(label: 'สุขศึกษา');
-
-  final String label;
-  const AcademicDepartment({required this.label});
-}
-
-enum Division {
-  general(label: 'กลุ่มบริหารงานทั่วไป'),
-  academic(label: 'กลุ่มบริหารงานวิชาการ'),
-  budget(label: 'กลุ่มบริหารงานงบประมาณ'),
-  human(label: 'กลุ่มบริหารงานบุคคล');
-
-  final String label;
-  const Division({required this.label});
-}
-
-enum EmployeeStatus {
-  director(label: 'ผู้อำนวยการ/ผู้บริหาร'),
-  deputyDirector(label: 'รองผู้อำนวยการ/รองผู้บริหาร'),
-  civilServant(label: 'ข้าราชการ'),
-  governmentEmployee(label: 'พนักงานราชการ'),
-  contractTeacher(label: 'ครูอัตราจ้าง'),
-  permanentEmployee(label: 'ลูกจ้างประจำ'),
-  temporaryEmployee(label: 'ลูกจ้างชั่วคราว'),
-  officeStaff(label: 'เจ้าหน้าที่สำนักงาน'),
-  developer(label: 'นักพัฒนา'),
-  driver(label: 'พนักงานขับรถ');
-
-  final String label;
-  const EmployeeStatus({required this.label});
-}
+import 'package:srv_paperless/data/model/academic_department_model.dart';
+import 'package:srv_paperless/data/model/divisions_model.dart';
+import 'package:srv_paperless/data/model/employee_status_model.dart';
 
 class User {
   final String id;
@@ -47,10 +10,10 @@ class User {
   String firstname;
   String lastname;
   String phone;
-  AcademicDepartment academicDepartment;
-  Division divisions;
+  String academicDepartment;
+  String divisions;
+  String employeeStatus;
   String homeroomClass;
-  EmployeeStatus employeeStatus;
   final String role; // admin, user
 
   User({
@@ -68,37 +31,6 @@ class User {
     required this.role
   });
 
-  static Future<User> create({
-    required String id,
-    required String username,
-    required String rawPassword,
-    String image = "user.png",
-    required String firstname,
-    required String lastname,
-    required String phone,
-    required AcademicDepartment academicDepartment,
-    required Division divisions,
-    required String homeroomClass,
-    required EmployeeStatus employeeStatus,
-    required String role
-  }) async {
-    final hashedPassword = await PasswordService.hashPassword(rawPassword);
-    return User(
-      id: id,
-      username: username,
-      password: hashedPassword,
-      firstname: firstname,
-      lastname: lastname,
-      image: image,
-      phone: phone,
-      academicDepartment: academicDepartment,
-      divisions: divisions,
-      homeroomClass: homeroomClass,
-      employeeStatus: employeeStatus,
-      role: role
-    );
-  }
-
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       id: map['id'].toString(),
@@ -108,10 +40,10 @@ class User {
       firstname: map['firstname'],
       lastname: map['lastname'],
       phone: map['phone'],
-      academicDepartment: AcademicDepartment.values.firstWhere((e) => e.name == map['academic_department']),
-      divisions: Division.values.firstWhere((e) => e.name == map['divisions']),
+      academicDepartment: map['academic_department'],
+      divisions: map['divisions'],
       homeroomClass: map['homeroom_class'] ?? '',
-      employeeStatus: EmployeeStatus.values.firstWhere((e) => e.name == map['employee_status']),
+      employeeStatus: map['employee_status'],
       role: map['role'] ?? "user",
     );
   }
@@ -125,10 +57,10 @@ class User {
       'firstname': firstname,
       'lastname': lastname,
       'phone': phone,
-      'academic_department': academicDepartment.name,
-      'divisions': divisions.name,
+      'academic_department': academicDepartment,
+      'divisions': divisions,
       'homeroom_class': homeroomClass,
-      'employee_status': employeeStatus.name,
+      'employee_status': employeeStatus,
     };
   }
 

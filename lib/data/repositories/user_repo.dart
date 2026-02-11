@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/services/password_services.dart';
 
 import '../db_manager.dart';
 import '../model/user_model.dart';
@@ -7,6 +8,21 @@ abstract class UserRepository {
   Future<List<User>> fetchAllUsers();
   Future<User?> fetchUserById(String id);
   Future<User?> fetchUserByUsername(String username);
+
+  Future<User> create({
+    required String id,
+    required String username,
+    required String rawPassword,
+    String image = "user.png",
+    required String firstname,
+    required String lastname,
+    required String phone,
+    required String academicDepartment,
+    required String divisions,
+    required String homeroomClass,
+    required String employeeStatus,
+    required String role
+  });
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -39,6 +55,38 @@ class UserRepositoryImpl implements UserRepository {
 
     if (rows.isEmpty) return null;
     return User.fromMap(rows.first);
+  }
+  
+  @override
+  Future<User> create({
+    required String id,
+    required String username,
+    required String rawPassword,
+    String image = "user.png",
+    required String firstname,
+    required String lastname,
+    required String phone,
+    required String academicDepartment,
+    required String divisions,
+    required String homeroomClass,
+    required String employeeStatus,
+    required String role
+  }) async {
+    final hashedPassword = await PasswordService.hashPassword(rawPassword);
+    return User(
+      id: id,
+      username: username,
+      password: hashedPassword,
+      firstname: firstname,
+      lastname: lastname,
+      image: image,
+      phone: phone,
+      academicDepartment: academicDepartment,
+      divisions: divisions,
+      homeroomClass: homeroomClass,
+      employeeStatus: employeeStatus,
+      role: role
+    );
   }
 }
 

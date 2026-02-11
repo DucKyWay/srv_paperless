@@ -3,10 +3,9 @@ import 'package:srv_paperless/data/db_manager.dart';
 import 'package:srv_paperless/data/model/divisions_model.dart';
 
 abstract class DivisionsRepository {
-  Future<List<Divisions>> getAllDivisionss();
-  Future<Divisions?> getDivisionsById(int id);
-  Future<Divisions?> getDivisionsByKey(String key);
-  Future<Divisions?> getDivisionsByLabel(String label);
+  Future<List<Divisions>> fetchAllDivisions();
+  Future<Divisions?> fetchDivisionById(int id);
+  Future<Divisions?> fetchDivisionByKey(String key);
 }
 
 class DivisionsRepositoryImpl implements DivisionsRepository {
@@ -15,10 +14,10 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
   DivisionsRepositoryImpl(this.db, this.ref);
 
   @override
-  Future<Divisions?> getDivisionsById(int id) async {
+  Future<Divisions?> fetchDivisionById(int id) async {
     final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_id = ?",
-      [id]
+      "SELECT division_id, division_key, division_label FROM divisions WHERE division_id = ?",
+      [id],
     );
 
     if (maps.isNotEmpty) {
@@ -28,9 +27,9 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
   }
 
   @override
-  Future<Divisions?> getDivisionsByKey(String key) async {
+  Future<Divisions?> fetchDivisionByKey(String key) async {
     final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_key = ?",
+      "SELECT division_id, division_key, division_label FROM divisions WHERE division_key = ?",
       [key]
     );
 
@@ -41,21 +40,8 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
   }
 
   @override
-  Future<Divisions?> getDivisionsByLabel(String label) async {
-    final maps = await db.query(
-      "SELECT * FROM academic_department WHERE a_department_label = ?",
-      [label]
-    );
-
-    if (maps.isNotEmpty) {
-      return Divisions.fromMap(maps.first);
-    }
-    return null;
-  }
-
-  @override
-  Future<List<Divisions>> getAllDivisionss() async {
-    final List<Map<String, dynamic>> maps = await db.query('academic_department');
+  Future<List<Divisions>> fetchAllDivisions() async {
+    final List<Map<String, dynamic>> maps = await db.query('divisions');
     
     return List.generate(maps.length, (i) {
       return Divisions.fromMap(maps[i]);
@@ -66,4 +52,16 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
 final divisionsRepoProvider = Provider<DivisionsRepository>((ref) {
   final db = DbManager();
   return DivisionsRepositoryImpl(db, ref);
+});
+
+// ===== Provider =====
+
+final getAllDivisions = FutureProvider<List<Divisions>>((ref) async {
+  final repo = ref.watch(divisionsRepoProvider);
+  return await repo.fetchAllDivisions();
+});
+
+final getDivisionsByKey = FutureProvider.family<Divisions?, String>((ref, key) async {
+  final repo = ref.watch(divisionsRepoProvider);
+  return await repo.fetchDivisionByKey(key);
 });
