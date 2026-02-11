@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/widgets/main_layout.dart';
+import 'package:srv_paperless/widgets/menu_header.dart';
 
 class UserHomePage extends StatelessWidget {
   const UserHomePage({super.key});
@@ -7,23 +8,7 @@ class UserHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "ระบบโครงการออนไลน์",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-            style: TextStyle(fontSize: 12, color: Colors.white),
-          ),
-        ],
-      ),
+      title: NormalHeader(),
       child: SingleChildScrollView(
         child: Center(
           child: Column(

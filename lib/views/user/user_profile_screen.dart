@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:srv_paperless/widgets/main_layout.dart';
+import 'package:srv_paperless/widgets/menu_header.dart';
 
 class UserProfile extends ConsumerStatefulWidget {
   const UserProfile({super.key});
@@ -41,23 +42,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
     }
 
     return MainLayout(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "ระบบโครงการออนไลน์",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-            style: TextStyle(fontSize: 12, color: Colors.white),
-          ),
-        ],
-      ),
+      title: const BackButtonHeader(),
       child: SingleChildScrollView(
         child: Center(
           child: Column(

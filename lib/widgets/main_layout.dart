@@ -22,6 +22,13 @@ class MainLayout extends ConsumerWidget {
             children: [
               const SizedBox(height: 50),
               ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text("หน้าแรก"),
+                onTap: () {
+                    Navigator.pushNamed(context, '/user_home');
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.account_circle_outlined),
                 title: const Text("โปรไฟล์"),
                 onTap: () {

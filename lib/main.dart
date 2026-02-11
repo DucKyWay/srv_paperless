@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
-import 'package:srv_paperless/views/user/user_homepage_screen.dart';
+import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/views/user/user_profile_screen.dart';
 
 void main() async {
