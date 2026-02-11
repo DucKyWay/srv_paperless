@@ -1,12 +1,12 @@
-class DivisionsModel {
+class Divisions {
   final String id;
   final String key;
   final String label;
 
-  DivisionsModel({required this.id, required this.key, required this.label});
+  Divisions({required this.id, required this.key, required this.label});
 
-  factory DivisionsModel.fromMap(Map<String, dynamic> map) {
-    return DivisionsModel(
+  factory Divisions.fromMap(Map<String, dynamic> map) {
+    return Divisions(
       id: map['division_id'],
       key: map['division_key'],
       label: map['division_label'],

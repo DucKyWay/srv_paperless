@@ -1,16 +1,16 @@
-class EmployeeStatusModel {
+class EmployeeStatus {
   final String id;
   final String key;
   final String label;
 
-  EmployeeStatusModel({
+  EmployeeStatus({
     required this.id,
     required this.key,
     required this.label,
   });
 
-  factory EmployeeStatusModel.fromMap(Map<String, dynamic> map) {
-    return EmployeeStatusModel(
+  factory EmployeeStatus.fromMap(Map<String, dynamic> map) {
+    return EmployeeStatus(
       id: map['e_status_id'],
       key: map['e_status_key'],
       label: map['e_status_label'],
