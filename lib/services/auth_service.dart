@@ -10,6 +10,10 @@ class AuthService {
   AuthService(this.userRepo);
 
   Future<User> login(String email, String password) async {
+    if (email.trim().isEmpty || password.trim().isEmpty) {
+      throw AuthException.emptyCredentials();
+    }
+
     try {
       final credential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -19,7 +23,7 @@ class AuthService {
       final user = await userRepo.fetchUserById(credential.user!.uid);
 
       if (user == null) {
-        throw AuthException._("ไม่พบข้อมูลโปรไฟล์ผู้ใช้ในระบบ");
+        throw AuthException.userIsNull();
       }
 
       return user;
@@ -39,14 +43,39 @@ class AuthService {
   Future<void> logout() async {
     await _auth.signOut();
   }
+
+  Future<void> changePassword(String newPassword) async {
+    try {
+      final user = _auth.currentUser;
+
+      if (user == null) {
+        throw AuthException._("Session has expired, please login");
+      }
+
+      await user.updatePassword(newPassword);
+    } on fb_auth.FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        throw AuthException._("รหัสผ่านคาดเดาง่ายเกินไป");
+      } else {
+        throw AuthException._(e.message ?? "ไม่สามารถเปลี่ยนรหัสผ่านได้");
+      }
+    } catch (e) {
+      throw AuthException._("เกิดข้อผิดพลาด: $e");
+    }
+  }
 }
 
 class AuthException implements Exception {
   final String message;
   AuthException._(this.message);
 
+  factory AuthException.userIsNull() =>
+      AuthException._("ไม่พบข้อมูลโปรไฟล์ผู้ใช้ในระบบ");
   factory AuthException.userNotFound() => AuthException._("ไม่พบชื่อผู้ใช้นี้");
-  factory AuthException.invalidPassword() => AuthException._("รหัสผ่านไม่ถูกต้อง");
+  factory AuthException.invalidPassword() =>
+      AuthException._("รหัสผ่านไม่ถูกต้อง");
+  factory AuthException.emptyCredentials() =>
+      AuthException._("กรุณากรอกชื่อผู้ใช้งานและรหัสผ่านให้ถูกต้อง");
 
   @override
   String toString() => message;

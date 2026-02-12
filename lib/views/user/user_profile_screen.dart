@@ -1,9 +1,16 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:srv_paperless/core/utils/async_value_ext.dart';
+import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/repositories/academic_department_repo.dart';
 import 'package:srv_paperless/data/repositories/divisions_repo.dart';
 import 'package:srv_paperless/data/repositories/employee_status_repo.dart';
+import 'package:srv_paperless/data/repositories/user_repo.dart';
+import 'package:srv_paperless/services/auth_service.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
@@ -18,6 +25,149 @@ class UserProfile extends ConsumerStatefulWidget {
 }
 
 class _UserProfileState extends ConsumerState<UserProfile> {
+  void _showChangePasswordDialog() {
+    final TextEditingController newPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("เปลี่ยนรหัสผ่านใหม่"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: newPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "รหัสผ่านใหม่"),
+            ),
+            TextField(
+              controller: confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "ยืนยันรหัสผ่านใหม่",
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("ยกเลิก"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (newPasswordController.text ==
+                      confirmPasswordController.text &&
+                  newPasswordController.text.isNotEmpty) {
+                try {
+                  await ref
+                      .read(authServiceProvider)
+                      .changePassword(newPasswordController.text);
+
+                  if (context.mounted) {
+                    Navigator.pop(context); // ปิด Dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("เปลี่ยนรหัสผ่านสำเร็จ"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("รหัสผ่านไม่ตรงกัน"),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
+            },
+            child: const Text("บันทึก"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _changeProfileImage(ImageSource source) async {
+  final ImagePicker picker = ImagePicker();
+  final XFile? image = await picker.pickImage(source: source);
+
+  if (image != null) {
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final user = ref.read(authProvider).currentUser!;
+      final uid = user.id;
+      
+      if (user.image.isNotEmpty && user.image != "user.png") {
+        await deleteFile('srv-paperless', user.image);
+      }
+
+      final String filename = "profile_${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+      await uploadFile('srv-paperless', filename, image.path);
+
+      await ref.read(userRepoProvider).updateProfileImage(uid, filename);
+
+      ref.invalidate(authProvider); 
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("อัปเดตรูปโปรไฟล์สำเร็จ"), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("เกิดข้อผิดพลาด: $e"), backgroundColor: Colors.red),
+      );
+    }
+  }
+}
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('ถ่ายรูปใหม่'),
+              onTap: () {
+                Navigator.pop(context);
+                _changeProfileImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('เลือกจากแกลเลอรี่'),
+              onTap: () {
+                Navigator.pop(context);
+                _changeProfileImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -63,10 +213,69 @@ class _UserProfileState extends ConsumerState<UserProfile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 20),
-              Image.asset(
-                (user.image != "") ? "assets/images/${user.image}" : "assets/images/user.png",
-                fit: BoxFit.contain,
-                height: 150,
+              GestureDetector(
+                onTap: _showImageSourceActionSheet,
+                child: Stack(
+                  children: [
+                    FutureBuilder<String>(
+                      future: getPrivateImageUrl(user.image),
+                      builder: (context, snapshot) {
+                        final String? imageUrl = snapshot.data;
+
+                        return GestureDetector(
+                          onTap: _showImageSourceActionSheet,
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 75,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage:
+                                    (imageUrl != null && imageUrl.isNotEmpty)
+                                    ? NetworkImage(imageUrl) as ImageProvider
+                                    : const AssetImage(
+                                        "assets/images/user.png",
+                                      ),
+                                child:
+                                    snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? const CircularProgressIndicator()
+                                    : null,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  radius: 20,
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        radius: 20,
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 20),
               Text(
@@ -104,7 +313,9 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                       ),
                       border: 15,
                       color: Color(0x1D4200).withOpacity(1),
-                      onPressed: () {},
+                      onPressed: () {
+                        _showChangePasswordDialog();
+                      },
                     ),
                     SizedBox(height: 8),
                     CustomButton(

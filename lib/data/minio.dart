@@ -41,3 +41,24 @@ Future<void> uploadFile(
     print("Upload failed: $e");
   }
 }
+
+Future<String> getPrivateImageUrl(String fileName) async {
+  if (fileName == null || fileName.isEmpty || fileName == "user.png") return "";
+  try {
+    return await minio.presignedGetObject('srv-paperless', fileName, expires: 3600);
+  } catch (e) {
+    print("Error generating URL: $e");
+    return "";
+  }
+}
+
+Future<void> deleteFile(String bucketName, String objectName) async {
+  try {
+    if (objectName == "user.png" || objectName.isEmpty) return;
+
+    await minio.removeObject(bucketName, objectName);
+    print("Delete successful: $objectName");
+  } catch (e) {
+    print("Delete failed: $e");
+  }
+}

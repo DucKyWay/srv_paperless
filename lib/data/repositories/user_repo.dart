@@ -8,9 +8,11 @@ abstract class UserRepository {
   Future<List<User>> fetchAllUsers();
   Future<User?> fetchUserById(String id);
   Future<User?> fetchUserByUsername(String username);
-  Future<User?> getCurrentUser();
 
   Future<void> create(User user, String password);
+
+  Future<User?> getCurrentUser();
+  Future<void> updateProfileImage(String uid, String filename);
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -61,6 +63,15 @@ class UserRepositoryImpl implements UserRepository {
 
     final newUser = user.copyWith(id: credential.user!.uid);
     await _db.collection('users').doc(newUser.id).set(newUser.toMap());
+  }
+
+  @override
+  Future<void> updateProfileImage(String uid, String filename) async {
+    try {
+      await _db.collection('users').doc(uid).update({'image': filename});
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 

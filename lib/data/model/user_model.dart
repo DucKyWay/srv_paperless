@@ -68,6 +68,7 @@ class User {
       'divisions': divisions,
       'homeroom_class': homeroomClass,
       'employee_status': employeeStatus,
+      'role': role
     };
   }
 
