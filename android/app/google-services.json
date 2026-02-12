@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "241551599743",
+    "project_id": "srv-paperless",
+    "storage_bucket": "srv-paperless.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241551599743:android:e94cdca040696caa92b74a",
+        "android_client_info": {
+          "package_name": "com.example.srv_paperless"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARZmBEw8BmnnwMC5ALJL8zB_AaNKPOjjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

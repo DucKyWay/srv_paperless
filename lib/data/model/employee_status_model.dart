@@ -1,23 +1,19 @@
 class EmployeeStatus {
-  final int id;
+  final String id;
   final String key;
   final String label;
 
-  EmployeeStatus({
-    required this.id,
-    required this.key,
-    required this.label,
-  });
+  EmployeeStatus({required this.id, required this.key, required this.label});
 
-  factory EmployeeStatus.fromMap(Map<String, dynamic> map) {
+  factory EmployeeStatus.fromMap(Map<String, dynamic> map, String docId) {
     return EmployeeStatus(
-      id: map['e_status_id'] as int,
-      key: map['e_status_key'].toString(),
-      label: map['e_status_label'].toString(),
+      id: docId,
+      key: map['key']?.toString() ?? '',
+      label: map['label']?.toString() ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'e_status_id': id, 'e_status_key': key, 'e_status_label': label};
+    return {'key': key, 'label': label,};
   }
 }

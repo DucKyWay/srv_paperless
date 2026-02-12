@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"srv-paperless","appId":"1:241551599743:android:e94cdca040696caa92b74a","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"srv-paperless","configurations":{"android":"1:241551599743:android:e94cdca040696caa92b74a","ios":"1:241551599743:ios:e29599240017ea8492b74a"}}}}}}

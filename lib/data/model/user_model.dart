@@ -1,7 +1,6 @@
 class User {
   final String id;
   final String username;
-  String password;
   String image;
   String firstname;
   String lastname;
@@ -15,7 +14,6 @@ class User {
   User({
     required this.id,
     required this.username,
-    required this.password,
     this.image = "user.png",
     required this.firstname,
     required this.lastname,
@@ -27,28 +25,41 @@ class User {
     required this.role
   });
 
-  factory User.fromMap(Map<String, dynamic> map) {
+  User copyWith({String? id, String? image}) {
     return User(
-      id: map['id'].toString(),
-      username: map['username'],
-      password: map['password'],
+      id: id ?? this.id,
+      username: username,
+      image: image ?? this.image,
+      firstname: firstname,
+      lastname: lastname,
+      phone: phone,
+      academicDepartment: academicDepartment,
+      divisions: divisions,
+      homeroomClass: homeroomClass,
+      employeeStatus: employeeStatus,
+      role: role,
+    );
+  }
+
+  factory User.fromMap(Map<String, dynamic> map, String docId) {
+    return User(
+      id: docId,
+      username: map['username']?.toString() ?? '',
       image: map['image'] ?? "user.png",
-      firstname: map['firstname'],
-      lastname: map['lastname'],
-      phone: map['phone'],
-      academicDepartment: map['academic_department'],
-      divisions: map['divisions'],
-      homeroomClass: map['homeroom_class'],
-      employeeStatus: map['employee_status'],
+      firstname: map['firstname']?.toString() ?? '',
+      lastname: map['lastname']?.toString() ?? '',
+      phone: map['phone']?.toString() ?? '',
+      academicDepartment: map['academic_department']?.toString() ?? '',
+      divisions: map['divisions']?.toString() ?? '',
+      homeroomClass: map['homeroom_class']?.toString() ?? '',
+      employeeStatus: map['employee_status']?.toString() ?? '',
       role: map['role'] ?? "user",
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'username': username,
-      'password': password,
       'image': image,
       'firstname': firstname,
       'lastname': lastname,

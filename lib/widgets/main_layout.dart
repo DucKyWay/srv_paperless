@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/services/auth_service.dart';
 
 class MainLayout extends ConsumerWidget {
   final Widget child;
@@ -25,14 +25,14 @@ class MainLayout extends ConsumerWidget {
                 leading: const Icon(Icons.home_outlined),
                 title: const Text("หน้าแรก"),
                 onTap: () {
-                    Navigator.pushNamed(context, '/user_home');
+                  Navigator.pushNamed(context, '/user_home');
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.account_circle_outlined),
                 title: const Text("โปรไฟล์"),
                 onTap: () {
-                    Navigator.pushNamed(context, '/user_profile');
+                  Navigator.pushNamed(context, '/user_profile');
                 },
               ),
               const Spacer(),
@@ -43,13 +43,12 @@ class MainLayout extends ConsumerWidget {
                   "ออกจากระบบ",
                   style: TextStyle(color: Colors.red),
                 ),
-                onTap: () {
-                  ref.read(authProvider.notifier).logout();
+                onTap: () async {
                   Navigator.of(context).pop();
-                  Navigator.pushReplacementNamed(context, '/');
+                  await ref.read(authServiceProvider).logout();
                 },
               ),
-              const SizedBox(height: 10), // เว้นระยะห่างจากขอบล่างนิดหน่อย
+              const SizedBox(height: 10), 
             ],
           ),
         ),

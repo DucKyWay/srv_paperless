@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
+import 'package:srv_paperless/firebase_options.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/views/user/user_profile_screen.dart';
@@ -11,11 +15,15 @@ import 'package:srv_paperless/views/user/user_profile_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   try {
     await dotenv.load(fileName: ".env");
-    print("Env loaded");
+    if(kDebugMode) print("Env loaded");
   } catch (e) {
-    print("Error: can't load env: $e");
+    if(kDebugMode) print("Error: can't load env: $e");
   }
 
   await checkB2Connection();
@@ -38,11 +46,23 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme
         )
       ),
-      initialRoute: '/',
+      home: StreamBuilder<fb_auth.User?>(
+        stream: fb_auth.FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          if (snapshot.hasData) {
+            return const UserHomePage();
+          }
+          return const LoginScreen();
+        },
+      ),
+      initialRoute: "/login",
       routes: {
-        '/': (context) => const LoginScreen(),
         '/user_home': (context) => const UserHomePage(),
-        '/user_profile':(context) =>const UserProfile()
+        '/user_profile': (context) => const UserProfile(),
+        '/login': (context) => const LoginScreen(),
       },
     );
   }
