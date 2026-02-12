@@ -41,11 +41,14 @@ class MainLayout extends ConsumerWidget {
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
                   "ออกจากระบบ",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: Color.fromRGBO(244, 67, 54, 1)),
                 ),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await ref.read(authServiceProvider).logout();
+                  if(context.mounted) {
+                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                  }
                 },
               ),
               const SizedBox(height: 10), 

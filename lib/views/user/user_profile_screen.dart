@@ -64,7 +64,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
             children: [
               SizedBox(height: 20),
               Image.asset(
-                "assets/images/${user.image}",
+                (user.image != "") ? "assets/images/${user.image}" : "assets/images/user.png",
                 fit: BoxFit.contain,
                 height: 150,
               ),
