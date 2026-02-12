@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/utils/async_value_ext.dart';
 import 'package:srv_paperless/data/repositories/academic_department_repo.dart';
 import 'package:srv_paperless/data/repositories/divisions_repo.dart';
 import 'package:srv_paperless/data/repositories/employee_status_repo.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:srv_paperless/widgets/main_layout.dart';
 import 'package:srv_paperless/widgets/menu_header.dart';
@@ -44,8 +46,12 @@ class _UserProfileState extends ConsumerState<UserProfile> {
       );
     }
 
-    final employeeStatusAsync = ref.watch(getEmployeeStatusByKey(user.employeeStatus));
-    final departmentAsync = ref.watch(getDepartmentByKey(user.academicDepartment));
+    final employeeStatusAsync = ref.watch(
+      getEmployeeStatusByKey(user.employeeStatus),
+    );
+    final departmentAsync = ref.watch(
+      getDepartmentByKey(user.academicDepartment),
+    );
     final divisionAsync = ref.watch(getDivisionsByKey(user.divisions));
 
     return MainLayout(
@@ -76,32 +82,11 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                   children: [
                     info("ชื่อ-นามสกุล:", user.fullname),
                     const SizedBox(height: 8),
-                    employeeStatusAsync.when(
-                      data: (dept) => info(
-                        "ตำแหน่ง:",
-                        dept?.label ?? "ไม่พบข้อมูล ($user.employeeStatus)",
-                      ),
-                      loading: () => info("ตำแหน่ง:", "กำลังโหลด..."),
-                      error: (err, _) => info("ตำแหน่ง:", "ข้อผิดพลาด: $err"),
-                    ),
+                    info("ตำแหน่ง:", employeeStatusAsync.labelText),
                     const SizedBox(height: 8),
-                    departmentAsync.when(
-                      data: (dept) => info(
-                        "กลุ่มสาระ:",
-                        dept?.label ?? "ไม่พบข้อมูล ($user.academicDepartment)",
-                      ),
-                      loading: () => info("กลุ่มสาระ:", "กำลังโหลด..."),
-                      error: (err, _) => info("กลุ่มสาระ:", "ข้อผิดพลาด: $err"),
-                    ),
+                    info("กลุ่มสาระ:", departmentAsync.labelText),
                     const SizedBox(height: 8),
-                    divisionAsync.when(
-                      data: (dept) => info(
-                        "ฝ่ายงาน:",
-                        dept?.label ?? "ไม่พบข้อมูล ($user.divisions)",
-                      ),
-                      loading: () => info("ฝ่ายงาน:", "กำลังโหลด..."),
-                      error: (err, _) => info("ฝ่ายงาน:", "ข้อผิดพลาด: $err"),
-                    ),
+                    info("ฝ่ายงาน:", divisionAsync.labelText),
                     const SizedBox(height: 8),
                     info("ประจำชั้น:", user.homeroomClass),
                     SizedBox(height: 45),
@@ -109,6 +94,28 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                       label: "เบอร์โทร",
                       hint: user.phone,
                       controller: phoneController,
+                    ),
+                    SizedBox(height: 45),
+                    CustomButton(
+                      height: 55,
+                      text: Text(
+                        "เปลี่ยนรหัสผ่าน",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      border: 15,
+                      color: Color(0x1D4200).withOpacity(1),
+                      onPressed: () {},
+                    ),
+                    SizedBox(height: 8),
+                    CustomButton(
+                      height: 55,
+                      text: Text(
+                        "ยืนยัน",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      border: 15,
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () {},
                     ),
                   ],
                 ),

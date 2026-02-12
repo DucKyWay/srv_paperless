@@ -41,17 +41,17 @@ class BackButtonHeader extends MenuHeader {
   @override
   Widget? buildLeading(BuildContext context) => Row(
     children: [
-      IconButton(
+      TextButton.icon(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.pop(context),
-      ),
-      Text(
-        "ย้อนกลับ",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          decoration: TextDecoration.underline,
-          decorationColor: Colors.white
+        label: Text(
+          "ย้อนกลับ",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            decoration: TextDecoration.underline,
+            decorationColor: Colors.white,
+          ),
         ),
       ),
     ],

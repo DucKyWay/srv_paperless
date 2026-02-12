@@ -1,7 +1,3 @@
-import 'package:srv_paperless/data/model/academic_department_model.dart';
-import 'package:srv_paperless/data/model/divisions_model.dart';
-import 'package:srv_paperless/data/model/employee_status_model.dart';
-
 class User {
   final String id;
   final String username;
@@ -42,7 +38,7 @@ class User {
       phone: map['phone'],
       academicDepartment: map['academic_department'],
       divisions: map['divisions'],
-      homeroomClass: map['homeroom_class'] ?? '',
+      homeroomClass: map['homeroom_class'],
       employeeStatus: map['employee_status'],
       role: map['role'] ?? "user",
     );
