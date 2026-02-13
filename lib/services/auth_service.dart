@@ -63,6 +63,20 @@ class AuthService {
       throw AuthException._("เกิดข้อผิดพลาด: $e");
     }
   }
+
+  Future<User> getCurrentUser() async {
+    final fbUser = _auth.currentUser;
+    if (fbUser == null) {
+      throw AuthException._("Session has expired, please login");
+    }
+
+    final user = await userRepo.fetchUserById(fbUser.uid);
+    if (user == null) {
+      throw AuthException.userIsNull();
+    }
+
+    return user;
+  }
 }
 
 class AuthException implements Exception {

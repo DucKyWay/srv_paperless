@@ -67,11 +67,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> updateProfileImage(String uid, String filename) async {
-    try {
-      await _db.collection('users').doc(uid).update({'image': filename});
-    } catch (e) {
-      rethrow;
-    }
+     await _db.collection('users').doc(uid).update({'image': filename});
   }
 }
 
