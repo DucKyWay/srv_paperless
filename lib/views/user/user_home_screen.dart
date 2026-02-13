@@ -35,9 +35,9 @@ class UserHomePage extends StatelessWidget {
                 ),
               ),
               
-              card(context,"ยื่นโครงการ",1),
-              card(context,"ติดตามโครงการ",2),
-              card(context,"สรุปโครงการที่ดำเนินการสำเร็จ",3),
+              card(context,"ยื่นโครงการ", 1),
+              card(context,"ติดตามโครงการ", 2),
+              card(context,"สรุปโครงการที่ดำเนินการสำเร็จ", 3),
               
             ],
           ),

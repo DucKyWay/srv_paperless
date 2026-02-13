@@ -66,7 +66,7 @@ Future<String> getPrivateImageUrl(String fileName) async {
 Future<void> deleteFile(String objectName) async {
   String bucketName = "srv-paperless";
   try {
-    if (objectName == "user.png" || objectName.isEmpty) return;
+    if (objectName.isEmpty) return;
 
     await minio.removeObject(bucketName, objectName);
     print("Delete successful: $objectName");

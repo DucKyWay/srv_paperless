@@ -26,7 +26,7 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
       final user = ref.read(authProvider).currentUser!;
       final uid = user.id;
 
-      if (user.image.isNotEmpty && user.image != "user.png") {
+      if (user.image.isNotEmpty) {
         await deleteFile(user.image);
       }
 
