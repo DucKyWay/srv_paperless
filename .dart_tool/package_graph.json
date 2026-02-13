@@ -263,7 +263,7 @@
     },
     {
       "name": "matcher",
-      "version": "0.12.18",
+      "version": "0.12.17",
       "dependencies": [
         "async",
         "meta",
@@ -274,7 +274,7 @@
     },
     {
       "name": "test_api",
-      "version": "0.7.8",
+      "version": "0.7.7",
       "dependencies": [
         "async",
         "boolean_selector",
@@ -573,14 +573,14 @@
     },
     {
       "name": "material_color_utilities",
-      "version": "0.13.0",
+      "version": "0.11.1",
       "dependencies": [
         "collection"
       ]
     },
     {
       "name": "characters",
-      "version": "1.4.1",
+      "version": "1.4.0",
       "dependencies": []
     },
     {
@@ -726,7 +726,7 @@
     },
     {
       "name": "test",
-      "version": "1.28.0",
+      "version": "1.26.3",
       "dependencies": [
         "analyzer",
         "async",
@@ -735,6 +735,7 @@
         "coverage",
         "http_multi_server",
         "io",
+        "js",
         "matcher",
         "node_preamble",
         "package_config",
@@ -835,7 +836,7 @@
     },
     {
       "name": "test_core",
-      "version": "0.6.14",
+      "version": "0.6.12",
       "dependencies": [
         "analyzer",
         "args",
@@ -914,6 +915,11 @@
       "dependencies": []
     },
     {
+      "name": "js",
+      "version": "0.7.2",
+      "dependencies": []
+    },
+    {
       "name": "io",
       "version": "1.0.5",
       "dependencies": [
@@ -948,7 +954,7 @@
     },
     {
       "name": "analyzer",
-      "version": "9.0.0",
+      "version": "8.4.1",
       "dependencies": [
         "_fe_analyzer_shared",
         "collection",
@@ -1054,7 +1060,7 @@
     },
     {
       "name": "_fe_analyzer_shared",
-      "version": "92.0.0",
+      "version": "91.0.0",
       "dependencies": [
         "meta"
       ]
