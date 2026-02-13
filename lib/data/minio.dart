@@ -15,7 +15,7 @@ Future<bool> checkB2Connection() async {
   final String targetBucket = 'srv-paperless';
   try {
     final bool exists = await minio.bucketExists(targetBucket);
-    
+
     if (exists) {
       print("Connect to Backblaze: Bucket '$targetBucket' is ready.");
       return true;
@@ -30,12 +30,11 @@ Future<bool> checkB2Connection() async {
 }
 
 Future<void> uploadFile(
-  String bucketName,
   String objectName,
   String filePath,
 ) async {
   try {
-    await minio.fPutObject(bucketName, objectName, filePath);
+    await minio.fPutObject('srv-paperless', objectName, filePath);
     print("Upload successful!");
   } catch (e) {
     print("Upload failed: $e");
@@ -43,16 +42,29 @@ Future<void> uploadFile(
 }
 
 Future<String> getPrivateImageUrl(String fileName) async {
-  if (fileName == null || fileName.isEmpty || fileName == "user.png") return "";
+  if (fileName.isEmpty || fileName == "user.png") return "";
+
   try {
-    return await minio.presignedGetObject('srv-paperless', fileName, expires: 3600);
+    try {
+      await minio.statObject('srv-paperless', fileName);
+    } catch (e) {
+      print("B2 Error: Object '$fileName' does not exist in bucket.");
+      return "";
+    }
+
+    return await minio.presignedGetObject(
+      'srv-paperless',
+      fileName,
+      expires: 3600,
+    );
   } catch (e) {
     print("Error generating URL: $e");
     return "";
   }
 }
 
-Future<void> deleteFile(String bucketName, String objectName) async {
+Future<void> deleteFile(String objectName) async {
+  String bucketName = "srv-paperless";
   try {
     if (objectName == "user.png" || objectName.isEmpty) return;
 

@@ -42,13 +42,13 @@ class _UserProfileState extends ConsumerState<UserProfile> {
         final uid = user.id;
 
         if (user.image.isNotEmpty && user.image != "user.png") {
-          await deleteFile('srv-paperless', user.image);
+          await deleteFile(user.image);
         }
 
         final String filename =
             "profile_${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg";
 
-        await uploadFile('srv-paperless', filename, image.path);
+        await uploadFile(filename, image.path);
 
         await ref.read(userRepoProvider).updateProfileImage(uid, filename);
 
@@ -76,13 +76,14 @@ class _UserProfileState extends ConsumerState<UserProfile> {
   }
 
   void _showImageSourceActionSheet() {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) => ImageSourceSheet(
-      onSourceSelected: (source) => _changeProfileImage(source),
-    ),
-  );
-}
+    showModalBottomSheet(
+      context: context,
+      builder:
+          (context) => ImageSourceSheet(
+            onSourceSelected: (source) => _changeProfileImage(source),
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,24 +92,24 @@ class _UserProfileState extends ConsumerState<UserProfile> {
     final TextEditingController phoneController = TextEditingController();
     if (user == null) {
       return MainLayout(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "ระบบโครงการออนไลน์",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.white,
+        title: NormalHeader(),
+        child: Center(
+          child: Column(
+            children: [
+              Text("กรุณาเข้าสู่ระบบ", style: Theme.of(context).textTheme.bodyLarge),
+              CustomButton(
+                height: 55,
+                text: Text(
+                  "เข้าสู่ระบบ",
+                  style: TextStyle(color: Colors.white),
+                ),
+                border: 15,
+                color: Theme.of(context).colorScheme.primaryContainer,
+                onPressed: () => Navigator.pushNamed(context, '/login')
               ),
-            ),
-            Text(
-              "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-              style: TextStyle(fontSize: 12, color: Colors.white),
-            ),
-          ],
+            ],
+          ),
         ),
-        child: Center(child: Text("กรุณาเข้าสู่ระบบ")),
       );
     }
 

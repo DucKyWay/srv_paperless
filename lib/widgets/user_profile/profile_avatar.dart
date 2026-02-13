@@ -5,7 +5,11 @@ class ProfileAvatar extends StatelessWidget {
   final String imageName;
   final VoidCallback onTap;
 
-  const ProfileAvatar({super.key, required this.imageName, required this.onTap});
+  const ProfileAvatar({
+    super.key,
+    required this.imageName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +20,38 @@ class ProfileAvatar extends StatelessWidget {
           FutureBuilder<String>(
             future: getPrivateImageUrl(imageName),
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircleAvatar(
+                  radius: 75,
+                  child: CircularProgressIndicator(),
+                );
+              }
+
               final imageUrl = snapshot.data;
-              return CircleAvatar(
-                radius: 75,
-                backgroundColor: Colors.grey[200],
-                backgroundImage: (imageUrl != null && imageUrl.isNotEmpty)
-                    ? NetworkImage(imageUrl) as ImageProvider
-                    : const AssetImage("assets/images/user.png"),
-                child: snapshot.connectionState == ConnectionState.waiting
-                    ? const CircularProgressIndicator()
-                    : null,
+
+              return ClipOval(
+                child: Image.network(
+                  imageUrl ?? '',
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      "assets/images/user.png",
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                ),
               );
             },
           ),
@@ -35,7 +61,11 @@ class ProfileAvatar extends StatelessWidget {
             child: CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.primary,
               radius: 20,
-              child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
