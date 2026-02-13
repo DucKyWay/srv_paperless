@@ -9,10 +9,13 @@ abstract class UserRepository {
   Future<User?> fetchUserById(String id);
   Future<User?> fetchUserByUsername(String username);
 
-  Future<void> create(User user, String password);
-
-  Future<User?> getCurrentUser();
-  Future<void> updateProfileImage(String uid, String filename);
+  Future<int> create(User user, String password);
+  Future<int> updateProfileImage(String uid, String filename);
+  Future<int> updatePhoneNumber(String uid, String phone);
+  Future<int> updateAcademicDepartment(String uid, String academicDepartment);
+  Future<int> updateDivisions(String uid, String divisions);
+  Future<int> updateHomeroomClass(String uid, String homeroomClass);
+  Future<int> deleteUser(String uid);
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -35,39 +38,98 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<User?> fetchUserByUsername(String username) async {
-    final snapshot = await _db
-        .collection('users')
-        .where('username', isEqualTo: username)
-        .limit(1)
-        .get();
+    final snapshot =
+        await _db
+            .collection('users')
+            .where('username', isEqualTo: username)
+            .limit(1)
+            .get();
     if (snapshot.docs.isEmpty) return null;
     final doc = snapshot.docs.first;
     return User.fromMap(doc.data(), doc.id);
   }
 
   @override
-  Future<User?> getCurrentUser() async {
-    final firebaseUser = _auth.currentUser;
-    if (firebaseUser != null) {
-      return await fetchUserById(firebaseUser.uid);
+  Future<int> create(User user, String password) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: user.username,
+        password: password,
+      );
+
+      final newUser = user.copyWith(id: credential.user!.uid);
+      await _db.collection('users').doc(newUser.id).set(newUser.toMap());
+      return 0;    
+    } catch (e) {
+      return 1;
     }
-    return null;
   }
 
   @override
-  Future<void> create(User user, String password) async {
-    final credential = await _auth.createUserWithEmailAndPassword(
-      email: user.username,
-      password: password,
-    );
-
-    final newUser = user.copyWith(id: credential.user!.uid);
-    await _db.collection('users').doc(newUser.id).set(newUser.toMap());
+  Future<int> updatePhoneNumber(String uid, String phone) async {
+    try {
+      await _db.collection('users').doc(uid).update({'phone': phone});
+      return 0;    
+    } catch (e) {
+      return 1;
+    }
   }
 
   @override
-  Future<void> updateProfileImage(String uid, String filename) async {
-     await _db.collection('users').doc(uid).update({'image': filename});
+  Future<int> updateProfileImage(String uid, String filename) async {
+    try {
+      await _db.collection('users').doc(uid).update({'image': filename});
+      return 0;    
+    } catch (e) {
+      return 1;
+    }
+  }
+  
+  @override
+  Future<int> updateAcademicDepartment(String uid, String academicDepartment) async {
+    try {
+      await _db.collection('users').doc(uid).update({'academic_department': academicDepartment});
+      return 0;    
+    } catch (e) {
+      return 1;
+    }
+  }
+  
+  @override
+  Future<int> updateDivisions(String uid, String divisions) async {
+    try {
+      await _db.collection('users').doc(uid).update({'divisions': divisions});
+      return 0;    
+    } catch (e) {
+      return 1;
+    }
+  }
+  
+  @override
+  Future<int> updateHomeroomClass(String uid, String homeroomClass) async {
+    try {
+      await _db.collection('users').doc(uid).update({'homeroom_class': homeroomClass});
+      return 0;    
+    } catch (e) {
+      return 1;
+    }
+  }
+  
+  @override
+  Future<int> deleteUser(String uid) async {
+    try {
+    final user = await fetchUserById(uid);
+    
+    if (user != null) {
+      await _db.collection('users').doc(uid).delete();
+      return 0;
+    } else {
+      return 1;
+    }
+  } catch (e) {
+    print("Delete user error: $e");
+    return -1;
+  }
   }
 }
 

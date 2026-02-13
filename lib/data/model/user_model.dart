@@ -1,14 +1,14 @@
 class User {
   final String id;
   final String username;
-  final String image;
-  final String firstname;
-  final String lastname;
-  final String phone;
-  final String academicDepartment;
-  final String divisions;
+  String image;
+  String firstname;
+  String lastname;
+  String phone;
+  String academicDepartment;
+  String divisions;
   final String employeeStatus;
-  final String homeroomClass;
+  String homeroomClass;
   final String role;
 
   User({
