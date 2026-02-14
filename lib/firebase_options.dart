@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'srv-paperless.firebasestorage.app',
     iosBundleId: 'com.example.srvPaperless',
   );
+
 }

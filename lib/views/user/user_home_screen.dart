@@ -34,8 +34,12 @@ class UserHomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              
-              card(context,"ยื่นโครงการ",1),
+              GestureDetector(
+                child:  card(context,"ยื่นโครงการ",1),
+                onTap: (){
+                 Navigator.pushNamed(context, '/create_request');
+                },
+              ),
               card(context,"ติดตามโครงการ",2),
               card(context,"สรุปโครงการที่ดำเนินการสำเร็จ",3),
               
