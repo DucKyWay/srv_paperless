@@ -36,4 +36,19 @@ class AuthNotifier extends Notifier<AuthState> {
   void logout() {
     state = AuthState();
   }
+
+  Future<void> getCurrentUser() async {
+    try {
+      final authService = ref.read(authServiceProvider);
+      
+      final updatedUser = await authService.getCurrentUser(); 
+
+      state = state.copyWith(
+        currentUser: updatedUser,
+        isLoading: false,
+      );
+    } catch (e) {
+      print("Refresh user failed: $e");
+    }
+  }
 }

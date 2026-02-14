@@ -7,9 +7,9 @@ class User {
   String phone;
   String academicDepartment;
   String divisions;
-  String employeeStatus;
+  final String employeeStatus;
   String homeroomClass;
-  final String role; // admin, user
+  final String role;
 
   User({
     required this.id,
@@ -24,20 +24,35 @@ class User {
     required this.employeeStatus,
     required this.role
   });
+  
+  String get fullname => "$firstname $lastname";
+  bool get isAdmin => role == "admin";
 
-  User copyWith({String? id, String? image}) {
+  User copyWith({
+    String? id,
+    String? username,
+    String? image,
+    String? firstname,
+    String? lastname,
+    String? phone,
+    String? academicDepartment,
+    String? divisions,
+    String? employeeStatus,
+    String? homeroomClass,
+    String? role,
+  }) {
     return User(
       id: id ?? this.id,
-      username: username,
+      username: username ?? this.username,
       image: image ?? this.image,
-      firstname: firstname,
-      lastname: lastname,
-      phone: phone,
-      academicDepartment: academicDepartment,
-      divisions: divisions,
-      homeroomClass: homeroomClass,
-      employeeStatus: employeeStatus,
-      role: role,
+      firstname: firstname ?? this.firstname,
+      lastname: lastname ?? this.lastname,
+      phone: phone ?? this.phone,
+      academicDepartment: academicDepartment ?? this.academicDepartment,
+      divisions: divisions ?? this.divisions,
+      homeroomClass: homeroomClass ?? this.homeroomClass,
+      employeeStatus: employeeStatus ?? this.employeeStatus,
+      role: role ?? this.role,
     );
   }
 
@@ -68,16 +83,7 @@ class User {
       'divisions': divisions,
       'homeroom_class': homeroomClass,
       'employee_status': employeeStatus,
+      'role': role
     };
-  }
-
-  bool get isAdmin => role == "admin";
-
-  String get fullname => "$firstname $lastname";
-
-  set name(String value) {
-    var parts = value.split(" ");
-    firstname = parts[0];
-    if (parts.length > 1) lastname = parts[1];
   }
 }
