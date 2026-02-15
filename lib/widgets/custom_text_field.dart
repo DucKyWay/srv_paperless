@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
   final bool isPassword;
+  final TextInputType keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final VoidCallback? onTap;
+  final bool readOnly;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -12,6 +18,11 @@ class CustomTextField extends StatelessWidget {
     required this.hint,
     required this.controller, 
     this.isPassword = false,
+    this.keyboardType = TextInputType.text, 
+    this.inputFormatters,
+    this.onTap,
+    this.readOnly = false,
+    this.validator,
   });
   @override
   Widget build(BuildContext context) {
@@ -19,9 +30,14 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,style: TextStyle(fontSize: 14),),
-        TextField(
+        TextFormField(
+          readOnly: readOnly,
+          onTap: onTap,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           controller: controller,
           obscureText: isPassword,
+          validator: validator,
           decoration: InputDecoration(
             hintText: hint,
             border: OutlineInputBorder(

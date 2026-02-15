@@ -9,6 +9,7 @@ import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/firebase_options.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
+import 'package:srv_paperless/views/user/request/create_request.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/views/user/user_profile_screen.dart';
 
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         '/user_home': (context) => const UserHomePage(),
         '/user_profile': (context) => const UserProfile(),
         '/login': (context) => const LoginScreen(),
+        '/create_request':(context) =>CreateRequest(), 
       },
     );
   }

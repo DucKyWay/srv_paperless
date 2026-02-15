@@ -3,9 +3,9 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/_fe_analyzer_shared-91.0.0",
+      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/_fe_analyzer_shared-85.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.5"
     },
     {
       "name": "_flutterfire_internals",
@@ -15,9 +15,9 @@
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/analyzer-8.4.1",
+      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/analyzer-7.7.1",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.5"
     },
     {
       "name": "args",
@@ -156,6 +156,12 @@
       "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/file-7.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "file_picker",
+      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/file_picker-8.3.7",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "file_selector_linux",
@@ -345,9 +351,9 @@
     },
     {
       "name": "image_picker_ios",
-      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_ios-0.8.13+3",
+      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_ios-0.8.13+6",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.10"
     },
     {
       "name": "image_picker_linux",
@@ -744,6 +750,12 @@
       "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/webkit_inspection_protocol-1.2.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "win32",
+      "rootUri": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.15.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.8"
     },
     {
       "name": "xdg_directories",
