@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/main_layout.dart';
 import 'package:srv_paperless/widgets/menu_header.dart';
 
-class UserHomePage extends StatelessWidget {
+class UserHomePage extends ConsumerWidget {
   const UserHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.currentUser;
+
+    ref.listen<AsyncValue<void>>(userProfileProvider, (previous, next) {
+      next.whenOrNull(
+        error:
+            (e, _) => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("เกิดข้อผิดพลาด: $e"),
+                backgroundColor: Colors.red,
+              ),
+            ),
+        data: (_) {
+          if (previous is AsyncLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("ดำเนินการสำเร็จ"),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        },
+      );
+    });
+
+    if (user == null) {
+      Navigator.pushNamed(context, "/login");
+    }
+
     return MainLayout(
       title: NormalHeader(),
       child: SingleChildScrollView(
@@ -34,38 +66,59 @@ class UserHomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              
-              card(context,"ยื่นโครงการ", 1),
-              card(context,"ติดตามโครงการ", 2),
-              card(context,"สรุปโครงการที่ดำเนินการสำเร็จ", 3),
-              
+
+              if (user!.isBudget) ...[
+                card(context, "คำขออนุมัติโครงการ", 6, () {}),
+                card(context, "ติดตามผลโครงการ", 6, () {}),
+                card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
+              ],
+
+              card(context, "ยื่นโครงการ", 1, () {
+                Navigator.pushNamed(context, "/request/create");
+              }),
+              card(context, "ติดตามโครงการ", 2, () {}),
+              card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),
             ],
           ),
         ),
       ),
     );
   }
-}
-Widget card(BuildContext context, String text, int num) { // เพิ่ม context เข้ามา
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 12.5),
-    child: Container(
-      // ใช้ความกว้าง 90% ของหน้าจอ แทนการระบุเลข 350 ตรงๆ
-      width: MediaQuery.of(context).size.width * 0.85, 
-      height: 160,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.black, width: 1.0),
-      
+
+  Widget card(BuildContext context, String text, int num, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.5),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.85,
+          height: 160,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black, width: 1.0),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '$num',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(text, style: const TextStyle(fontSize: 20,fontWeight:FontWeight.bold)),
-          Text('$num', style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }

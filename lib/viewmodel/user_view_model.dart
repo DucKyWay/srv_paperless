@@ -24,17 +24,14 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
 
     try {
       final user = ref.read(authProvider).currentUser!;
-      final uid = user.id;
 
-      if (user.image.isNotEmpty) {
-        await deleteFile(user.image);
-      }
+      await deleteOldUserProfileImages(user.id);
 
       final String filename =
-          "profile_${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+          "profile_${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg";
       await uploadFile(filename, image.path);
 
-      await ref.read(userRepoProvider).updateProfileImage(uid, filename);
+      await ref.read(userRepoProvider).updateProfileImage(user.id, filename);
       await ref.read(authProvider.notifier).getCurrentUser();
 
       state = const AsyncValue.data(null);
@@ -49,9 +46,8 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       final user = ref.read(authProvider).currentUser!;
-      final uid = user.id;
 
-      await ref.read(userRepoProvider).updatePhoneNumber(uid, phone);
+      await ref.read(userRepoProvider).updatePhoneNumber(user.id, phone);
       await ref.read(authProvider.notifier).getCurrentUser();
 
       state = const AsyncValue.data(null);

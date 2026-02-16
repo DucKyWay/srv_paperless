@@ -27,9 +27,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (authState.currentUser != null) {
       final user = authState.currentUser!;
       if(user.isAdmin) {
-        Navigator.pushReplacementNamed(context, '/user_home'); //TODO: admin home
+        Navigator.pushReplacementNamed(context, '/user/home'); //TODO: admin home
       } else {
-        Navigator.pushReplacementNamed(context, '/user_home');
+        Navigator.pushReplacementNamed(context, '/user/home');
       }
     } else if (authState.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(

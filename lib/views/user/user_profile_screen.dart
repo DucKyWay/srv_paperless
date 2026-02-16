@@ -40,10 +40,10 @@ class UserProfile extends ConsumerWidget {
     });
 
     if (user == null) {
-      return _buildLoginRequired(context);
+      Navigator.pushNamed(context, "/login");
     }
 
-    final employeeStatusAsync = ref.watch(getEmployeeStatusByKey(user.employeeStatus));
+    final employeeStatusAsync = ref.watch(getEmployeeStatusByKey(user!.employeeStatus));
     final departmentAsync = ref.watch(getDepartmentByKey(user.academicDepartment));
     final divisionAsync = ref.watch(getDivisionsByKey(user.divisions));
 
@@ -125,31 +125,8 @@ class UserProfile extends ConsumerWidget {
       context: context,
       builder: (context) => ImageSourceSheet(
         onSourceSelected: (source) {
-          Navigator.pop(context);
           ref.read(userProfileProvider.notifier).updateProfileImage(source);
         },
-      ),
-    );
-  }
-
-  Widget _buildLoginRequired(BuildContext context) {
-    return MainLayout(
-      title: const NormalHeader(),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("กรุณาเข้าสู่ระบบ", style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 16),
-            CustomButton(
-              height: 55,
-              text: const Text("เข้าสู่ระบบ", style: TextStyle(color: Colors.white)),
-              border: 15,
-              color: Theme.of(context).colorScheme.primaryContainer,
-              onPressed: () => Navigator.pushNamed(context, '/login'),
-            ),
-          ],
-        ),
       ),
     );
   }

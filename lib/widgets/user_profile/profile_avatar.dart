@@ -18,7 +18,7 @@ class ProfileAvatar extends StatelessWidget {
       child: Stack(
         children: [
           FutureBuilder<String>(
-            future: getPrivateImageUrl(imageName),
+            future: getPrivateFileUrl(imageName),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircleAvatar(

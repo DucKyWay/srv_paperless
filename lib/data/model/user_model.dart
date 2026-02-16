@@ -26,6 +26,7 @@ class User {
   });
   
   String get fullname => "$firstname $lastname";
+  bool get isBudget => divisions == "budget";
   bool get isAdmin => role == "admin";
 
   User copyWith({

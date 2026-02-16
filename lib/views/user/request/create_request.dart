@@ -96,9 +96,6 @@ class _CreateRequestState extends State<CreateRequest> {
   }
 }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;

@@ -25,14 +25,14 @@ class MainLayout extends ConsumerWidget {
                 leading: const Icon(Icons.home_outlined),
                 title: const Text("หน้าแรก"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/user_home');
+                  Navigator.pushNamed(context, '/user/home');
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.account_circle_outlined),
                 title: const Text("โปรไฟล์"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/user_profile');
+                  Navigator.pushNamed(context, '/user/profile');
                 },
               ),
               const Spacer(),
