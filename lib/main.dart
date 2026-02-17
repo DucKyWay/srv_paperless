@@ -16,20 +16,18 @@ import 'package:srv_paperless/views/user/user_profile_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   try {
     await dotenv.load(fileName: ".env");
-    if(kDebugMode) print("Env loaded");
+    if (kDebugMode) print("Env loaded");
   } catch (e) {
-    if(kDebugMode) print("Error: can't load env: $e");
+    if (kDebugMode) print("Error: can't load env: $e");
   }
 
   await checkB2Connection();
 
-  runApp(ProviderScope(child: MyApp(),));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,27 +42,30 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: materialTheme.light().colorScheme,
         textTheme: GoogleFonts.baiJamjureeTextTheme(
-          Theme.of(context).textTheme
-        )
+          Theme.of(context).textTheme,
+        ),
       ),
       home: StreamBuilder<fb_auth.User?>(
         stream: fb_auth.FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
+
           if (snapshot.hasData) {
             return const UserHomePage();
           }
+
           return const LoginScreen();
         },
       ),
-      initialRoute: "/login",
       routes: {
         '/user/home': (context) => const UserHomePage(),
         '/user/profile': (context) => const UserProfile(),
         '/login': (context) => const LoginScreen(),
-        '/request/create':(context) => CreateRequest(), 
+        '/request/create': (context) => CreateRequest(),
       },
     );
   }

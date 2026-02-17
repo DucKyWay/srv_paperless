@@ -4,6 +4,7 @@ import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -20,25 +21,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final authNotifier = ref.read(authProvider.notifier);
     await authNotifier.login(usernameController.text, passwordController.text);
-
-    if(!mounted) return;
-    final authState = ref.read(authProvider);
-
-    if (authState.currentUser != null) {
-      final user = authState.currentUser!;
-      if(user.isAdmin) {
-        Navigator.pushReplacementNamed(context, '/user/home'); //TODO: admin home
-      } else {
-        Navigator.pushReplacementNamed(context, '/user/home');
-      }
-    } else if (authState.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authState.error!),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 
   @override

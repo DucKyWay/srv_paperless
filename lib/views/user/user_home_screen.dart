@@ -5,11 +5,24 @@ import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/main_layout.dart';
 import 'package:srv_paperless/widgets/menu_header.dart';
 
-class UserHomePage extends ConsumerWidget {
+class UserHomePage extends ConsumerStatefulWidget {
   const UserHomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UserHomePage> createState() => _UserHomePageState();
+}
+
+class _UserHomePageState extends ConsumerState<UserHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(authProvider.notifier).getCurrentUser();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.currentUser;
 
@@ -34,10 +47,6 @@ class UserHomePage extends ConsumerWidget {
         },
       );
     });
-
-    if (user == null) {
-      Navigator.pushNamed(context, "/login");
-    }
 
     return MainLayout(
       title: NormalHeader(),
@@ -67,7 +76,7 @@ class UserHomePage extends ConsumerWidget {
                 ),
               ),
 
-              if (user!.isBudget) ...[
+              if (user?.isBudget == true) ...[
                 card(context, "คำขออนุมัติโครงการ", 6, () {}),
                 card(context, "ติดตามผลโครงการ", 6, () {}),
                 card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
