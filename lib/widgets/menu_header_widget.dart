@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-abstract class MenuHeader extends StatelessWidget {
-  const MenuHeader({super.key});
+abstract class MenuHeaderWidget extends StatelessWidget {
+  const MenuHeaderWidget({super.key});
 
   Widget? buildLeading(BuildContext context);
 
@@ -13,8 +13,8 @@ abstract class MenuHeader extends StatelessWidget {
   }
 }
 
-class NormalHeader extends MenuHeader {
-  const NormalHeader({super.key});
+class HeaderNormal extends MenuHeaderWidget {
+  const HeaderNormal({super.key});
   @override
   Widget? buildLeading(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,8 +36,8 @@ class NormalHeader extends MenuHeader {
   );
 }
 
-class BackButtonHeader extends MenuHeader {
-  const BackButtonHeader({super.key});
+class HeaderWithBackButton extends MenuHeaderWidget {
+  const HeaderWithBackButton({super.key});
   @override
   Widget? buildLeading(BuildContext context) => Row(
     children: [

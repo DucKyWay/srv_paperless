@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
-import 'package:srv_paperless/widgets/main_layout.dart';
-import 'package:srv_paperless/widgets/menu_header.dart';
+import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:srv_paperless/widgets/menu_header_widget.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
 
 class CreateRequest extends StatefulWidget {
   const CreateRequest({super.key});
@@ -29,72 +31,73 @@ class _CreateRequestState extends State<CreateRequest> {
   void _showDatePicker(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => Container(
-        height: 300,
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              color: Colors.grey[200],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    child: const Text('ยกเลิก'),
-                    onPressed: () => Navigator.of(context).pop(),
+      builder:
+          (_) => Container(
+            height: 300,
+            color: Colors.white,
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.grey[200],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CupertinoButton(
+                        child: const Text('ยกเลิก'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      CupertinoButton(
+                        child: const Text('ตกลง'),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
                   ),
-                  CupertinoButton(
-                    child: const Text('ตกลง'),
-                    onPressed: () => Navigator.of(context).pop(),
+                ),
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: DateTime.now(),
+                    onDateTimeChanged: (DateTime newDateTime) {
+                      setState(() {
+                        // จัดรูปแบบเป็น 14/02/2026
+                        requestCreateDateController.text = DateFormat(
+                          'dd/MM/yyyy',
+                        ).format(newDateTime);
+                      });
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Expanded(
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.date,
-                initialDateTime: DateTime.now(),
-                onDateTimeChanged: (DateTime newDateTime) {
-                  setState(() {
-                    // จัดรูปแบบเป็น 14/02/2026
-                    requestCreateDateController.text = DateFormat(
-                      'dd/MM/yyyy',
-                    ).format(newDateTime);
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
- Future<void> _pickPDF() async {
-  try {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
+  Future<void> _pickPDF() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
 
-    if (result != null) {
-      String? filePath = result.files.single.path;
-      
-      if (filePath != null) {
-        setState(() {
-          _fileName = result.files.single.name;
-          _selectedFile = File(filePath);
-        });
+      if (result != null) {
+        String? filePath = result.files.single.path;
+
+        if (filePath != null) {
+          setState(() {
+            _fileName = result.files.single.name;
+            _selectedFile = File(filePath);
+          });
+        } else {
+          debugPrint("File path is null. Trying to select from local storage?");
+        }
       } else {
-        debugPrint("File path is null. Trying to select from local storage?");
+        debugPrint("User canceled the picker");
       }
-    } else {
-      debugPrint("User canceled the picker");
+    } catch (e) {
+      debugPrint("Error at _pickPDF: $e");
     }
-  } catch (e) {
-    debugPrint("Error at _pickPDF: $e");
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -102,39 +105,16 @@ class _CreateRequestState extends State<CreateRequest> {
     requestCreateDateController.text = DateFormat(
       'dd/MM/yyyy',
     ).format(DateTime.now());
-    return MainLayout(
-      title: NormalHeader(),
+    return MenuWidget(
+      title: HeaderWithBackButton(),
       child: SingleChildScrollView(
         child: SafeArea(
           child: Center(
             child: Column(
               children: [
-                Container(
-                  padding:EdgeInsets.symmetric(vertical: 16),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        "assets/images/srv-logo.png",
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        "ยื่นโครงการ",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
+                TitleNormal(title: "ยื่นโครงการ"),
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.08,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.08),
                   child: Column(
                     children: [
                       CustomTextField(
@@ -174,18 +154,18 @@ class _CreateRequestState extends State<CreateRequest> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           Text(
+                          Text(
                             "แนบเอกสารโครงการ (PDF)",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                           SizedBox(height: 8),
+                          SizedBox(height: 8),
                           InkWell(
                             onTap: _pickPDF,
                             child: Container(
-                              padding:  EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 15,
                               ),
@@ -196,18 +176,16 @@ class _CreateRequestState extends State<CreateRequest> {
                               ),
                               child: Row(
                                 children: [
-                                   Icon(
-                                    Icons.picture_as_pdf,
-                                    color: Colors.red,
-                                  ),
-                                   SizedBox(width: 10),
+                                  Icon(Icons.picture_as_pdf, color: Colors.red),
+                                  SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       _fileName ?? "คลิกเพื่อเลือกไฟล์ PDF",
                                       style: TextStyle(
-                                        color: _fileName == null
-                                            ? Colors.grey
-                                            : Colors.black,
+                                        color:
+                                            _fileName == null
+                                                ? Colors.grey
+                                                : Colors.black,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -228,6 +206,32 @@ class _CreateRequestState extends State<CreateRequest> {
                           ),
                         ],
                       ),
+
+                      SizedBox(height: 20),
+                      CustomButton(
+                        height: 55,
+                        text: const Text(
+                          "บันทึกฉบับร่าง",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        border: 15,
+                        color: Color(0xff3A6BB5),
+                        onPressed: () {
+                          _requestCreateDialog();
+                        },
+                      ),
+
+                      SizedBox(height: 20),
+                      CustomButton(
+                        height: 55,
+                        text: const Text(
+                          "สร้างโครงการ",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        border: 15,
+                        color: Color(0xff3A9AB5),
+                        onPressed: () {},
+                      ),
                     ],
                   ),
                 ),
@@ -237,5 +241,9 @@ class _CreateRequestState extends State<CreateRequest> {
         ),
       ),
     );
+  }
+
+  Widget _requestCreateDialog() {
+    return AlertDialog();
   }
 }
