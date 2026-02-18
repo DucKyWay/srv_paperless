@@ -16,11 +16,9 @@ class CommentRepositoryImpl implements CommentRepository {
   @override
   Future<int> create(Comment comment) async {
     try {
-      final newComment = comment.copyWith(id: comment.id);
-      await _db
-          .collection('comments')
-          .doc(newComment.id)
-          .set(newComment.toMap());
+      final doc = _db.collection('comments').doc();
+      final newComment = comment.copyWith(id: doc.id);
+      await doc.set(newComment.toMap());
       return 0;
     } catch (e) {
       return 1;

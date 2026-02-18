@@ -1,12 +1,12 @@
 class Comment {
-  final String id;
+  String? id;
   final String userId;
   final String projectId;
   final String message;
   String? commentCreatedAt;
 
   Comment({
-    required this.id,
+    this.id,
     required this.userId,
     required this.projectId,
     required this.message,
