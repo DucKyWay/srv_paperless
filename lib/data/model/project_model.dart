@@ -1,48 +1,62 @@
-class Project_location {
-  String? id;
-  String? requestId;
-  String? locationPathImage;
-  String? locationImageDetail; 
+class Project {
+  final String id;
+  final String? projectName;
+  final String? chairman;
+  final String? date;
+  final double? budget;
+  final String? pdfPath;
+  String? status; // 'draft' หรือ 'submitted'
 
-  Project_location({
+  Project({
     required this.id,
-    required this.requestId,
-    required this.locationPathImage,
-    required this.locationImageDetail,
+    required this.projectName,
+    required this.chairman,
+    required this.date,
+    required this.budget,
+    required this.pdfPath,
+    this.status = 'draft',
   });
 
-
-  Project_location copyWith({
+  Project copyWith({
     String? id,
-    String? requestId,
-    String? locationPathImage,
-    String? locationImageDetail,
-  }){
-    return Project_location(
+    String? projectName,
+    String? chairman,
+    String? date,
+    double? budget,
+    String? pdfPath,
+    String? status,
+  }) {
+    return Project(
       id: id ?? this.id,
-      requestId: requestId ?? this.requestId,
-      locationPathImage: locationPathImage ?? this.locationPathImage,
-      locationImageDetail: locationImageDetail?? this.locationImageDetail,
+      projectName: projectName ?? this.projectName,
+      chairman: chairman ?? this.chairman,
+      date: date ?? this.date,
+      budget: budget ?? this.budget,
+      pdfPath: pdfPath ?? this.pdfPath,
+      status: status ?? this.status
     );
   }
 
-
-
-factory Project_location.fromMap(Map<String,dynamic> map,String  docId){
-  return Project_location(
-    id: docId, 
-    requestId: map['requestId']?.toString() ?? '', 
-    locationPathImage: map['locationPathImage']?.toString() ?? '', 
-    locationImageDetail: map['locationImageDetail']?.toString() ?? '', 
+  factory Project.fromMap(Map<String, dynamic> map, String docId) {
+    return Project(
+      id: docId,
+      projectName: map['project_name']?.toString(),
+      chairman: map['chairman'],
+      date: map['date'],
+      budget: map['budget'],
+      pdfPath: map['pdf_path'],
+      status: map['status'],
     );
-}
+  }
 
-Map<String,dynamic> toMap(){
-  return {
-    'requestId' : requestId,
-    'locationPathImage' : locationPathImage,
-    'locationImageDetail' :locationImageDetail,
-  };
-}
-
+  Map<String, dynamic> toMap() {
+    return {
+      'project_name': projectName,
+      'chairman': chairman,
+      'date': date,
+      'budget': budget,
+      'pdf_path': pdfPath,
+      'status': status,
+    };
+  }
 }
