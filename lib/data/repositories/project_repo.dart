@@ -73,15 +73,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<int> update(String id, Project project) async {
     try {
-      await _db.collection('projects').doc(id).update({
-        'id': project.id,
-        'project_name': project.projectName,
-        'chairman': project.chairman,
-        'date': project.date,
-        'budget': project.budget,
-        'pdf_path': project.pdfPath,
-        'status': project.status,
-      });
+      await _db.collection('projects').doc(id).update(project.toMap());
       return 0;
     } catch (e) {
       return 1;
