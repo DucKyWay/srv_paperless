@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/services/auth_service.dart';
+import 'package:srv_paperless/widgets/custom_button.dart';
 
 class ChangePasswordDialog extends ConsumerWidget {
   const ChangePasswordDialog({super.key});
@@ -12,7 +13,7 @@ class ChangePasswordDialog extends ConsumerWidget {
         TextEditingController();
 
     return AlertDialog(
-      title: const Text("เปลี่ยนรหัสผ่านใหม่"),
+      title: const Center(child: Text("เปลี่ยนรหัสผ่านใหม่", style: TextStyle(fontWeight: FontWeight.bold))),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -29,11 +30,7 @@ class ChangePasswordDialog extends ConsumerWidget {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("ยกเลิก"),
-        ),
-        ElevatedButton(
+        CustomButton(
           onPressed: () async {
             if (newPasswordController.text == confirmPasswordController.text &&
                 newPasswordController.text.isNotEmpty) {
@@ -68,7 +65,18 @@ class ChangePasswordDialog extends ConsumerWidget {
               );
             }
           },
-          child: const Text("บันทึก"),
+          text: const Text("บันทึก", style: TextStyle(color: Colors.white),),
+          color: Color(0xFF1D4200),
+          height: 55,
+          border: 15,
+        ),
+        SizedBox(height: 8),
+        CustomButton(
+          onPressed: () => Navigator.pop(context),
+          text: const Text("ยกเลิก", style: TextStyle(color: Colors.white),),
+          color: Theme.of(context).colorScheme.onErrorContainer,
+          height: 55,
+          border: 15,
         ),
       ],
     );

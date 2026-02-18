@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
@@ -216,9 +217,13 @@ class _CreateRequestState extends State<CreateRequest> {
                         ),
                         border: 15,
                         color: Color(0xff3A6BB5),
-                        onPressed: () {
-                          _requestCreateDialog();
-                        },
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (_) => AlertConfirmWidget(
+                              title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
+                              onConfirm: () {}
+                          ),
+                        )
                       ),
 
                       SizedBox(height: 20),
@@ -230,7 +235,13 @@ class _CreateRequestState extends State<CreateRequest> {
                         ),
                         border: 15,
                         color: Color(0xff3A9AB5),
-                        onPressed: () {},
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (_) => AlertConfirmWidget(
+                                title: "คุณต้องการสร้างโครงการหรือไม่",
+                                onConfirm: () {}
+                            ),
+                          )
                       ),
                     ],
                   ),
@@ -241,9 +252,5 @@ class _CreateRequestState extends State<CreateRequest> {
         ),
       ),
     );
-  }
-
-  Widget _requestCreateDialog() {
-    return AlertDialog();
   }
 }
