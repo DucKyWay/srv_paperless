@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/services/auth_service.dart';
 
-class MainLayout extends ConsumerWidget {
+class MenuWidget extends ConsumerWidget {
   final Widget child;
   final Widget title;
 
-  const MainLayout({super.key, required this.child, required this.title});
+  const MenuWidget({super.key, required this.child, required this.title});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

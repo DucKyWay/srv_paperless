@@ -59,7 +59,7 @@ class UserRepositoryImpl implements UserRepository {
 
       final newUser = user.copyWith(id: credential.user!.uid);
       await _db.collection('users').doc(newUser.id).set(newUser.toMap());
-      return 0;    
+      return 0;
     } catch (e) {
       return 1;
     }
@@ -69,7 +69,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<int> updatePhoneNumber(String uid, String phone) async {
     try {
       await _db.collection('users').doc(uid).update({'phone': phone});
-      return 0;    
+      return 0;
     } catch (e) {
       return 1;
     }
@@ -79,57 +79,64 @@ class UserRepositoryImpl implements UserRepository {
   Future<int> updateProfileImage(String uid, String filename) async {
     try {
       await _db.collection('users').doc(uid).update({'image': filename});
-      return 0;    
+      return 0;
     } catch (e) {
       return 1;
     }
   }
-  
+
   @override
-  Future<int> updateAcademicDepartment(String uid, String academicDepartment) async {
+  Future<int> updateAcademicDepartment(
+    String uid,
+    String academicDepartment,
+  ) async {
     try {
-      await _db.collection('users').doc(uid).update({'academic_department': academicDepartment});
-      return 0;    
+      await _db.collection('users').doc(uid).update({
+        'academic_department': academicDepartment,
+      });
+      return 0;
     } catch (e) {
       return 1;
     }
   }
-  
+
   @override
   Future<int> updateDivisions(String uid, String divisions) async {
     try {
       await _db.collection('users').doc(uid).update({'divisions': divisions});
-      return 0;    
+      return 0;
     } catch (e) {
       return 1;
     }
   }
-  
+
   @override
   Future<int> updateHomeroomClass(String uid, String homeroomClass) async {
     try {
-      await _db.collection('users').doc(uid).update({'homeroom_class': homeroomClass});
-      return 0;    
+      await _db.collection('users').doc(uid).update({
+        'homeroom_class': homeroomClass,
+      });
+      return 0;
     } catch (e) {
       return 1;
     }
   }
-  
+
   @override
   Future<int> deleteUser(String uid) async {
     try {
-    final user = await fetchUserById(uid);
-    
-    if (user != null) {
-      await _db.collection('users').doc(uid).delete();
-      return 0;
-    } else {
-      return 1;
+      final user = await fetchUserById(uid);
+
+      if (user != null) {
+        await _db.collection('users').doc(uid).delete();
+        return 0;
+      } else {
+        return 1;
+      }
+    } catch (e) {
+      print("Delete user error: $e");
+      return -1;
     }
-  } catch (e) {
-    print("Delete user error: $e");
-    return -1;
-  }
   }
 }
 

@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
-import 'package:srv_paperless/widgets/main_layout.dart';
-import 'package:srv_paperless/widgets/menu_header.dart';
+import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:srv_paperless/widgets/menu_header_widget.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
 
 class CreateRequest extends StatefulWidget {
   const CreateRequest({super.key});
@@ -98,89 +99,20 @@ class _CreateRequestState extends State<CreateRequest> {
     }
   }
 
-  Widget pdfBox() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "แนบเอกสารโครงการ (PDF)",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        InkWell(
-          onTap: _pickPDF,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              border: Border.all(color: Colors.grey.shade400),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.picture_as_pdf, color: Colors.red),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    _fileName ?? "คลิกเพื่อเลือกไฟล์ PDF",
-                    style: TextStyle(
-                      color: _fileName == null ? Colors.grey : Colors.black,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-                if (_fileName != null)
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 20),
-                    onPressed: () {
-                      setState(() {
-                        _fileName = null;
-                        _selectedFile = null;
-                      });
-                    },
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
     requestCreateDateController.text = DateFormat(
       'dd/MM/yyyy',
     ).format(DateTime.now());
-    return MainLayout(
-      title: NormalHeader(),
+    return MenuWidget(
+      title: HeaderWithBackButton(),
       child: SingleChildScrollView(
         child: SafeArea(
           child: Center(
             child: Column(
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        "assets/images/srv-logo.png",
-                        fit: BoxFit.contain,
-                      ),
-                      Text(
-                        "ยื่นโครงการ",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
+                TitleNormal(title: "ยื่นโครงการ"),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: width * 0.08),
                   child: Column(
@@ -218,30 +150,88 @@ class _CreateRequestState extends State<CreateRequest> {
                         ],
                       ),
                       SizedBox(height: 12),
-                      pdfBox(),
-                      SizedBox(height: 12),
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "แนบเอกสารโครงการ (PDF)",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          InkWell(
+                            onTap: _pickPDF,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 15,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                border: Border.all(color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.picture_as_pdf, color: Colors.red),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      _fileName ?? "คลิกเพื่อเลือกไฟล์ PDF",
+                                      style: TextStyle(
+                                        color:
+                                            _fileName == null
+                                                ? Colors.grey
+                                                : Colors.black,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  if (_fileName != null)
+                                    IconButton(
+                                      icon: const Icon(Icons.close, size: 20),
+                                      onPressed: () {
+                                        setState(() {
+                                          _fileName = null;
+                                          _selectedFile = null;
+                                        });
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 20),
                       CustomButton(
                         height: 55,
-                        text: Text(
+                        text: const Text(
                           "บันทึกฉบับร่าง",
                           style: TextStyle(color: Colors.white),
                         ),
                         border: 15,
-                        color: Color.fromRGBO(58, 107, 181, 1),
-                        onPressed: () {},
+                        color: Color(0xff3A6BB5),
+                        onPressed: () {
+                          _requestCreateDialog();
+                        },
                       ),
-                      SizedBox(height: 12),
+
+                      SizedBox(height: 20),
                       CustomButton(
                         height: 55,
-                        text: Text(
+                        text: const Text(
                           "สร้างโครงการ",
                           style: TextStyle(color: Colors.white),
                         ),
                         border: 15,
-                        color: Color.fromRGBO(58, 154, 181, 1),
+                        color: Color(0xff3A9AB5),
                         onPressed: () {},
                       ),
-                      SizedBox(height: 12),
                     ],
                   ),
                 ),
@@ -251,5 +241,9 @@ class _CreateRequestState extends State<CreateRequest> {
         ),
       ),
     );
+  }
+
+  Widget _requestCreateDialog() {
+    return AlertDialog();
   }
 }

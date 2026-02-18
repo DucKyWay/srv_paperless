@@ -1,71 +1,47 @@
-class Project {
+class Project_location {
   String? id;
-  String? projectName;
-  String? chairman;
-  String? date;
-  double? budget;
-  String? pdfPath;
-  String? fixLasted;
-  String status; // 'draft' หรือ 'submitted'
+  String? requestId;
+  String? locationPathImage;
+  String? locationImageDetail; 
 
-  Project({
+  Project_location({
     required this.id,
-    required this.projectName,
-    required this.chairman,
-    required this.date,
-    required this.budget,
-    required this.pdfPath,
-    required this.fixLasted,
-    this.status = 'draft',
+    required this.requestId,
+    required this.locationPathImage,
+    required this.locationImageDetail,
   });
 
 
-  Project copyWith({
+  Project_location copyWith({
     String? id,
-    String? projectName,
-    String? chairman,
-    String? date,
-    double? budget,
-    String? pdfPath,
-    String? fixLasted,
-    String? status,
+    String? requestId,
+    String? locationPathImage,
+    String? locationImageDetail,
   }){
-    return Project(
+    return Project_location(
       id: id ?? this.id,
-      projectName: projectName ?? this.projectName,
-      chairman: chairman ?? this.chairman,
-      date: date?? this.date,
-      budget: budget?? this.budget,
-      pdfPath: pdfPath ?? this.pdfPath,
-      fixLasted:  fixLasted ?? this.fixLasted,
-      status: status ?? this.status,
+      requestId: requestId ?? this.requestId,
+      locationPathImage: locationPathImage ?? this.locationPathImage,
+      locationImageDetail: locationImageDetail?? this.locationImageDetail,
     );
   }
 
 
 
-factory Project.fromMap(Map<String,dynamic> map,String  docId){
-  return Project(
+factory Project_location.fromMap(Map<String,dynamic> map,String  docId){
+  return Project_location(
     id: docId, 
-    projectName: map['projectName']?.toString() ?? '', 
-    chairman: map['chairman']?.toString() ?? '', 
-    date: map['date']?.toString() ?? '', 
-    budget: map['budget']?? 0, 
-    pdfPath: map['pdfPath'] ?? '', 
-    fixLasted: map['fixLasted'] ?? '',
-    status: map['status']?.toString() ??'draft',
+    requestId: map['requestId']?.toString() ?? '', 
+    locationPathImage: map['locationPathImage']?.toString() ?? '', 
+    locationImageDetail: map['locationImageDetail']?.toString() ?? '', 
     );
 }
 
 Map<String,dynamic> toMap(){
   return {
-    'projectName' : projectName,
-    'chairman' : chairman,
-    'date' :date,
-    'budget' : budget,
-    'pdfPath' : pdfPath,
-    'fixLasted' : fixLasted,
-    'status' : status 
+    'requestId' : requestId,
+    'locationPathImage' : locationPathImage,
+    'locationImageDetail' :locationImageDetail,
   };
 }
 

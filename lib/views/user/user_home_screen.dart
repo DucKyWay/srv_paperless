@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
-import 'package:srv_paperless/widgets/main_layout.dart';
-import 'package:srv_paperless/widgets/menu_header.dart';
+import 'package:srv_paperless/widgets/menu_widget.dart';
+import 'package:srv_paperless/widgets/menu_header_widget.dart';
 
 class UserHomePage extends ConsumerStatefulWidget {
   const UserHomePage({super.key});
@@ -48,8 +48,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
       );
     });
 
-    return MainLayout(
-      title: NormalHeader(),
+    return MenuWidget(
+      title: HeaderNormal(),
       child: SingleChildScrollView(
         child: Center(
           child: Column(

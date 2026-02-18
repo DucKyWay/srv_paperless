@@ -8,8 +8,8 @@ import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:srv_paperless/widgets/image_source_sheet.dart';
-import 'package:srv_paperless/widgets/main_layout.dart';
-import 'package:srv_paperless/widgets/menu_header.dart';
+import 'package:srv_paperless/widgets/menu_widget.dart';
+import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/user_profile/change_password_dialog.dart';
 import 'package:srv_paperless/widgets/user_profile/profile_avatar.dart';
 import 'package:srv_paperless/widgets/user_profile/profile_info.dart';
@@ -49,8 +49,8 @@ class UserProfile extends ConsumerWidget {
 
     return Stack(
       children: [
-        MainLayout(
-          title: const BackButtonHeader(),
+        MenuWidget(
+          title: const HeaderWithBackButton(),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
