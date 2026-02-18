@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/data/repositories/user_repo.dart';
 import 'package:srv_paperless/services/auth_service.dart';
+import 'package:srv_paperless/viewmodel/user_view_model.dart';
 
 class MenuWidget extends ConsumerWidget {
   final Widget child;
@@ -26,6 +28,20 @@ class MenuWidget extends ConsumerWidget {
                 title: const Text("หน้าแรก"),
                 onTap: () {
                   Navigator.pushNamed(context, '/user/home');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_business_outlined),
+                title: const Text("ยื่นโครงการใหม่"),
+                onTap: () {
+                  Navigator.pushNamed(context, '/request/create');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.my_library_books_outlined),
+                title: const Text("โครงการของฉัน"),
+                onTap: () {
+                  Navigator.pushNamed(context, '');
                 },
               ),
               ListTile(

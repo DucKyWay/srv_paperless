@@ -14,30 +14,42 @@ class AlertConfirmWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Center(child: Text("ยืนยันการทำรายการ", style: TextStyle(fontWeight: FontWeight.bold))),
+      title: Center(
+        child: Text(
+          "ยืนยันการทำรายการ",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          ]),
+        children: [Text(title, style: Theme.of(context).textTheme.bodyMedium)],
+      ),
       actions: [
-        CustomButton(
-          height: 55,
-          text: Text("ยืนยัน", style: TextStyle(color: Colors.white),),
-          border: 15,
-          // color: Theme.of(context).colorScheme.tertiaryContainer,
-          color: Color(0xFF1D4200),
-            onPressed: onConfirm
-        ),
-        SizedBox(height: 8),
-        CustomButton(
-          height: 55,
-          text: Text("ยกเลิก", style: TextStyle(color: Colors.white),),
-          border: 15,
-          color: Theme.of(context).colorScheme.onErrorContainer,
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: CustomButton(
+                  height: 55,
+                  text: const Text("ยกเลิก", style: TextStyle(color: Colors.white)),
+                  border: 15,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: CustomButton(
+                  height: 55,
+                  text: const Text("ยืนยัน", style: TextStyle(color: Colors.white)),
+                  border: 15,
+                  color: const Color(0xFF1D4200),
+                  onPressed: onConfirm,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

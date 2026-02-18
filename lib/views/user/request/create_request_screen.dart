@@ -12,14 +12,14 @@ import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
-class CreateRequest extends StatefulWidget {
-  const CreateRequest({super.key});
+class CreateRequestScreen extends StatefulWidget {
+  const CreateRequestScreen({super.key});
 
   @override
-  State<CreateRequest> createState() => _CreateRequestState();
+  State<CreateRequestScreen> createState() => _CreateRequestScreenState();
 }
 
-class _CreateRequestState extends State<CreateRequest> {
+class _CreateRequestScreenState extends State<CreateRequestScreen> {
   final TextEditingController projectNameController = TextEditingController();
   final TextEditingController projectChairmanController =
       TextEditingController();
@@ -217,13 +217,15 @@ class _CreateRequestState extends State<CreateRequest> {
                         ),
                         border: 15,
                         color: Color(0xff3A6BB5),
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (_) => AlertConfirmWidget(
-                              title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                              onConfirm: () {}
-                          ),
-                        )
+                        onPressed:
+                            () => showDialog(
+                              context: context,
+                              builder:
+                                  (_) => AlertConfirmWidget(
+                                    title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
+                                    onConfirm: () {},
+                                  ),
+                            ),
                       ),
 
                       SizedBox(height: 20),
@@ -235,13 +237,15 @@ class _CreateRequestState extends State<CreateRequest> {
                         ),
                         border: 15,
                         color: Color(0xff3A9AB5),
-                          onPressed: () => showDialog(
-                            context: context,
-                            builder: (_) => AlertConfirmWidget(
-                                title: "คุณต้องการสร้างโครงการหรือไม่",
-                                onConfirm: () {}
+                        onPressed:
+                            () => showDialog(
+                              context: context,
+                              builder:
+                                  (_) => AlertConfirmWidget(
+                                    title: "คุณต้องการสร้างโครงการหรือไม่",
+                                    onConfirm: () {},
+                                  ),
                             ),
-                          )
                       ),
                     ],
                   ),
