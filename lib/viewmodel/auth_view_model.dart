@@ -15,7 +15,6 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       final authService = ref.read(authServiceProvider);
       final user = await authService.login(username, password);
-
       state = state.copyWith(
         isLoading: false,
         currentUser: user,

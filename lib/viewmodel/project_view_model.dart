@@ -34,11 +34,14 @@ final allProjectsProvider = FutureProvider<List<Project>>((ref) {
 final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
   return ref.watch(projectServiceProvider).getApprovedProjects();
 });
+final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
+  return ref.watch(projectServiceProvider).getPendingProjects();
+});
 
 final draftProjectsProvider = FutureProvider.family<List<Project>, String>((ref, userId) {
   return ref.watch(projectServiceProvider).getDraftProjectsbyUserId(userId);
 });
 
-final projectDetailProvider = FutureProvider.family<Project?, String>((ref, id) {
+final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {
   return ref.watch(projectServiceProvider).getProjectById(id);
 });

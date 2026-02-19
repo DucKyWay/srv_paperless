@@ -56,19 +56,17 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<int> create(Project project) async {
-    try {
-      final newProject = project.copyWith(id: project.id);
-      await _db
-          .collection('projects')
-          .doc(newProject.id)
-          .set(newProject.toMap());
+Future<int> create(Project project) async {
+  try {
+    final docRef = _db.collection('projects').doc(); 
+    final finalProject = project.copyWith(id: docRef.id);
+    await docRef.set(finalProject.toMap());
 
-      return 0;
-    } catch (e) {
-      return 1;
-    }
+    return 0;
+  } catch (e) {
+    return 1;
   }
+}
 
   @override
   Future<int> update(String id, Project project) async {

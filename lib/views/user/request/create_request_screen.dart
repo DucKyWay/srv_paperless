@@ -30,6 +30,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   final TextEditingController budgetController = TextEditingController();
   final TextEditingController requestCreateDateController = TextEditingController();
   String? _fileName;
+  DateTime? _dateTime;
   File? _selectedFile;
 
   void _showDatePicker(BuildContext context) {
@@ -67,6 +68,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
                         requestCreateDateController.text = DateFormat(
                           'dd/MM/yyyy',
                         ).format(newDateTime);
+                        _dateTime = newDateTime;
                       });
                     },
                   ),
@@ -126,8 +128,10 @@ Future<void> _handleSave({required bool isDraft}) async {
     projectName: projectNameController.text,
     chairman: projectChairmanController.text,
     budget: double.tryParse(budgetController.text) ?? 0.0,
-    date: requestCreateDateController.text,
-    id: user.id,
+    date: _dateTime,
+    fixLatest: DateTime.now(),
+    id: '',
+    userId: user.id,
     pdfPath: _fileName ?? '',
   );
 
@@ -137,6 +141,7 @@ Future<void> _handleSave({required bool isDraft}) async {
 
   final state = ref.read(projectProvider);
   if (!state.hasError) {
+    ref.invalidate(draftProjectsProvider(user.id));
     if (mounted) {
       Navigator.of(context).pop(); 
       Navigator.of(context).pop();

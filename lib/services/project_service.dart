@@ -22,6 +22,10 @@ class ProjectService {
     return await projectRepo.fetchProjectsByStatus('reject');
   }
 
+  Future<List<Project>> getPendingProjects() async {
+    return await projectRepo.fetchProjectsByStatus('pending');
+  }
+
   Future<List<Project>> getDraftProjectsbyUserId(String id) async {
     return await projectRepo.fetchProjectDraftByUserId(id);
   }
