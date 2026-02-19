@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         '/user/profile': (context) => const UserProfile(),
         '/login': (context) => const LoginScreen(),
         '/request/draft/create': (context) => CreateRequestScreen(),
-        '/request/draft':(context) =>RequestDraftScreen()
+        '/request/draft':(context) =>RequestDraftAndPendingScreen()
       },
     );
   }
