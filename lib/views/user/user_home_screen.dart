@@ -83,7 +83,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               ],
 
               card(context, "ยื่นโครงการ", 1, () {
-                Navigator.pushNamed(context, "/request/create");
+                Navigator.pushNamed(context, "/request/draft");
               }),
               card(context, "ติดตามโครงการ", 2, () {}),
               card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),

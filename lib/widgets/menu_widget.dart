@@ -7,8 +7,9 @@ import 'package:srv_paperless/viewmodel/user_view_model.dart';
 class MenuWidget extends ConsumerWidget {
   final Widget child;
   final Widget title;
+  final Widget? floatingActionButton;
 
-  const MenuWidget({super.key, required this.child, required this.title});
+  const MenuWidget({super.key, required this.child, required this.title,this.floatingActionButton});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,6 +74,7 @@ class MenuWidget extends ConsumerWidget {
         ),
       ),
       body: child,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

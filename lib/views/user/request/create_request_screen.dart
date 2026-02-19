@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/data/model/project_model.dart';
+import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/viewmodel/project_view_model.dart';
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
@@ -12,20 +16,19 @@ import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
-class CreateRequestScreen extends StatefulWidget {
+class CreateRequestScreen extends ConsumerStatefulWidget {
   const CreateRequestScreen({super.key});
 
   @override
-  State<CreateRequestScreen> createState() => _CreateRequestScreenState();
+  ConsumerState<CreateRequestScreen> createState() =>
+      _CreateRequestScreenState();
 }
 
-class _CreateRequestScreenState extends State<CreateRequestScreen> {
+class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   final TextEditingController projectNameController = TextEditingController();
-  final TextEditingController projectChairmanController =
-      TextEditingController();
+  final TextEditingController projectChairmanController = TextEditingController();
   final TextEditingController budgetController = TextEditingController();
-  final TextEditingController requestCreateDateController =
-      TextEditingController();
+  final TextEditingController requestCreateDateController = TextEditingController();
   String? _fileName;
   File? _selectedFile;
 
@@ -99,10 +102,64 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       debugPrint("Error at _pickPDF: $e");
     }
   }
+Future<void> _handleSave({required bool isDraft}) async {
+  if (!isDraft) {
+    if (projectNameController.text.isEmpty ||
+        projectChairmanController.text.isEmpty ||
+        budgetController.text.isEmpty ||
+        _selectedFile == null) {
+      Navigator.of(context).pop(); 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+  }
+  final authState = ref.read(authProvider);
+  final user = authState.currentUser;
+
+  if (user == null) return;
+  final projectData = Project(
+    projectName: projectNameController.text,
+    chairman: projectChairmanController.text,
+    budget: double.tryParse(budgetController.text) ?? 0.0,
+    date: requestCreateDateController.text,
+    id: user.id,
+    pdfPath: _fileName ?? '',
+  );
+
+  await ref
+      .read(projectProvider.notifier)
+      .saveProject(project: projectData, isDraft: isDraft);
+
+  final state = ref.read(projectProvider);
+  if (!state.hasError) {
+    if (mounted) {
+      Navigator.of(context).pop(); 
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  } else {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: ${state.error}')),
+      );
+    }
+  }
+}
 
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
+
     requestCreateDateController.text = DateFormat(
       'dd/MM/yyyy',
     ).format(DateTime.now());
@@ -223,7 +280,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               builder:
                                   (_) => AlertConfirmWidget(
                                     title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                    onConfirm: () {},
+                                    onConfirm: () => _handleSave(isDraft: true)
                                   ),
                             ),
                       ),
@@ -243,7 +300,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               builder:
                                   (_) => AlertConfirmWidget(
                                     title: "คุณต้องการสร้างโครงการหรือไม่",
-                                    onConfirm: () {},
+                                    onConfirm: () => _handleSave(isDraft: false),
                                   ),
                             ),
                       ),

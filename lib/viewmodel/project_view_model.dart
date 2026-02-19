@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:srv_paperless/data/model/project_model.dart';
+import 'package:srv_paperless/services/project_service.dart';
 
 final projectProvider = StateNotifierProvider<ProjectViewModel, AsyncValue<void>>((ref) {
   return ProjectViewModel(ref);
@@ -7,5 +9,36 @@ final projectProvider = StateNotifierProvider<ProjectViewModel, AsyncValue<void>
 
 class ProjectViewModel extends StateNotifier<AsyncValue<void>> {
   final Ref ref;
-  ProjectViewModel(this.ref) : super (const AsyncValue.data(null));
+  ProjectViewModel(this.ref) : super(const AsyncValue.data(null));
+  Future<void> saveProject({required Project project, required bool isDraft}) async {
+    state = const AsyncValue.loading();
+    final projectWithStatus = project.copyWith(status: isDraft ? 'draft' : 'pending');
+    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).createProject(projectWithStatus));
+  }
+
+  Future<void> updateProject(String id, Project project) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).updateProject(id, project));
+  }
+
+  Future<void> deleteProject(String id) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).deleteProject(id));
+  }
 }
+
+final allProjectsProvider = FutureProvider<List<Project>>((ref) {
+  return ref.watch(projectServiceProvider).getProjectAll();
+});
+
+final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
+  return ref.watch(projectServiceProvider).getApprovedProjects();
+});
+
+final draftProjectsProvider = FutureProvider.family<List<Project>, String>((ref, userId) {
+  return ref.watch(projectServiceProvider).getDraftProjectsbyUserId(userId);
+});
+
+final projectDetailProvider = FutureProvider.family<Project?, String>((ref, id) {
+  return ref.watch(projectServiceProvider).getProjectById(id);
+});
