@@ -1,17 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/repositories/comment_repo.dart';
 
-final commentProvider = StateNotifierProvider<CommentViewModel, AsyncValue>((
-  ref,
-) {
-  return CommentViewModel(ref);
-});
+final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(CommentViewModel.new);
 
-class CommentViewModel extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
-  CommentViewModel(this.ref) : super(const AsyncValue.data(null));
+class CommentViewModel extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() {}
 
   Future<Comment?> getCommentById(String id) async {
     if (id.isEmpty) return null;

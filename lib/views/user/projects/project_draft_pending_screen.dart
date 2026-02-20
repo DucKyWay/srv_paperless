@@ -36,7 +36,7 @@ class _RequestDraftAndPendingScreenState
           // ในเมธอด build
           child: Column(
             children: [
-              const TitleNormal(title: "ยื่นโครงการ"),
+              const TitleNormal(title: "ร่างโครงการของฉัน"),
               // ใช้ Expanded ครอบ เพื่อให้ ListView มีขอบเขตความสูงที่ชัดเจน
               Expanded(
                 child: Padding(

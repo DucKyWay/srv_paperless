@@ -1,15 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:srv_paperless/data/model/divisions_model.dart';
 import 'package:srv_paperless/services/divisions_service.dart';
 
-final divisionsProvider = StateNotifierProvider<DivisionsViewModel, AsyncValue<void>>((ref) {
-  return DivisionsViewModel(ref);
-});
+final divisionsProvider = AsyncNotifierProvider<DivisionsViewModel, void>(
+  DivisionsViewModel.new
+);
 
-class DivisionsViewModel extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
-  DivisionsViewModel(this.ref) : super (const AsyncValue.data(null));
+class DivisionsViewModel extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() {}
 }
 
 final allDivisions = FutureProvider<List<Divisions>>((ref) {

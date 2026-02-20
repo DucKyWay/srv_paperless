@@ -1,20 +1,18 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/services/project_service.dart';
 
-final projectProvider =
-    StateNotifierProvider<ProjectViewModel, AsyncValue<void>>((ref) {
-      return ProjectViewModel(ref);
-    });
+final projectProvider = AsyncNotifierProvider<ProjectViewModel, void>(
+  ProjectViewModel.new,
+);
 
-class ProjectViewModel extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
-
-  ProjectViewModel(this.ref) : super(const AsyncValue.data(null));
+class ProjectViewModel extends AsyncNotifier<void> {
+  @override
+  FutureOr<void> build() {}
 
   Future<void> saveProject({
     required Project project,

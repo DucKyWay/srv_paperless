@@ -26,9 +26,11 @@ class CreateRequestScreen extends ConsumerStatefulWidget {
 
 class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   final TextEditingController projectNameController = TextEditingController();
-  final TextEditingController projectChairmanController = TextEditingController();
+  final TextEditingController projectChairmanController =
+      TextEditingController();
   final TextEditingController budgetController = TextEditingController();
-  final TextEditingController requestCreateDateController = TextEditingController();
+  final TextEditingController requestCreateDateController =
+      TextEditingController();
   String? _fileName;
   DateTime? _dateTime;
   File? _selectedFile;
@@ -104,62 +106,70 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
       debugPrint("Error at _pickPDF: $e");
     }
   }
-Future<void> _handleSave({required bool isDraft}) async {
-  if (!isDraft) {
-    if (projectNameController.text.isEmpty ||
-        projectChairmanController.text.isEmpty ||
-        budgetController.text.isEmpty ||
-        _selectedFile == null) {
-      Navigator.of(context).pop(); 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
+
+  Future<void> _handleSave({required bool isDraft}) async {
+    if (!isDraft) {
+      if (projectNameController.text.isEmpty ||
+          projectChairmanController.text.isEmpty ||
+          budgetController.text.isEmpty ||
+          _selectedFile == null) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
+    final authState = ref.read(authProvider);
+    final user = authState.currentUser;
+
+    if (user == null) return;
+    final projectData = Project(
+      projectName: projectNameController.text,
+      chairman: projectChairmanController.text,
+      budget: double.tryParse(budgetController.text) ?? 0.0,
+      date: _dateTime,
+      fixLatest: DateTime.now(),
+      id: '',
+      userId: user.id,
+      pdfPath: _fileName ?? '',
+    );
+
+    await ref
+        .read(projectProvider.notifier)
+        .saveProject(
+          project: projectData,
+          isDraft: isDraft,
+          pdfFile: _selectedFile,
+        );
+
+    final state = ref.read(projectProvider);
+    if (!state.hasError) {
+      ref.invalidate(draftProjectsProvider(user.id));
+      if (mounted) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาด: ${state.error}')),
+        );
+      }
     }
   }
-  final authState = ref.read(authProvider);
-  final user = authState.currentUser;
-
-  if (user == null) return;
-  final projectData = Project(
-    projectName: projectNameController.text,
-    chairman: projectChairmanController.text,
-    budget: double.tryParse(budgetController.text) ?? 0.0,
-    date: _dateTime,
-    fixLatest: DateTime.now(),
-    id: '',
-    userId: user.id,
-    pdfPath: _fileName ?? '',
-  );
-
-  await ref
-      .read(projectProvider.notifier)
-      .saveProject(project: projectData, isDraft: isDraft, pdfFile: _selectedFile);
-
-  final state = ref.read(projectProvider);
-  if (!state.hasError) {
-    ref.invalidate(draftProjectsProvider(user.id));
-    if (mounted) {
-      Navigator.of(context).pop(); 
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
-  } else {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาด: ${state.error}')),
-      );
-    }
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +295,7 @@ Future<void> _handleSave({required bool isDraft}) async {
                               builder:
                                   (_) => AlertConfirmWidget(
                                     title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                    onConfirm: () => _handleSave(isDraft: true)
+                                    onConfirm: () => _handleSave(isDraft: true),
                                   ),
                             ),
                       ),
@@ -305,7 +315,8 @@ Future<void> _handleSave({required bool isDraft}) async {
                               builder:
                                   (_) => AlertConfirmWidget(
                                     title: "คุณต้องการสร้างโครงการหรือไม่",
-                                    onConfirm: () => _handleSave(isDraft: false),
+                                    onConfirm:
+                                        () => _handleSave(isDraft: false),
                                   ),
                             ),
                       ),

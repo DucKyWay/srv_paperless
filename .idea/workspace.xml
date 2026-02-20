@@ -5,19 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/services/academic_department_service.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/services/divisions_service.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/services/employee_status_service.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/academic_department_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/academic_department_repo.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/divisions_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/divisions_repo.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/employee_status_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/employee_status_repo.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/project_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/project_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/comment_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/comment_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_create_request_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_create_request_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
