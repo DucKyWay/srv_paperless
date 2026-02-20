@@ -33,20 +33,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
         error:
-            (e, _) => ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("เกิดข้อผิดพลาด: $e"),
-                backgroundColor: Colors.red,
-              ),
-            ),
+            (e, _) => _showSnackBar(context, "เกิดข้อผิดพลาด: $e", Colors.red),
         data: (_) {
           if (previous is AsyncLoading) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("ดำเนินการสำเร็จ"),
-                backgroundColor: Colors.green,
-              ),
-            );
+            _showSnackBar(context, "ดำเนินการสำเร็จ", Colors.green);
           }
         },
       );
@@ -115,5 +105,15 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
         ),
       ),
     );
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
+    BuildContext context,
+    String text,
+    Color color,
+  ) {
+    return ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

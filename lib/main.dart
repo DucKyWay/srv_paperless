@@ -9,10 +9,7 @@ import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/firebase_options.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
-import 'package:srv_paperless/views/user/projects//project_create_request_screen.dart';
-import 'package:srv_paperless/views/user/projects/project_draft_pending_screen.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
-import 'package:srv_paperless/views/user/user_profile_screen.dart';
 import 'package:srv_paperless/core/routes/app_routes.dart';
 
 void main() async {
@@ -22,9 +19,9 @@ void main() async {
 
   try {
     await dotenv.load(fileName: ".env");
-    if (kDebugMode) print("Env loaded");
+    debugPrint("Env loaded");
   } catch (e) {
-    if (kDebugMode) print("Error: can't load env: $e");
+    debugPrint("Error: can't load env: $e");
   }
 
   await checkB2Connection();
@@ -39,7 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final materialTheme = MaterialTheme(ThemeData.light().textTheme);
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SRV Paperless',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: materialTheme.light().colorScheme,
@@ -59,23 +56,10 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData) {
             return const UserHomePage();
           }
-
           return const LoginScreen();
         },
       ),
-      routes: {
-        AppRoutes.userHome: (context) => const UserHomePage(),
-        AppRoutes.userProfile: (context) => const UserProfile(),
-        AppRoutes.login: (context) => const LoginScreen(),
-        AppRoutes.projectDraft: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            if(args == 'create') return CreateRequestScreen();
-            return CreateRequestScreen(draftId: args);
-          }
-          return const RequestDraftAndPendingScreen();
-        }
-      },
+      routes: AppRoutes.routes,
     );
   }
 }

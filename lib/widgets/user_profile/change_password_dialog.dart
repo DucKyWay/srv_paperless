@@ -41,28 +41,13 @@ class ChangePasswordDialog extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.pop(context); // ปิด Dialog
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("เปลี่ยนรหัสผ่านสำเร็จ"),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  _showSnackBar(context, "เปลี่ยนรหัสผ่านสำเร็จ", Colors.green);
                 }
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(e.toString()),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                _showSnackBar(context, e.toString(), Colors.red);
               }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("รหัสผ่านไม่ตรงกัน"),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              _showSnackBar(context, "รหัสผ่านไม่ตรงกัน", Colors.orange);
             }
           },
           text: const Text("บันทึก", style: TextStyle(color: Colors.white),),
@@ -79,6 +64,15 @@ class ChangePasswordDialog extends ConsumerWidget {
           border: 15,
         ),
       ],
+    );
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(BuildContext context, String text, Color color) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
+      ),
     );
   }
 }
