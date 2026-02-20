@@ -49,18 +49,3 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
 final divisionsRepoProvider = Provider<DivisionsRepository>(
   (ref) => DivisionsRepositoryImpl(),
 );
-
-// ===== Provider =====
-
-final getAllDivisions = FutureProvider<List<Divisions>>((ref) async {
-  final repo = ref.watch(divisionsRepoProvider);
-  return await repo.fetchAllDivisions();
-});
-
-final getDivisionsByKey = FutureProvider.family<Divisions?, String>((
-  ref,
-  key,
-) async {
-  final repo = ref.watch(divisionsRepoProvider);
-  return await repo.fetchDivisionByKey(key);
-});

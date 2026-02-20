@@ -49,18 +49,3 @@ class AcademicDepartmentRepositoryImpl implements AcademicDepartmentRepository {
 final academicDepartmentRepoProvider = Provider<AcademicDepartmentRepository>(
   (ref) => AcademicDepartmentRepositoryImpl(),
 );
-
-// ===== Provider =====
-
-final getAllDepartments = FutureProvider<List<AcademicDepartment>>((ref) async {
-  final repo = ref.watch(academicDepartmentRepoProvider);
-  return await repo.fetchAllAcademicDepartments();
-});
-
-final getDepartmentByKey = FutureProvider.family<AcademicDepartment?, String>((
-  ref,
-  key,
-) async {
-  final repo = ref.watch(academicDepartmentRepoProvider);
-  return await repo.fetchAcademicDepartmentByKey(key);
-});

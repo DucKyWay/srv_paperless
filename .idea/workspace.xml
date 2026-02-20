@@ -5,11 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/services/user_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/academic_department_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/divisions_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/employee_status_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/user_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/user_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/academic_department_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/academic_department_repo.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/divisions_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/divisions_repo.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/employee_status_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/employee_status_repo.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/project_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/project_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -72,29 +79,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
-    &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/niji-mac/git/ku-342-mobileapp/srv_paperless&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "develop",
+    "io.flutter.project.isFirstOpen": "true",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/niji-elitebook/git/ku/342-flutter/srv_paperless/lib/viewmodel",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\niji-elitebook\git\ku\342-flutter\srv_paperless\lib\viewmodel" />
+      <recent name="C:\Users\niji-elitebook\git\ku\342-flutter\srv_paperless\lib\services" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\niji-elitebook\git\ku\342-flutter\srv_paperless\lib\data\services" />
     </key>

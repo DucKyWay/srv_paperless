@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:srv_paperless/data/repositories/academic_department_repo.dart';
-import 'package:srv_paperless/data/repositories/divisions_repo.dart';
-import 'package:srv_paperless/data/repositories/employee_status_repo.dart';
+import 'package:srv_paperless/viewmodel/academic_department_view_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/viewmodel/divisions_view_model.dart';
+import 'package:srv_paperless/viewmodel/employee_status_view_model.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
@@ -43,9 +43,9 @@ class UserProfile extends ConsumerWidget {
       Navigator.pushNamed(context, "/login");
     }
 
-    final employeeStatusAsync = ref.watch(getEmployeeStatusByKey(user!.employeeStatus));
-    final departmentAsync = ref.watch(getDepartmentByKey(user.academicDepartment));
-    final divisionAsync = ref.watch(getDivisionsByKey(user.divisions));
+    final employeeStatusAsync = ref.watch(employeeStatusByKey(user!.employeeStatus));
+    final departmentAsync = ref.watch(academicDepartmentByKey(user.academicDepartment));
+    final divisionAsync = ref.watch(divisionsByKey(user.divisions));
 
     return Stack(
       children: [

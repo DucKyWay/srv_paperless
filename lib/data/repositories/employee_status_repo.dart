@@ -49,18 +49,3 @@ class EmployeeStatusRepositoryImpl implements EmployeeStatusRepository {
 final employeeStatusRepoProvider = Provider<EmployeeStatusRepository>(
   (ref) => EmployeeStatusRepositoryImpl(),
 );
-
-// ===== Provider =====
-
-final getAllEmployeeStatus = FutureProvider<List<EmployeeStatus>>((ref) async {
-  final repo = ref.watch(employeeStatusRepoProvider);
-  return await repo.fetchAllEmployeeStatus();
-});
-
-final getEmployeeStatusByKey = FutureProvider.family<EmployeeStatus?, String>((
-  ref,
-  key,
-) async {
-  final repo = ref.watch(employeeStatusRepoProvider);
-  return await repo.fetchEmployeeStatusByKey(key);
-});
