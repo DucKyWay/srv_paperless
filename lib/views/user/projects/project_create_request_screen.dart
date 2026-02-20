@@ -137,7 +137,7 @@ Future<void> _handleSave({required bool isDraft}) async {
 
   await ref
       .read(projectProvider.notifier)
-      .saveProject(project: projectData, isDraft: isDraft);
+      .saveProject(project: projectData, isDraft: isDraft, pdfFile: _selectedFile);
 
   final state = ref.read(projectProvider);
   if (!state.hasError) {

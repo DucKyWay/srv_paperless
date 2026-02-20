@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
@@ -10,10 +13,21 @@ final projectProvider = StateNotifierProvider<ProjectViewModel, AsyncValue<void>
 class ProjectViewModel extends StateNotifier<AsyncValue<void>> {
   final Ref ref;
   ProjectViewModel(this.ref) : super(const AsyncValue.data(null));
-  Future<void> saveProject({required Project project, required bool isDraft}) async {
-    state = const AsyncValue.loading();
-    final projectWithStatus = project.copyWith(status: isDraft ? 'draft' : 'pending');
-    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).createProject(projectWithStatus));
+
+  Future<void> saveProject({required Project project, required bool isDraft, required File? pdfFile}) async {
+    try {
+      state = const AsyncValue.loading();
+      final projectWithStatus = project.copyWith(status: isDraft ? 'draft' : 'pending');
+      final result = await ref.read(projectServiceProvider).createProject(projectWithStatus);
+      state = AsyncValue.data(result);
+
+      if(result != null && pdfFile != null) {
+        final String projectId = result.id;
+        final filename = await ref.read(projectServiceProvider).uploadProjectFile(projectId: projectId, filePath: pdfFile.path);
+      }
+    } catch (e) {
+      if(kDebugMode) print(e);
+    }
   }
 
   Future<void> updateProject(String id, Project project) async {
@@ -39,7 +53,7 @@ final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
 });
 
 final draftProjectsProvider = FutureProvider.family<List<Project>, String>((ref, userId) {
-  return ref.watch(projectServiceProvider).getDraftProjectsbyUserId(userId);
+  return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
 });
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {

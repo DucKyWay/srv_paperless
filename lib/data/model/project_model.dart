@@ -18,7 +18,7 @@ class Project {
     required this.chairman,
     required this.date,
     required this.budget,
-    required this.pdfPath,
+    this.pdfPath,
     required this.fixLatest,
     this.status = 'draft',
   });

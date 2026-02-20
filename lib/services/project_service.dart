@@ -1,9 +1,14 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/repositories/project_repo.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProjectService {
   final ProjectRepository projectRepo;
+
   ProjectService(this.projectRepo);
 
   Future<List<Project>> getProjectAll() async {
@@ -26,13 +31,13 @@ class ProjectService {
     return await projectRepo.fetchProjectsByStatus('pending');
   }
 
-  Future<List<Project>> getDraftProjectsbyUserId(String id) async {
+  Future<List<Project>> getDraftProjectsByUserId(String id) async {
     return await projectRepo.fetchProjectDraftByUserId(id);
   }
 
-  Future<bool> createProject(Project project) async {
+  Future<Project?> createProject(Project project) async {
     final result = await projectRepo.create(project);
-    return result == 0; 
+    return result;
   }
 
   Future<bool> updateProject(String id, Project project) async {
@@ -43,6 +48,22 @@ class ProjectService {
   Future<bool> deleteProject(String id) async {
     final result = await projectRepo.delete(id);
     return result == 0;
+  }
+
+  Future<String?> uploadProjectFile({
+    required String projectId,
+    required String filePath}) async {
+    try {
+      final fileName = "project_${projectId}_${DateTime.now().millisecondsSinceEpoch}.pdf";
+      uploadFile(fileName, filePath);
+
+      final result = await projectRepo.updateProjectFile(projectId, fileName);
+      debugPrint("Success to upload: $fileName");
+      return result == 0 ? fileName : null;
+    } catch (e) {
+      debugPrint("Upload failed: $e");
+      return null;
+    }
   }
 }
 

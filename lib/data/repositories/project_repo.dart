@@ -8,13 +8,15 @@ abstract class ProjectRepository {
   Future<List<Project>> fetchProjectsByChairman(String name);
   Future<List<Project>> fetchProjectsByStatus(String status);
   Future<List<Project>> fetchProjectDraftByUserId(String id);
-  Future<int> create(Project project);
+  Future<Project?> create(Project project);
   Future<int> update(String id, Project project);
   Future<int> delete(String id);
+  Future<int> updateProjectFile(String id, String name);
 }
 
 class ProjectRepositoryImpl implements ProjectRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   @override
   Future<List<Project>> fetchAllProjects() async {
     final snapshot = await _db.collection('projects').get();
@@ -56,17 +58,17 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-Future<int> create(Project project) async {
-  try {
-    final docRef = _db.collection('projects').doc(); 
-    final finalProject = project.copyWith(id: docRef.id);
-    await docRef.set(finalProject.toMap());
+  Future<Project?> create(Project project) async {
+    try {
+      final docRef = _db.collection('projects').doc();
+      final finalProject = project.copyWith(id: docRef.id);
+      await docRef.set(finalProject.toMap());
 
-    return 0;
-  } catch (e) {
-    return 1;
+      return finalProject;
+    } catch (e) {
+      return null;
+    }
   }
-}
 
   @override
   Future<int> update(String id, Project project) async {
@@ -93,19 +95,29 @@ Future<int> create(Project project) async {
       return 1;
     }
   }
-  
+
   @override
-  Future<List<Project>> fetchProjectDraftByUserId(String id) async{
+  Future<List<Project>> fetchProjectDraftByUserId(String id) async {
     final snapshot =
         await _db
             .collection('projects')
             .where('user_id', isEqualTo: id)
-            .where('status',isEqualTo: 'draft')
+            .where('status', isEqualTo: 'draft')
             .get();
 
     return snapshot.docs
         .map((doc) => Project.fromMap(doc.data(), doc.id))
         .toList();
+  }
+
+  @override
+  Future<int> updateProjectFile(String id, String name) async {
+    try {
+      await _db.collection('projects').doc(id).update({'pdf_path': name});
+      return 0;
+    } catch (e) {
+      return 1;
+    }
   }
 }
 

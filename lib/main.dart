@@ -9,8 +9,8 @@ import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/firebase_options.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
-import 'package:srv_paperless/views/user/request/create_request_screen.dart';
-import 'package:srv_paperless/views/user/request/request_draft_and_pending_screen.dart';
+import 'package:srv_paperless/views/user/projects//project_create_request_screen.dart';
+import 'package:srv_paperless/views/user/projects/project_draft_pending_screen.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/views/user/user_profile_screen.dart';
 
