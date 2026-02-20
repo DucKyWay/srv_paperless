@@ -26,7 +26,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     final authState = ref.watch(authProvider);
     final user = authState.currentUser;
 
-    ref.listen<AsyncValue<void>>(userProfileProvider, (previous, next) {
+    ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
         error:
             (e, _) => ScaffoldMessenger.of(context).showSnackBar(

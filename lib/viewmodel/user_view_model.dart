@@ -1,26 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:srv_paperless/data/minio.dart';
-import 'package:srv_paperless/data/repositories/user_repo.dart';
+import 'package:srv_paperless/services/user_service.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 
 import '../data/model/user_model.dart';
 
-final userProfileProvider =
-    StateNotifierProvider<UserProfileViewModel, AsyncValue<void>>((ref) {
-      return UserProfileViewModel(ref);
-    });
+final userProvider = AsyncNotifierProvider<UserProfileViewModel, void>(
+  UserProfileViewModel.new,
+);
 
-class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
-  final Ref ref;
-
-  UserProfileViewModel(this.ref) : super(const AsyncValue.data(null));
+class UserProfileViewModel extends AsyncNotifier<void > {
+  @override
+  FutureOr<void> build() {}
 
   Future<List<User>> getAllUsers() async {
     try {
-      return await ref.read(userRepoProvider).fetchAllUsers();
+      return await ref.read(userServiceProvider).getAllUsers();
     } catch (e) {
       if (kDebugMode) print("Failed to get Users: $e");
       return [];
@@ -31,7 +30,7 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
     if (id.isEmpty) return null;
 
     try {
-      return await ref.read(userRepoProvider).fetchUserById(id);
+      return await ref.read(userServiceProvider).getUserById(id);
     } catch (e) {
       return null;
     }
@@ -41,7 +40,7 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
     if (username.isEmpty) return null;
 
     try {
-      return await ref.read(userRepoProvider).fetchUserByUsername(username);
+      return await ref.read(userServiceProvider).getUserByUsername(username);
     } catch (e) {
       return null;
     }
@@ -64,7 +63,7 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
           "profile_${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg";
       await uploadFile(filename, image.path);
 
-      await ref.read(userRepoProvider).updateProfileImage(user.id, filename);
+      await ref.read(userServiceProvider).updateProfileImage(user.id, filename);
       await ref.read(authProvider.notifier).getCurrentUser();
 
       state = const AsyncValue.data(null);
@@ -80,7 +79,7 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
     try {
       final user = ref.read(authProvider).currentUser!;
 
-      await ref.read(userRepoProvider).updatePhoneNumber(user.id, phone);
+      await ref.read(userServiceProvider).updatePhoneNumber(user.id, phone);
       await ref.read(authProvider.notifier).getCurrentUser();
 
       state = const AsyncValue.data(null);
@@ -89,3 +88,11 @@ class UserProfileViewModel extends StateNotifier<AsyncValue<void>> {
     }
   }
 }
+
+final allUsersProvider = FutureProvider<List<User>>((ref) {
+  return ref.watch(userServiceProvider).getAllUsers();
+});
+
+final userByIdProvider = FutureProvider.family<User?, String>((ref, id) {
+  return ref.watch(userServiceProvider).getUserById(id);
+});

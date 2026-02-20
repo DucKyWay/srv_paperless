@@ -20,11 +20,11 @@ class UserProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final profileState = ref.watch(userProfileProvider);
+    final profileState = ref.watch(userProvider);
     final user = authState.currentUser;
     final phoneController = TextEditingController();
 
-    ref.listen<AsyncValue<void>>(userProfileProvider, (previous, next) {
+    ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
         error: (e, _) => ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("เกิดข้อผิดพลาด: $e"), backgroundColor: Colors.red),
@@ -100,7 +100,7 @@ class UserProfile extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
                       if (phoneController.text.isNotEmpty) {
-                        ref.read(userProfileProvider.notifier).updatePhoneNumber(phoneController.text);
+                        ref.read(userProvider.notifier).updatePhoneNumber(phoneController.text);
                       }
                     },
                   ),
@@ -125,7 +125,7 @@ class UserProfile extends ConsumerWidget {
       context: context,
       builder: (context) => ImageSourceSheet(
         onSourceSelected: (source) {
-          ref.read(userProfileProvider.notifier).updateProfileImage(source);
+          ref.read(userProvider.notifier).updateProfileImage(source);
         },
       ),
     );

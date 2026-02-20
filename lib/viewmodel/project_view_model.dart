@@ -6,38 +6,54 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/services/project_service.dart';
 
-final projectProvider = StateNotifierProvider<ProjectViewModel, AsyncValue<void>>((ref) {
-  return ProjectViewModel(ref);
-});
+final projectProvider =
+    StateNotifierProvider<ProjectViewModel, AsyncValue<void>>((ref) {
+      return ProjectViewModel(ref);
+    });
 
 class ProjectViewModel extends StateNotifier<AsyncValue<void>> {
   final Ref ref;
+
   ProjectViewModel(this.ref) : super(const AsyncValue.data(null));
 
-  Future<void> saveProject({required Project project, required bool isDraft, required File? pdfFile}) async {
+  Future<void> saveProject({
+    required Project project,
+    required bool isDraft,
+    required File? pdfFile,
+  }) async {
     try {
       state = const AsyncValue.loading();
-      final projectWithStatus = project.copyWith(status: isDraft ? 'draft' : 'pending');
-      final result = await ref.read(projectServiceProvider).createProject(projectWithStatus);
+      final projectWithStatus = project.copyWith(
+        status: isDraft ? 'draft' : 'pending',
+      );
+      final result = await ref
+          .read(projectServiceProvider)
+          .createProject(projectWithStatus);
       state = AsyncValue.data(result);
 
-      if(result != null && pdfFile != null) {
+      if (result != null && pdfFile != null) {
         final String projectId = result.id;
-        final filename = await ref.read(projectServiceProvider).uploadProjectFile(projectId: projectId, filePath: pdfFile.path);
+        final filename = await ref
+            .read(projectServiceProvider)
+            .uploadProjectFile(projectId: projectId, filePath: pdfFile.path);
       }
     } catch (e) {
-      if(kDebugMode) print(e);
+      if (kDebugMode) print(e);
     }
   }
 
   Future<void> updateProject(String id, Project project) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).updateProject(id, project));
+    state = await AsyncValue.guard(
+      () => ref.read(projectServiceProvider).updateProject(id, project),
+    );
   }
 
   Future<void> deleteProject(String id) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(projectServiceProvider).deleteProject(id));
+    state = await AsyncValue.guard(
+      () => ref.read(projectServiceProvider).deleteProject(id),
+    );
   }
 }
 
@@ -52,7 +68,10 @@ final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
   return ref.watch(projectServiceProvider).getPendingProjects();
 });
 
-final draftProjectsProvider = FutureProvider.family<List<Project>, String>((ref, userId) {
+final draftProjectsProvider = FutureProvider.family<List<Project>, String>((
+  ref,
+  userId,
+) {
   return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
 });
 
