@@ -5,14 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/core/routes/app_routes.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/academic_department_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/comment_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/comment_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/divisions_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/employee_status_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/login/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/login/login_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_create_request_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_create_request_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/menu_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/menu_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/title_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/title_widget.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

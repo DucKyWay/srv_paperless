@@ -17,7 +17,9 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 class CreateRequestScreen extends ConsumerStatefulWidget {
-  const CreateRequestScreen({super.key});
+  final String? draftId;
+
+  const CreateRequestScreen({super.key, this.draftId});
 
   @override
   ConsumerState<CreateRequestScreen> createState() =>
@@ -34,6 +36,31 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   String? _fileName;
   DateTime? _dateTime;
   File? _selectedFile;
+
+  Future<void> _loadDraft() async {
+    if (widget.draftId == null) return;
+
+    final draft = await ref.read(projectByIdProvider(widget.draftId!).future);
+
+    if (draft == null) return;
+
+    projectNameController.text = draft.projectName ?? '';
+    projectChairmanController.text = draft.chairman ?? '';
+    budgetController.text = draft.budget.toString() ?? '';
+
+    if (draft.date != null) {
+      _dateTime = draft.date;
+      requestCreateDateController.text = DateFormat(
+        'dd/MM/yyyy',
+      ).format(draft.date!);
+    }
+
+    if (draft.pdfPath != null && draft.pdfPath!.isNotEmpty) {
+      _fileName = draft.pdfPath;
+    }
+
+    setState(() {});
+  }
 
   void _showDatePicker(BuildContext context) {
     showCupertinoModalPopup(
@@ -66,7 +93,6 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
                     initialDateTime: DateTime.now(),
                     onDateTimeChanged: (DateTime newDateTime) {
                       setState(() {
-                        // จัดรูปแบบเป็น 14/02/2026
                         requestCreateDateController.text = DateFormat(
                           'dd/MM/yyyy',
                         ).format(newDateTime);
@@ -172,6 +198,15 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      _loadDraft();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
 
@@ -185,7 +220,10 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
           child: Center(
             child: Column(
               children: [
-                TitleNormal(title: "ยื่นโครงการ"),
+                TitleNormal(
+                  title:
+                      widget.draftId != null ? "แก้ไขฉบับร่าง" : "ยื่นโครงการ",
+                ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: width * 0.08),
                   child: Column(

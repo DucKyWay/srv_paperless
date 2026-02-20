@@ -4,6 +4,9 @@ import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
+
+import '../../core/routes/app_routes.dart';
 
 class UserHomePage extends ConsumerStatefulWidget {
   const UserHomePage({super.key});
@@ -25,6 +28,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.currentUser;
+    final isUserDivisionBudget = user?.isBudget ?? false;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
@@ -56,34 +60,16 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/images/srv-logo.png",
-                      fit: BoxFit.contain,
-                    ),
-                    Text(
-                      "หน้าแรก",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text("สรุปผลเบื้องต้น", style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
+              TitleNormal(title: "หน้าแรก", des: "สรุปผลเบื้องต้น"),
 
-              if (user?.isBudget == true) ...[
+              if (isUserDivisionBudget) ...[
                 card(context, "คำขออนุมัติโครงการ", 6, () {}),
                 card(context, "ติดตามผลโครงการ", 6, () {}),
                 card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
               ],
 
               card(context, "ยื่นโครงการ", 1, () {
-                Navigator.pushNamed(context, "/request/draft");
+                Navigator.pushNamed(context, AppRoutes.projectDraft);
               }),
               card(context, "ติดตามโครงการ", 2, () {}),
               card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),

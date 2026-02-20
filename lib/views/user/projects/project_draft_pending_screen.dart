@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:srv_paperless/core/routes/app_routes.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
@@ -26,7 +27,7 @@ class _RequestDraftAndPendingScreenState
       title: const HeaderWithBackButton(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, "/request/draft/create");
+          Navigator.pushNamed(context, AppRoutes.projectDraft, arguments: 'create');
         },
         backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
         child: const Icon(Icons.add, color: Colors.white),
@@ -140,7 +141,7 @@ Widget Card(BuildContext context, Project project) {
                 height: 35,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Logic สำหรับดูรายละเอียด
+                    Navigator.pushNamed(context, AppRoutes.projectDraft, arguments: project.id);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xff76B947), // สีเขียวตามรูป

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/routes/app_routes.dart';
 import 'package:srv_paperless/viewmodel/academic_department_view_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/divisions_view_model.dart';
@@ -40,7 +41,7 @@ class UserProfile extends ConsumerWidget {
     });
 
     if (user == null) {
-      Navigator.pushNamed(context, "/login");
+      Navigator.pushNamed(context, AppRoutes.login);
     }
 
     final employeeStatusAsync = ref.watch(employeeStatusByKey(user!.employeeStatus));

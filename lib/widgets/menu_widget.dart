@@ -4,12 +4,19 @@ import 'package:srv_paperless/data/repositories/user_repo.dart';
 import 'package:srv_paperless/services/auth_service.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
 
+import '../core/routes/app_routes.dart';
+
 class MenuWidget extends ConsumerWidget {
   final Widget child;
   final Widget title;
   final Widget? floatingActionButton;
 
-  const MenuWidget({super.key, required this.child, required this.title,this.floatingActionButton});
+  const MenuWidget({
+    super.key,
+    required this.child,
+    required this.title,
+    this.floatingActionButton,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,28 +35,28 @@ class MenuWidget extends ConsumerWidget {
                 leading: const Icon(Icons.home_outlined),
                 title: const Text("หน้าแรก"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/user/home');
+                  Navigator.pushNamed(context, AppRoutes.userHome);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.add_business_outlined),
                 title: const Text("ยื่นโครงการใหม่"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/request/create');
+                  Navigator.pushNamed(context, AppRoutes.projectDraft, arguments: "create");
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.my_library_books_outlined),
                 title: const Text("โครงการของฉัน"),
                 onTap: () {
-                  Navigator.pushNamed(context, '');
+                  Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.account_circle_outlined),
                 title: const Text("โปรไฟล์"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/user/profile');
+                  Navigator.pushNamed(context, AppRoutes.userProfile);
                 },
               ),
               const Spacer(),
@@ -63,12 +70,14 @@ class MenuWidget extends ConsumerWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   await ref.read(authServiceProvider).logout();
-                  if(context.mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                  if (context.mounted) {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
                   }
                 },
               ),
-              const SizedBox(height: 10), 
+              const SizedBox(height: 10),
             ],
           ),
         ),

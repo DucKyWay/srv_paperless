@@ -15,7 +15,8 @@ abstract class TitleWidget extends StatelessWidget {
 }
 
 class TitleNormal extends TitleWidget {
-  const TitleNormal({super.key, required super.title});
+  final String? des;
+  const TitleNormal({super.key, required super.title, this.des});
 
   @override
   Widget? buildLeading(BuildContext context) {
@@ -29,7 +30,7 @@ class TitleNormal extends TitleWidget {
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           Text(
-            "นโยบายและแผนงาน โรงเรียนสารวิทยา",
+            des ?? "นโยบายและแผนงาน โรงเรียนสารวิทยา",
             style: TextStyle(fontSize: 16),
           ),
         ],

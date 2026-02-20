@@ -13,6 +13,7 @@ import 'package:srv_paperless/views/user/projects//project_create_request_screen
 import 'package:srv_paperless/views/user/projects/project_draft_pending_screen.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/views/user/user_profile_screen.dart';
+import 'package:srv_paperless/core/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,11 +64,17 @@ class MyApp extends StatelessWidget {
         },
       ),
       routes: {
-        '/user/home': (context) => const UserHomePage(),
-        '/user/profile': (context) => const UserProfile(),
-        '/login': (context) => const LoginScreen(),
-        '/request/draft/create': (context) => CreateRequestScreen(),
-        '/request/draft':(context) =>RequestDraftAndPendingScreen()
+        AppRoutes.userHome: (context) => const UserHomePage(),
+        AppRoutes.userProfile: (context) => const UserProfile(),
+        AppRoutes.login: (context) => const LoginScreen(),
+        AppRoutes.projectDraft: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          if (args != null && args is String) {
+            if(args == 'create') return CreateRequestScreen();
+            return CreateRequestScreen(draftId: args);
+          }
+          return const RequestDraftAndPendingScreen();
+        }
       },
     );
   }

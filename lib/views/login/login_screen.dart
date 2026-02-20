@@ -4,6 +4,7 @@ import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -44,28 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               child: SafeArea( 
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: height * 0.1, 
-                      child: Image.asset("assets/images/srv-logo.png", fit: BoxFit.contain)
-                    ),
-                    const SizedBox(height: 15),
-                    const Text(
-                      "ระบบโครงการออนไลน์",
-                      style: TextStyle(
-                        fontSize: 26,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Text(
-                      "นโยบายและแผนงาน โรงเรียนสารวิทยา",
-                      style: TextStyle(fontSize: 14, color: Colors.white70),
-                    ),
-                  ],
-                ),
+                child: TitleNormal(title: "ระบบโครงการออนไลน์")
               ),
             ),
 
