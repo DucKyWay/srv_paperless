@@ -15,6 +15,7 @@ class AppRoutes {
   static const userProfile = '/user/profile';
 
   // Project / Draft
+  static const projectCreate = '/project/create';
   static const projectDraft = '/project/draft';
 
   // ===== routes =====
@@ -22,10 +23,10 @@ class AppRoutes {
     userHome: (context) => const UserHomePage(),
     userProfile: (context) => const UserProfile(),
     login: (context) => const LoginScreen(),
+    projectCreate: (context) => const CreateRequestScreen(),
     projectDraft: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args != null && args is String) {
-        if (args == 'create') return CreateRequestScreen();
         return CreateRequestScreen(draftId: args);
       }
       return const RequestDraftAndPendingScreen();

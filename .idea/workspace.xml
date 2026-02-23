@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/app_routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_profile_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/title_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/title_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/user_profile/change_password_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/user_profile/change_password_dialog.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

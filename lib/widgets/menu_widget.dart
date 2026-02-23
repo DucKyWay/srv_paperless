@@ -42,12 +42,12 @@ class MenuWidget extends ConsumerWidget {
                 leading: const Icon(Icons.add_business_outlined),
                 title: const Text("ยื่นโครงการใหม่"),
                 onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.projectDraft, arguments: "create");
+                  Navigator.pushNamed(context, AppRoutes.projectCreate);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.my_library_books_outlined),
-                title: const Text("โครงการของฉัน"),
+                title: const Text("ร่างโครงการของฉัน"),
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },

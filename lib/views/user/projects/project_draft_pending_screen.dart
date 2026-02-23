@@ -27,7 +27,7 @@ class _RequestDraftAndPendingScreenState
       title: const HeaderWithBackButton(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, AppRoutes.projectDraft, arguments: 'create');
+          Navigator.pushNamed(context, AppRoutes.projectCreate, arguments: 'create');
         },
         backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
         child: const Icon(Icons.add, color: Colors.white),
