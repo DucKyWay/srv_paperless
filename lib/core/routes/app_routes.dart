@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
+import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
 
 import '../../views/login/login_screen.dart';
 import '../../views/user/projects/project_create_request_screen.dart';
@@ -17,6 +19,7 @@ class AppRoutes {
   // Project / Draft
   static const projectCreate = '/project/create';
   static const projectDraft = '/project/draft';
+  static const projectRequest = '/project/manage/requests';
 
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
@@ -30,6 +33,13 @@ class AppRoutes {
         return CreateRequestScreen(draftId: args);
       }
       return const RequestDraftAndPendingScreen();
+    },
+    projectRequest: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectRequestScreen(projectId: args);
+      }
+      return const ProjectManageScreen();
     }
   };
 }

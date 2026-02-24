@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:srv_paperless/data/repositories/user_repo.dart';
-import 'package:srv_paperless/services/auth_service.dart';
-import 'package:srv_paperless/viewmodel/user_view_model.dart';
+import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 
 import '../core/routes/app_routes.dart';
 
@@ -20,6 +18,9 @@ class MenuWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final isUserDivisionBudget = authState.currentUser?.isBudget ?? false;
+
     return Scaffold(
       appBar: AppBar(
         title: title,
@@ -38,6 +39,13 @@ class MenuWidget extends ConsumerWidget {
                   Navigator.pushNamed(context, AppRoutes.userHome);
                 },
               ),
+              if(isUserDivisionBudget)...[
+                ListTile(
+                  leading: const Icon(Icons.book_outlined),
+                  title: const Text("จัดการโครงการ"),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.projectRequest),
+                )
+              ],
               ListTile(
                 leading: const Icon(Icons.add_business_outlined),
                 title: const Text("ยื่นโครงการใหม่"),
@@ -52,15 +60,15 @@ class MenuWidget extends ConsumerWidget {
                   Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },
               ),
+              const Spacer(),
+              const Divider(),
               ListTile(
-                leading: const Icon(Icons.account_circle_outlined),
-                title: const Text("โปรไฟล์"),
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text("แก้ไขข้อมูลส่วนตัว"),
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.userProfile);
                 },
               ),
-              const Spacer(),
-              const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
@@ -69,7 +77,7 @@ class MenuWidget extends ConsumerWidget {
                 ),
                 onTap: () async {
                   Navigator.of(context).pop();
-                  await ref.read(authServiceProvider).logout();
+                  ref.read(authProvider.notifier).logout();
                   if (context.mounted) {
                     Navigator.of(
                       context,

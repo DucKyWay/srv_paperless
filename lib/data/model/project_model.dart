@@ -9,7 +9,7 @@ class Project {
   final double? budget;
   final String? pdfPath;
   final DateTime? fixLatest;
-  String? status; // 'draft' หรือ 'submitted'
+  String? status; // 'draft' 'submitted' 'approve' 'rejected' ''
 
   Project({
     required this.id,

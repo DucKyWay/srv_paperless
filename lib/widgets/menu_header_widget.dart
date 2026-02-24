@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/core/constants/constants.dart';
 
 abstract class MenuHeaderWidget extends StatelessWidget {
   const MenuHeaderWidget({super.key});
@@ -39,10 +40,28 @@ class HeaderNormal extends MenuHeaderWidget {
 class HeaderWithBackButton extends MenuHeaderWidget {
   const HeaderWithBackButton({super.key});
   @override
-  Widget? buildLeading(BuildContext context) => Row(
+  Widget? buildLeading(BuildContext context) => backButtonContainer(context);
+}
+
+class HeaderLogoWithBackButton extends MenuHeaderWidget {
+  const HeaderLogoWithBackButton ({super.key});
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return Row(
+      children: [
+        Image.asset("${AppConstants.imagePath}/srv-logo.png", height: 40,),
+        backButtonContainer(context)
+      ],
+    );
+  }
+}
+
+Widget backButtonContainer(BuildContext context) {
+  return Row(
     children: [
       TextButton.icon(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
         onPressed: () => Navigator.pop(context),
         label: Text(
           "ย้อนกลับ",

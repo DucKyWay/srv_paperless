@@ -32,7 +32,9 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
+    final authService = ref.read(authServiceProvider);
+    authService.logout;
     state = AuthState();
   }
 

@@ -46,7 +46,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
 
     projectNameController.text = draft.projectName ?? '';
     projectChairmanController.text = draft.chairman ?? '';
-    budgetController.text = draft.budget.toString() ?? '';
+    budgetController.text = draft.budget.toString();
 
     if (draft.date != null) {
       _dateTime = draft.date;
@@ -214,13 +214,13 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
       'dd/MM/yyyy',
     ).format(DateTime.now());
     return MenuWidget(
-      title: HeaderWithBackButton(),
+      title: HeaderLogoWithBackButton(),
       child: SingleChildScrollView(
         child: SafeArea(
           child: Center(
             child: Column(
               children: [
-                TitleNormal(
+                TitleSmall(
                   title:
                       widget.draftId != null ? "แก้ไขฉบับร่าง" : "ยื่นโครงการ",
                 ),

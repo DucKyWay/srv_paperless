@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/core/constants/constants.dart';
 
 abstract class TitleWidget extends StatelessWidget {
   final String? title;
@@ -24,7 +25,7 @@ class TitleNormal extends TitleWidget {
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Column(
         children: [
-          Image.asset("assets/images/srv-logo.png", fit: BoxFit.contain),
+          Image.asset("${AppConstants.imagePath}/srv-logo.png", fit: BoxFit.contain),
           Text(
             title ?? "ระบบโครงการออนไลน์",
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -44,18 +45,17 @@ class TitleSmall extends TitleWidget {
 
   @override
   Widget buildLeading(BuildContext context) {
-    //TODO: make small title
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset("assets/images/srv-logo.png", fit: BoxFit.contain),
           Text(
-            "Lorem Ipsum",
+            title ?? "ระบบโครงการออนไลน์",
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           Text(
-            "นโยบายและแผนงาน โรงเรียนสารวิทยา",
+            des ?? "นโยบายและแผนงาน โรงเรียนสารวิทยา",
             style: TextStyle(fontSize: 16),
           ),
         ],

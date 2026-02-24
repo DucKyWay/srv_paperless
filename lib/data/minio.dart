@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:minio/minio.dart';
 import 'package:minio/io.dart';
@@ -17,14 +18,14 @@ Future<bool> checkB2Connection() async {
     final bool exists = await minio.bucketExists(bucketName);
 
     if (exists) {
-      print("Connect to Backblaze: Bucket '$bucketName' is ready.");
+      debugPrint("Connect to Backblaze: Bucket '$bucketName' is ready.");
       return true;
     } else {
-      print("Connection Failed: Bucket '$bucketName' not found.");
+      debugPrint("Connection Failed: Bucket '$bucketName' not found.");
       return false;
     }
   } catch (e) {
-    print("Connection Failed: $e");
+    debugPrint("Connection Failed: $e");
     return false;
   }
 }
@@ -32,9 +33,9 @@ Future<bool> checkB2Connection() async {
 Future<void> uploadFile(String objectName, String filePath) async {
   try {
     await minio.fPutObject(bucketName, objectName, filePath);
-    print("Upload successful!");
+    debugPrint("Upload successful!");
   } catch (e) {
-    print("Upload failed: $e");
+    debugPrint("Upload failed: $e");
   }
 }
 
@@ -42,9 +43,9 @@ Future<void> deleteFile(String objectName) async {
   if (objectName.isEmpty) return;
   try {
     await minio.removeObject(bucketName, objectName);
-    print("Delete successful: $objectName");
+    debugPrint("Delete successful: $objectName");
   } catch (e) {
-    print("Delete failed: $e");
+    debugPrint("Delete failed: $e");
   }
 }
 
@@ -53,7 +54,7 @@ Future<String> getPrivateFileUrl(String fileName) async {
   try {
     return await minio.presignedGetObject(bucketName, fileName, expires: 3600);
   } catch (e) {
-    print("B2 Error: Object '$fileName' does not exist in bucket.");
+    debugPrint("B2 Error: Object '$fileName' does not exist in bucket.");
     return "";
   }
 }
@@ -70,10 +71,10 @@ Future<void> deleteOldUserProfileImages(String uid) async {
 
       if (deleteKeys.isNotEmpty) {
         await minio.removeObjects(bucketName, deleteKeys);
-        print("Deleted ${deleteKeys.length} files for user $uid");
+        debugPrint("Deleted ${deleteKeys.length} files for user $uid");
       }
     }
   } catch (e) {
-    print("Error deleting old images: $e");
+    debugPrint("Error deleting old images: $e");
   }
 }
