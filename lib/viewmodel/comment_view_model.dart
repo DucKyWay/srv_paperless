@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/repositories/comment_repo.dart';
+import 'package:srv_paperless/services/comment_service.dart';
 
 final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(CommentViewModel.new);
 
@@ -41,7 +42,7 @@ class CommentViewModel extends AsyncNotifier<void> {
       userId: userId,
       projectId: projectId,
       message: message,
-      commentCreatedAt: DateTime.now().toString()
+      commentCreatedAt: DateTime.now()
     );
 
     int success = await ref.read(commentRepoProvider).create(comment);
@@ -53,14 +54,15 @@ class CommentViewModel extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> updateComment(String id, String userId, String projectId, String message) async {
+  Future<void> updateComment(String id, String userId, String projectId, String message, DateTime commentCreatedAt) async {
     if(id.isEmpty || userId.isEmpty || projectId.isEmpty || message.isEmpty) {
       print("Parameter cannot empty");
     } else {
       final comment = Comment(
         userId: userId,
         projectId: projectId,
-        message: message
+        message: message,
+        commentCreatedAt: commentCreatedAt,
       );
 
       await ref.read(commentRepoProvider).update(id, comment);
@@ -76,3 +78,7 @@ class CommentViewModel extends AsyncNotifier<void> {
     }
   }
 }
+
+final commentByProjectId = FutureProvider.family<List<Comment>, String>((ref, id) {
+  return ref.watch(commentsServiceProvider).getCommentsByProjectId(id);
+});

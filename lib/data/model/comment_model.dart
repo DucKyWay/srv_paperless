@@ -1,16 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Comment {
   String? id;
   final String userId;
   final String projectId;
   final String message;
-  String? commentCreatedAt;
+  final DateTime? commentCreatedAt;
 
   Comment({
     this.id,
     required this.userId,
     required this.projectId,
     required this.message,
-    this.commentCreatedAt,
+    required this.commentCreatedAt,
   });
 
   Comment copyWith({
@@ -18,7 +20,7 @@ class Comment {
     String? userId,
     String? projectId,
     String? message,
-    String? commentCreatedAt
+    DateTime? commentCreatedAt
   }) {
     return Comment(
       id: id ?? this.id,
@@ -35,7 +37,7 @@ class Comment {
       userId: map['user_id'],
       projectId: map['project_id'],
       message: map['message'],
-      commentCreatedAt: map['comment_created_at'],
+      commentCreatedAt: (map['comment_created_at'] as Timestamp?)?.toDate(),
     );
   }
 
