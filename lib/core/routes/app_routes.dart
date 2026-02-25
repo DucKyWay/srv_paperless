@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/views/admin/admin_home_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
@@ -21,11 +22,16 @@ class AppRoutes {
   static const projectDraft = '/project/draft';
   static const projectRequest = '/project/manage/requests';
 
+  // Admin
+  static const adminHome = '/admin/home';
+
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
     userHome: (context) => const UserHomePage(),
     userProfile: (context) => const UserProfile(),
     login: (context) => const LoginScreen(),
+
+    // Project
     projectCreate: (context) => const ProjectCreateScreen(),
     projectDraft: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
@@ -40,6 +46,9 @@ class AppRoutes {
         return ProjectRequestScreen(projectId: args);
       }
       return const ProjectManageScreen();
-    }
+    },
+
+    // Admin
+    adminHome: (context) => const AdminHomeScreen()
   };
 }

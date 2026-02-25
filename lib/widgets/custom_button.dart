@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final Widget text;
-  final double height;
+  final double? height;
+  final double? width;
   final VoidCallback? onPressed;
   final Color color;
   final double border;
 
   const CustomButton({
     super.key,
-    required this.height,
+    this.height,
     required this.text,
     this.onPressed,
+    this.width,
     required this.border,
     required this.color,
 
@@ -20,8 +22,8 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: height,
+      width: width ?? double.infinity,
+      height: height ?? 55,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: color,

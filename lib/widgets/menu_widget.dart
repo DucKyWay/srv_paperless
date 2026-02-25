@@ -19,7 +19,9 @@ class MenuWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final isUserDivisionBudget = authState.currentUser?.isBudget ?? false;
+    final currentUser = authState.currentUser;
+    final isUserDivisionBudget = currentUser?.isBudget ?? false;
+    final isUserRoleAdmin = currentUser?.isAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +62,15 @@ class MenuWidget extends ConsumerWidget {
                   Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },
               ),
+              if(isUserRoleAdmin)...[
+                ListTile(
+                  leading: const Icon(Icons.admin_panel_settings),
+                  title: const Text("ตั้งค่าผู้ดูแล"),
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.adminHome);
+                  },
+                )
+              ],
               const Spacer(),
               const Divider(),
               ListTile(
