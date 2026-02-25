@@ -5,7 +5,8 @@ import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
 
 import '../../views/login/login_screen.dart';
-import '../../views/user/projects/project_draft_pending_screen.dart';
+import '../../views/user/projects/project_draft_screen.dart';
+import '../../views/user/projects/project_pending_reject_screen.dart';
 import '../../views/user/user_home_screen.dart';
 import '../../views/user/user_profile_screen.dart';
 
@@ -22,6 +23,9 @@ class AppRoutes {
   static const projectDraft = '/project/draft';
   static const projectRequest = '/project/manage/requests';
 
+  // Project / pending and reject
+  static const projectPendingAndReject = '/project/pendingAndReject';
+
   // Admin
   static const adminHome = '/admin/home';
 
@@ -33,12 +37,13 @@ class AppRoutes {
 
     // Project
     projectCreate: (context) => const ProjectCreateScreen(),
+    projectPendingAndReject: (context) => const ProjectPendingAndRejectScreen(),
     projectDraft: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args != null && args is String) {
         return ProjectCreateScreen(draftId: args);
       }
-      return const RequestDraftAndPendingScreen();
+      return const RequestDraftScreen();
     },
     projectRequest: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
