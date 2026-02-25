@@ -114,11 +114,18 @@ class _ProjectPendingAndRejectScreenState extends ConsumerState<ProjectPendingAn
                         projectsAsync: pendingProject,
                         emptyMessage: "ไม่มีรายการที่รออนุมัติในขณะนี้",
                         routePath: AppRoutes.projectDraft,
+                        onRefresh: () async {
+                          ref.invalidate(pendingProjectsProvider);
+                        }
+                        ,
                       ),
                       ProjectListViewWidget(
                         projectsAsync: rejectProject,
                         emptyMessage: "ยังไม่มีรายการที่ถูกปฏิเสธ",
                         routePath: AppRoutes.projectDraft,
+                          onRefresh: () async {
+                            ref.invalidate(rejectedProjectsProvider);
+                        }
                       ),
                     ],
                   ),

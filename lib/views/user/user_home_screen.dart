@@ -63,7 +63,9 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               card(context, "ยื่นโครงการ", 1, () {
                 Navigator.pushNamed(context, AppRoutes.projectPendingAndReject);
               }),
-              card(context, "ติดตามโครงการ", 2, () {}),
+              card(context, "ติดตามโครงการ", 2, () {
+                Navigator.pushNamed(context, AppRoutes.projectApproved);
+              }),
               card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),
             ],
           ),

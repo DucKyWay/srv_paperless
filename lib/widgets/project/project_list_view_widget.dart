@@ -7,22 +7,28 @@ class ProjectListViewWidget extends StatelessWidget {
   final AsyncValue<List<Project>> projectsAsync;
   final String emptyMessage;
   final String routePath;
+  final Future<void> Function()? onRefresh; // เพิ่มตัวแปร callback สำหรับการรีเฟรช
 
   const ProjectListViewWidget({
     super.key,
     required this.projectsAsync,
     this.emptyMessage = "ไม่พบรายการ",
     required this.routePath,
+    this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
     return projectsAsync.when(
       data: (projects) {
+        Widget child;
         if (projects.isEmpty) {
-          return Center(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+          child = SingleChildScrollView(
+            // ต้องใช้ AlwaysScrollableScrollPhysics เพื่อให้ดึงรีเฟรชได้แม้ไม่มีรายการ
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -49,7 +55,7 @@ class ProjectListViewWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "เมื่อมีการอัปเดต รายการจะแสดงที่นี่",
+                    "ดึงหน้าจอลงเพื่อโหลดข้อมูลใหม่",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -59,32 +65,57 @@ class ProjectListViewWidget extends StatelessWidget {
               ),
             ),
           );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.only(top: 8, bottom: 100), // เผื่อที่ให้ปุ่มด้านล่าง
-          itemCount: projects.length,
-          itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: ProjectCardDetail(
-              project: projects[index],
-              routes: routePath,
+        } else {
+          child = ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 8, bottom: 100),
+            itemCount: projects.length,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: ProjectCardDetail(
+                project: projects[index],
+                routes: routePath,
+              ),
             ),
-          ),
-        );
+          );
+        }
+
+        // หุ้มด้วย RefreshIndicator ถ้ามีการส่ง onRefresh มา
+        if (onRefresh != null) {
+          return RefreshIndicator(
+            onRefresh: onRefresh!,
+            child: child,
+          );
+        }
+        return child;
       },
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
-      error: (err, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 48),
-            const SizedBox(height: 16),
-            Text("เกิดข้อผิดพลาด: $err"),
-          ],
-        ),
-      ),
+      error: (err, stack) {
+        final errorChild = SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text("เกิดข้อผิดพลาด: $err"),
+                const SizedBox(height: 8),
+                const Text("ดึงหน้าจอลงเพื่อลองใหม่"),
+              ],
+            ),
+          ),
+        );
+        
+        if (onRefresh != null) {
+          return RefreshIndicator(onRefresh: onRefresh!, child: errorChild);
+        }
+        return errorChild;
+      },
     );
   }
 }

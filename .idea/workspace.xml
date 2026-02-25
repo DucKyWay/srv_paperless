@@ -5,29 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/views/user/projects/project_pending_reject_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/widgets/project/project_list_view_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_graph.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_graph.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/version" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/version" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/KotlinJavaRuntime.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/KotlinJavaRuntime.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/views/user/projects/project_approved_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/local.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Flutter/Generated.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/Generated.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/app_routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/repositories/project_repo.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/project_repo.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/academic_department_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/academic_department_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/project_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/budgets/project_manage_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/budgets/project_manage_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/budgets/project_request_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/budgets/project_request_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_create_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_create_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_draft_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/comment_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/comment_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/viewmodel/auth_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/viewmodel/auth_view_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_pending_reject_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_pending_reject_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/user_home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Flutter/ephemeral/Flutter-Generated.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/ephemeral/Flutter-Generated.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Flutter/ephemeral/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/ephemeral/flutter_export_environment.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/srv_paperless.iml" beforeDir="false" afterPath="$PROJECT_DIR$/srv_paperless.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/project/project_list_view_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/project/project_list_view_widget.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +39,6 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
-        <option value="Kotlin Class" />
         <option value="Dart File" />
       </list>
     </option>
@@ -103,7 +87,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/pending-reject-page",
+    "git-widget-placeholder": "feature/create-page-approved",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
