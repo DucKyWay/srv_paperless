@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
+import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
 
 import '../../views/login/login_screen.dart';
-import '../../views/user/projects/project_create_request_screen.dart';
 import '../../views/user/projects/project_draft_pending_screen.dart';
 import '../../views/user/user_home_screen.dart';
 import '../../views/user/user_profile_screen.dart';
@@ -26,11 +26,11 @@ class AppRoutes {
     userHome: (context) => const UserHomePage(),
     userProfile: (context) => const UserProfile(),
     login: (context) => const LoginScreen(),
-    projectCreate: (context) => const CreateRequestScreen(),
+    projectCreate: (context) => const ProjectCreateScreen(),
     projectDraft: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args != null && args is String) {
-        return CreateRequestScreen(draftId: args);
+        return ProjectCreateScreen(draftId: args);
       }
       return const RequestDraftAndPendingScreen();
     },
