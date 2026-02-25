@@ -1,0 +1,230 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/utils/date_util.dart';
+import 'package:srv_paperless/data/model/comment_model.dart';
+import 'package:srv_paperless/data/model/project_model.dart';
+import 'package:srv_paperless/data/model/user_model.dart';
+
+import '../../data/minio.dart';
+import '../../viewmodel/user_view_model.dart';
+
+abstract class ProjectCardWidget extends ConsumerWidget {
+  const ProjectCardWidget({super.key});
+
+  Widget buildLeading(BuildContext context, WidgetRef ref);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return buildLeading(context, ref);
+  }
+}
+
+class ProjectCardDetail extends ProjectCardWidget {
+  final Project project;
+  final String routes;
+  final User? user;
+
+  const ProjectCardDetail({
+    super.key,
+    required this.project,
+    required this.routes,
+    this.user,
+  });
+
+  @override
+  Widget buildLeading(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      width: MediaQuery.of(context).size.width * 0.85,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 1.0),
+      ),
+      child: Row(
+        children: [
+          //TODO: use real image profile
+          CircleAvatar(
+            radius: 45,
+            backgroundColor: Colors.blue[100],
+            backgroundImage: const AssetImage('assets/images/user.png'),
+          ),
+          const SizedBox(width: 15),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "ชื่อโครงการ: ${project.projectName}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "ผู้ยื่นโครงการ : ${project.chairman}",
+                  style: const TextStyle(fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "ยื่นเมื่อ : ${DateUtil.formatIntlDate(project.date)}",
+                  style: const TextStyle(fontSize: 13),
+                ),
+                const SizedBox(height: 12),
+
+                // Detail
+                SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        routes,
+                        arguments: project.id,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff76B947),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      "รายละเอียด",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CommentCardWidget extends ProjectCardWidget {
+  final Comment comment;
+
+  const CommentCardWidget({super.key, required this.comment});
+
+  @override
+  Widget buildLeading(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(userByIdProvider(comment.userId));
+
+    return userAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (commentor) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.fromLTRB(10, 5, 20, 20),
+          decoration: BoxDecoration(
+            color: const Color(0xffFFDAD5),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black, width: 1.5),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  const SizedBox(height: 24),
+                  FutureBuilder<String>(
+                    future: getPrivateFileUrl(commentor?.image ?? ''),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.blue[100],
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        );
+                      }
+
+                      final imageUrl = snapshot.data;
+
+                      return Container(
+                        width: 90, // radius * 2
+                        height: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: ClipOval(
+                          child: Image.network(
+                            imageUrl ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                "assets/images/user.png",
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: RichText(
+                        text: const TextSpan(
+                          text: "หมายเหตุ",
+                          style: TextStyle(color: Colors.black54, fontSize: 14),
+                          children: [
+                            TextSpan(
+                              text: "*",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "ชื่อ: ${commentor?.fullname ?? 'ไม่ทราบชื่อ'}",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(comment.message),
+                    const SizedBox(height: 8),
+                    Text(
+                      DateUtil.formatThaiDate(comment.commentCreatedAt),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

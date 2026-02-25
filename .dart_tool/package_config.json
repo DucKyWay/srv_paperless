@@ -255,7 +255,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///C:/Users/niji-elitebook/fvm/versions/3.38.5/packages/flutter",
+      "rootUri": "file:///C:/Users/niji-elitebook/dev/flutter/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -291,13 +291,13 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///C:/Users/niji-elitebook/fvm/versions/3.38.5/packages/flutter_test",
+      "rootUri": "file:///C:/Users/niji-elitebook/dev/flutter/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///C:/Users/niji-elitebook/fvm/versions/3.38.5/packages/flutter_web_plugins",
+      "rootUri": "file:///C:/Users/niji-elitebook/dev/flutter/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -597,7 +597,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///C:/Users/niji-elitebook/fvm/versions/3.38.5/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///C:/Users/niji-elitebook/dev/flutter/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -789,8 +789,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.10.4",
-  "flutterRoot": "file:///C:/Users/niji-elitebook/fvm/versions/3.38.5",
-  "flutterVersion": "3.38.5",
+  "generatorVersion": "3.10.8",
+  "flutterRoot": "file:///C:/Users/niji-elitebook/dev/flutter/flutter",
+  "flutterVersion": "3.38.9",
   "pubCache": "file:///C:/Users/niji-elitebook/AppData/Local/Pub/Cache"
 }

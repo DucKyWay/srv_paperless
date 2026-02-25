@@ -12,6 +12,8 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
+import '../../../widgets/project/card_widget.dart';
+
 class ProjectRequestScreen extends ConsumerStatefulWidget {
   final String projectId;
   const ProjectRequestScreen({super.key, required this.projectId});
@@ -136,7 +138,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
         return ListView.builder(
           itemCount: comments.length,
           itemBuilder:
-              (context, index) => _commentCard(context, comments[index]),
+              (context, index) => CommentCardWidget(comment: comments[index]),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -145,112 +147,4 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
               Center(child: Text("เกิดข้อผิดพลาดในการแสดงหมายเหตุ $err")),
     );
   }
-
-  Widget _commentCard(BuildContext context, Comment comment) {
-  final userAsync = ref.watch(userByIdProvider(comment.userId));
-
-  return userAsync.when(
-    loading: () => const SizedBox.shrink(),
-    error: (_, __) => const SizedBox.shrink(),
-    data: (commentor) {
-      return Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        padding: const EdgeInsets.fromLTRB(10, 5, 20, 20),
-        decoration: BoxDecoration(
-          color: const Color(0xffFFDAD5),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.black, width: 1.5),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                const SizedBox(height: 24),
-                FutureBuilder<String>(
-                  future: getPrivateFileUrl(commentor?.image ?? ''), 
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircleAvatar(
-                        radius: 45,
-                        backgroundColor: Colors.blue[100],
-                        child: const CircularProgressIndicator(strokeWidth: 2),
-                      );
-                    }
-
-                    final imageUrl = snapshot.data;
-
-                    return Container(
-                      width: 90, // radius * 2
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                      child: ClipOval(
-                        child: Image.network(
-                          imageUrl ?? '',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              "assets/images/user.png",
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: RichText(
-                      text: const TextSpan(
-                        text: "หมายเหตุ",
-                        style: TextStyle(color: Colors.black54, fontSize: 14),
-                        children: [
-                          TextSpan(
-                            text: "*",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "ชื่อ: ${commentor?.fullname ?? 'ไม่ทราบชื่อ'}",
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(comment.message),
-                  const SizedBox(height: 8),
-                  Text(
-                    DateUtil.formatThaiDate(comment.commentCreatedAt),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
 }
