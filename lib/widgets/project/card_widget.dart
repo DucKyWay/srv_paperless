@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
@@ -28,6 +29,34 @@ class ProjectCardDetail extends ProjectCardWidget {
     required this.project,
     required this.routes,
   });
+  Color _getStatusColor(ProjectStatus? status) {
+    switch (status) {
+      case ProjectStatus.draft:
+        return Colors.blue.shade50;
+      case ProjectStatus.pending:
+        return Colors.orange.shade50;
+      case ProjectStatus.approve:
+        return Colors.green.shade50;
+      case ProjectStatus.rejected:
+        return Colors.red.shade50;
+      default:
+        return Colors.white;
+    }
+  }
+  Color _getBorderColor(ProjectStatus? status) {
+    switch (status) {
+      case ProjectStatus.draft:
+        return Colors.blue.shade300;
+      case ProjectStatus.pending:
+        return Colors.orange.shade300;
+      case ProjectStatus.approve:
+        return Colors.green.shade300;
+      case ProjectStatus.rejected:
+        return Colors.red.shade300;
+      default:
+        return Colors.black12;
+    }
+  }
 
   @override
   Widget buildLeading(BuildContext context, WidgetRef ref) {
@@ -42,9 +71,19 @@ class ProjectCardDetail extends ProjectCardWidget {
           width: MediaQuery.of(context).size.width * 0.85,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _getStatusColor(project.status), // ใช้สีตามสถานะ
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.black, width: 1.0),
+            border: Border.all(
+              color: _getBorderColor(project.status), // ใช้สีขอบตามสถานะ
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -89,13 +128,36 @@ class ProjectCardDetail extends ProjectCardWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "ชื่อโครงการ: ${project.projectName}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "ชื่อโครงการ: ${project.projectName}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // เพิ่ม Badge แสดงสถานะ
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _getBorderColor(project.status),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            project.status?.label ?? '',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(

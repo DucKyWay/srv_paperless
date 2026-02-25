@@ -1,9 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/model/academic_department_model.dart';
-import '../data/model/employee_status_model.dart';
 import '../data/repositories/academic_department_repo.dart';
-import '../data/repositories/employee_status_repo.dart';
-
 class AcademicDepartmentService {
   final AcademicDepartmentRepository academicDepartmentRepo;
 

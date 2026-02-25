@@ -47,26 +47,31 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       return;
     }
 
-    final draft = await ref.read(projectByIdProvider(widget.draftId!).future);
+    setState(() => _isLoading = true);
+    try {
+      final draft = await ref.read(projectByIdProvider(widget.draftId!).future);
 
-    if (draft == null) return;
+      if (draft != null) {
+        projectNameController.text = draft.projectName ?? '';
+        projectChairmanController.text = draft.chairman ?? '';
+        budgetController.text = draft.budget.toString();
 
-    projectNameController.text = draft.projectName ?? '';
-    projectChairmanController.text = draft.chairman ?? '';
-    budgetController.text = draft.budget.toString();
+        if (draft.date != null) {
+          _dateTime = draft.date;
+          requestCreateDateController.text = DateFormat(
+            'dd/MM/yyyy',
+          ).format(draft.date!);
+        }
 
-    if (draft.date != null) {
-      _dateTime = draft.date;
-      requestCreateDateController.text = DateFormat(
-        'dd/MM/yyyy',
-      ).format(draft.date!);
+        if (draft.pdfPath != null && draft.pdfPath!.isNotEmpty) {
+          _fileName = draft.pdfPath;
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading draft: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-
-    if (draft.pdfPath != null && draft.pdfPath!.isNotEmpty) {
-      _fileName = draft.pdfPath;
-    }
-
-    setState(() {});
   }
 
   void _showDatePicker(BuildContext context) {
@@ -145,8 +150,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       if (projectNameController.text.isEmpty ||
           projectChairmanController.text.isEmpty ||
           budgetController.text.isEmpty ||
-          _selectedFile == null) {
-        Navigator.of(context).pop();
+          (_fileName == null && _selectedFile == null)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF'),
@@ -161,13 +165,14 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     final user = authState.currentUser;
 
     if (user == null) return;
+
     final projectData = Project(
       projectName: projectNameController.text,
       chairman: projectChairmanController.text,
       budget: double.tryParse(budgetController.text) ?? 0.0,
       date: _dateTime,
       fixLatest: DateTime.now(),
-      id: '',
+      id: widget.draftId ?? '',
       userId: user.id,
       pdfPath: _fileName ?? '',
       status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
@@ -181,9 +186,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
             pdfFile: _selectedFile,
           );
     } else {
-      if (widget.draftId != null && !isDraft) {
-        projectData.status = ProjectStatus.pending;
-      }
       await ref
           .read(projectProvider.notifier)
           .updateProject(
@@ -191,11 +193,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
             project: projectData,
             pdfFile: _selectedFile,
           );
-
-      final success = ref.read(projectProvider).value ?? false;
-      if (success) {
-        _showSnackBar(context, "แก้ไขข้อมูลสำเร็จ", Colors.green);
-      }
     }
 
     final state = ref.read(projectProvider);
@@ -220,18 +217,16 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   @override
   void initState() {
     super.initState();
-
-    Future.microtask(() {
-      _loadDraft();
-    });
+    Future.microtask(() => _loadDraft());
   }
 
   @override
   Widget build(BuildContext context) {
+
     final width = context.screenWidth;
     return MenuWidget(
       title: HeaderLogoWithBackButton(),
-      child: SingleChildScrollView(
+      child:  _isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
         child: SafeArea(
           child: Center(
             child: Column(
@@ -256,8 +251,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                         controller: projectChairmanController,
                       ),
                       SizedBox(height: 12),
-
-                      // ส่วนของวันที่
                       CustomTextField(
                         label: "เสนอโครงการวันที่",
                         hint: "เลือกวันที่",
@@ -265,7 +258,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                         readOnly: true,
                         onTap: () => _showDatePicker(context),
                       ),
-
                       SizedBox(height: 12),
                       CustomTextField(
                         label: "จำนวนเงิน(บาท)",
@@ -277,7 +269,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                         ],
                       ),
                       SizedBox(height: 12),
-
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -333,7 +324,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 20),
                       CustomButton(
                         height: 55,
@@ -353,7 +343,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                   ),
                             ),
                       ),
-
                       SizedBox(height: 20),
                       CustomButton(
                         height: 55,

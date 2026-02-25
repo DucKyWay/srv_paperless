@@ -54,16 +54,18 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
 
               if (isUserDivisionBudget) ...[
                 card(context, "คำขออนุมัติโครงการ", 6, () {
-                  Navigator.pushNamed(context, AppRoutes.projectRequest);
+                  Navigator.pushNamed(context, AppRoutes.projectDraft);
                 }),
                 card(context, "ติดตามผลโครงการ", 6, () {}),
                 card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
               ],
 
               card(context, "ยื่นโครงการ", 1, () {
-                Navigator.pushNamed(context, AppRoutes.projectDraft);
+                Navigator.pushNamed(context, AppRoutes.projectPendingAndReject);
               }),
-              card(context, "ติดตามโครงการ", 2, () {}),
+              card(context, "ติดตามโครงการ", 2, () {
+                Navigator.pushNamed(context, AppRoutes.projectApproved);
+              }),
               card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),
             ],
           ),

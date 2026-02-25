@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/usr/local/share/flutter
-FLUTTER_APPLICATION_PATH=/Users/niji-mac/git/ku-342-mobileapp/srv_paperless
+FLUTTER_ROOT=C:\Manus\flutter
+FLUTTER_APPLICATION_PATH=C:\Manus\flutter_ku\paperless_project\srv_paperless
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
