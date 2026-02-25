@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 
 class Project {
   final String id;
@@ -9,7 +10,7 @@ class Project {
   final double? budget;
   final String? pdfPath;
   final DateTime? fixLatest;
-  String? status; // 'draft' 'submitted' 'approve' 'rejected' ''
+  final ProjectStatus status;
 
   Project({
     required this.id,
@@ -20,7 +21,7 @@ class Project {
     required this.budget,
     this.pdfPath,
     required this.fixLatest,
-    this.status = 'draft',
+    this.status = ProjectStatus.draft,
   });
 
   Project copyWith({
@@ -32,7 +33,7 @@ class Project {
     double? budget,
     String? pdfPath,
     DateTime? fixLatest,
-    String? status,
+    ProjectStatus? status,
   }) {
     return Project(
       id: id ?? this.id,
@@ -43,7 +44,7 @@ class Project {
       budget: budget ?? this.budget,
       fixLatest: fixLatest ?? this.fixLatest,
       pdfPath: pdfPath ?? this.pdfPath,
-      status: status ?? this.status
+      status: status ?? this.status,
     );
   }
 
@@ -57,20 +58,23 @@ class Project {
       chairman: map['chairman'],
       budget: map['budget'],
       pdfPath: map['pdf_path'],
-      status: map['status'],
+      status: ProjectStatus.values.firstWhere(
+        (e) => e.name == map['status'],
+        orElse: () => ProjectStatus.draft,
+      ),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'user_id' : userId,
+      'user_id': userId,
       'project_name': projectName,
       'chairman': chairman,
       'date': date,
       'budget': budget,
       'pdf_path': pdfPath,
-      'fix_latest':fixLatest,
-      'status': status,
+      'fix_latest': fixLatest,
+      'status': status.name,
     };
   }
 }

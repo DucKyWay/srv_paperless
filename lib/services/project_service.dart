@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/repositories/project_repo.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
@@ -18,15 +19,15 @@ class ProjectService {
   }
 
   Future<List<Project>> getApprovedProjects() async {
-    return await projectRepo.fetchProjectsByStatus('approved');
+    return await projectRepo.fetchProjectsByStatus(ProjectStatus.approve.name);
   }
 
   Future<List<Project>> getRejectProjects() async {
-    return await projectRepo.fetchProjectsByStatus('reject');
+    return await projectRepo.fetchProjectsByStatus(ProjectStatus.rejected.name);
   }
 
   Future<List<Project>> getPendingProjects() async {
-    return await projectRepo.fetchProjectsByStatus('pending');
+    return await projectRepo.fetchProjectsByStatus(ProjectStatus.pending.name);
   }
 
   Future<List<Project>> getDraftProjectsByUserId(String id) async {

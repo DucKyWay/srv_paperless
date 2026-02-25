@@ -97,7 +97,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "อนุมิติโครงการ : ${project!.status}",
+                          "อนุมัติโครงการ : ${project!.status.label}",
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 8),
@@ -155,7 +155,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
     data: (commentor) {
       return Container(
         margin: const EdgeInsets.only(bottom: 20),
-        padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
+        padding: const EdgeInsets.fromLTRB(10, 5, 20, 20),
         decoration: BoxDecoration(
           color: const Color(0xffFFDAD5),
           borderRadius: BorderRadius.circular(24),
@@ -204,7 +204,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                 ),
               ],
             ),
-            const SizedBox(width: 15),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

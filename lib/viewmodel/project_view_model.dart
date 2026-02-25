@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/services/project_service.dart';
 
@@ -22,7 +23,7 @@ class ProjectViewModel extends AsyncNotifier<void> {
     try {
       state = const AsyncValue.loading();
       final projectWithStatus = project.copyWith(
-        status: isDraft ? 'draft' : 'pending',
+        status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
       );
       final result = await ref
           .read(projectServiceProvider)
@@ -35,7 +36,13 @@ class ProjectViewModel extends AsyncNotifier<void> {
             .read(projectServiceProvider)
             .uploadProjectFile(projectId: projectId, filePath: pdfFile.path);
       }
-    } catch (e) {
+
+      ref.invalidate(allProjectsProvider);
+      ref.invalidate(draftProjectsProvider);
+
+      state = const AsyncValue.data(null);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
       if (kDebugMode) print(e);
     }
   }

@@ -53,7 +53,9 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               TitleNormal(title: "หน้าแรก", des: "สรุปผลเบื้องต้น"),
 
               if (isUserDivisionBudget) ...[
-                card(context, "คำขออนุมัติโครงการ", 6, () {}),
+                card(context, "คำขออนุมัติโครงการ", 6, () {
+                  Navigator.pushNamed(context, AppRoutes.projectRequest);
+                }),
                 card(context, "ติดตามผลโครงการ", 6, () {}),
                 card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
               ],
