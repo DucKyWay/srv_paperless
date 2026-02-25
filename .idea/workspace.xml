@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/widgets/project/card_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/version" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/version" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/local.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/budgets/project_manage_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/budgets/project_manage_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/budgets/project_request_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/budgets/project_request_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/user/projects/project_draft_pending_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/project/card_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/project/card_widget.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

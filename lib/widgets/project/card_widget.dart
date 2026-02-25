@@ -22,92 +22,124 @@ abstract class ProjectCardWidget extends ConsumerWidget {
 class ProjectCardDetail extends ProjectCardWidget {
   final Project project;
   final String routes;
-  final User? user;
 
   const ProjectCardDetail({
     super.key,
     required this.project,
     required this.routes,
-    this.user,
   });
 
   @override
   Widget buildLeading(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      width: MediaQuery.of(context).size.width * 0.85,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 1.0),
-      ),
-      child: Row(
-        children: [
-          //TODO: use real image profile
-          CircleAvatar(
-            radius: 45,
-            backgroundColor: Colors.blue[100],
-            backgroundImage: const AssetImage('assets/images/user.png'),
+    final userAsync = ref.watch(userByIdProvider(project.userId));
+
+    return userAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (user) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          width: MediaQuery.of(context).size.width * 0.85,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.black, width: 1.0),
           ),
-          const SizedBox(width: 15),
+          child: Row(
+            children: [
+              FutureBuilder<String>(
+                future: getPrivateFileUrl(user?.image ?? ''),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.blue[100],
+                      child: const CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  }
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "ชื่อโครงการ: ${project.projectName}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "ผู้ยื่นโครงการ : ${project.chairman}",
-                  style: const TextStyle(fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "ยื่นเมื่อ : ${DateUtil.formatIntlDate(project.date)}",
-                  style: const TextStyle(fontSize: 13),
-                ),
-                const SizedBox(height: 12),
+                  final imageUrl = snapshot.data;
 
-                // Detail
-                SizedBox(
-                  width: double.infinity,
-                  height: 35,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        routes,
-                        arguments: project.id,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff76B947),
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                  return Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: Image.network(
+                        imageUrl ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            "assets/images/user.png",
+                            fit: BoxFit.cover,
+                          );
+                        },
                       ),
-                      elevation: 0,
                     ),
-                    child: const Text(
-                      "รายละเอียด",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  );
+                },
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "ชื่อโครงการ: ${project.projectName}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "ผู้ยื่นโครงการ : ${user?.fullname}",
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "ยื่นเมื่อ : ${DateUtil.formatIntlDate(project.date)}",
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 35,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            routes,
+                            arguments: project.id,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff76B947),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          "รายละเอียด",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
