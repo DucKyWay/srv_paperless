@@ -24,7 +24,6 @@ class ProjectListViewWidget extends StatelessWidget {
         Widget child;
         if (projects.isEmpty) {
           child = SingleChildScrollView(
-            // ต้องใช้ AlwaysScrollableScrollPhysics เพื่อให้ดึงรีเฟรชได้แม้ไม่มีรายการ
             physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
               height: MediaQuery.of(context).size.height * 0.5,
@@ -80,7 +79,6 @@ class ProjectListViewWidget extends StatelessWidget {
           );
         }
 
-        // หุ้มด้วย RefreshIndicator ถ้ามีการส่ง onRefresh มา
         if (onRefresh != null) {
           return RefreshIndicator(
             onRefresh: onRefresh!,
