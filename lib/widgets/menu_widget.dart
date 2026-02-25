@@ -64,7 +64,7 @@ class MenuWidget extends ConsumerWidget {
               ),
               if(isUserRoleAdmin)...[
                 ListTile(
-                  leading: const Icon(Icons.admin_panel_settings),
+                  leading: const Icon(Icons.admin_panel_settings_outlined),
                   title: const Text("ตั้งค่าผู้ดูแล"),
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.adminHome);

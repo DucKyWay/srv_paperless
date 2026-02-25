@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/views/admin/admin_home_screen.dart';
+import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
+import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
@@ -24,6 +26,7 @@ class AppRoutes {
 
   // Admin
   static const adminHome = '/admin/home';
+  static const adminManageUsers = '/admin/manage/users';
 
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
@@ -49,6 +52,13 @@ class AppRoutes {
     },
 
     // Admin
-    adminHome: (context) => const AdminHomeScreen()
+    adminHome: (context) => const AdminHomeScreen(),
+    adminManageUsers: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if(args != null && args is String) {
+        return AdminManageUserScreen(userId: args);
+      }
+      return const AdminManageUsersScreen();
+    }
   };
 }

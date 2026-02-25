@@ -13,9 +13,18 @@ final userProvider = AsyncNotifierProvider<UserProfileViewModel, void>(
   UserProfileViewModel.new,
 );
 
-class UserProfileViewModel extends AsyncNotifier<void > {
+class UserProfileViewModel extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
+
+  Future<int> updateUser(String uid, User updatedUser) async {
+    try {
+      return await ref.read(userServiceProvider).updateUser(uid, updatedUser);
+    } catch (e) {
+      debugPrint("Failed to updated User: $e");
+      return 1;
+    }
+  }
 
   Future<List<User>> getAllUsers() async {
     try {

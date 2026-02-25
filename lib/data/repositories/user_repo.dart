@@ -10,6 +10,7 @@ abstract class UserRepository {
   Future<User?> fetchUserByUsername(String username);
 
   Future<int> create(User user, String password);
+  Future<int> update(String uid, User updatedUser);
   Future<int> updateProfileImage(String uid, String filename);
   Future<int> updatePhoneNumber(String uid, String phone);
   Future<int> updateAcademicDepartment(String uid, String academicDepartment);
@@ -136,6 +137,16 @@ class UserRepositoryImpl implements UserRepository {
     } catch (e) {
       print("Delete user error: $e");
       return -1;
+    }
+  }
+
+  @override
+  Future<int> update(String uid, User updatedUser) async {
+    try {
+      await _db.collection('users').doc(uid).update(updatedUser.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
     }
   }
 }

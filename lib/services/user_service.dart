@@ -47,6 +47,10 @@ class UserService {
     return await userRepo.updateHomeroomClass(uid, homeroomClass);
   }
 
+  Future<int> updateUser(String uid, User updatedUser) async {
+    return await userRepo.update(uid, updatedUser);
+  }
+
   Future<int> deleteUser(String uid) async {
     return await userRepo.deleteUser(uid);
   }

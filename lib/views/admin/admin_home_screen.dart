@@ -27,7 +27,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TitleNormal(des: "การตั้งค่าสำหรับผู้ดูแลระบบ"),
-              _card(context, "จัดการผู้ใช้งาน", AppRoutes.adminHome, Colors.blue.shade700),
+              _card(context, "จัดการผู้ใช้งาน", AppRoutes.adminManageUsers, Colors.blue.shade700),
             ],
           ),
         ),

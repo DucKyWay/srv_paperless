@@ -204,20 +204,15 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
-            ),
-            backgroundColor: Colors.green,
-          ),
+        _showSnackBar(
+          context,
+          isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
+          Colors.green,
         );
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('เกิดข้อผิดพลาด: ${state.error}')),
-        );
+        _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
       }
     }
   }
@@ -390,12 +385,13 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     );
   }
 
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(BuildContext context, String text, Color color) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        backgroundColor: color,
-      ),
-    );
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
+    BuildContext context,
+    String text,
+    Color color,
+  ) {
+    return ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
-  final String hint;
+  final String? hint;
   final TextEditingController controller;
   final bool isPassword;
   final TextInputType keyboardType;
@@ -15,7 +15,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
     required this.label,
-    required this.hint,
+    this.hint,
     required this.controller, 
     this.isPassword = false,
     this.keyboardType = TextInputType.text, 
@@ -39,7 +39,7 @@ class CustomTextField extends StatelessWidget {
           obscureText: isPassword,
           validator: validator,
           decoration: InputDecoration(
-            hintText: hint,
+            hintText: hint ?? '',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
