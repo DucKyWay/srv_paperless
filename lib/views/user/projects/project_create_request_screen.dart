@@ -18,7 +18,6 @@ import 'package:srv_paperless/widgets/title_widget.dart';
 
 class CreateRequestScreen extends ConsumerStatefulWidget {
   final String? draftId;
-
   const CreateRequestScreen({super.key, this.draftId});
 
   @override
@@ -38,7 +37,12 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   File? _selectedFile;
 
   Future<void> _loadDraft() async {
-    if (widget.draftId == null) return;
+    print(widget.draftId);
+    if (widget.draftId == null){
+      _dateTime = DateTime.now();
+    requestCreateDateController.text = DateFormat('dd/MM/yyyy').format(_dateTime!);
+      return;
+    } 
 
     final draft = await ref.read(projectByIdProvider(widget.draftId!).future);
 
@@ -90,7 +94,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
                 Expanded(
                   child: CupertinoDatePicker(
                     mode: CupertinoDatePickerMode.date,
-                    initialDateTime: DateTime.now(),
+                    initialDateTime:_dateTime ?? DateTime.now(),
                     onDateTimeChanged: (DateTime newDateTime) {
                       setState(() {
                         requestCreateDateController.text = DateFormat(
@@ -164,14 +168,22 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
       userId: user.id,
       pdfPath: _fileName ?? '',
     );
-
-    await ref
-        .read(projectProvider.notifier)
-        .saveProject(
-          project: projectData,
-          isDraft: isDraft,
-          pdfFile: _selectedFile,
-        );
+    if (widget.draftId == null) {
+      await ref
+          .read(projectProvider.notifier)
+          .saveProject(
+            project: projectData,
+            isDraft: isDraft,
+            pdfFile: _selectedFile,
+          );
+    } else {
+      if (widget.draftId != null && !isDraft) {
+        projectData.status = "pending";
+      }
+      await ref
+          .read(projectProvider.notifier)
+          .updateProject(id: widget.draftId!, project: projectData);
+    }
 
     final state = ref.read(projectProvider);
     if (!state.hasError) {
@@ -209,10 +221,6 @@ class _CreateRequestScreenState extends ConsumerState<CreateRequestScreen> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
-
-    requestCreateDateController.text = DateFormat(
-      'dd/MM/yyyy',
-    ).format(DateTime.now());
     return MenuWidget(
       title: HeaderLogoWithBackButton(),
       child: SingleChildScrollView(
