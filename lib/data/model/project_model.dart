@@ -10,7 +10,7 @@ class Project {
   final double? budget;
   final String? pdfPath;
   final DateTime? fixLatest;
-  final ProjectStatus status;
+  ProjectStatus status;
 
   Project({
     required this.id,

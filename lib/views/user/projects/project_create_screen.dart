@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
@@ -16,17 +17,16 @@ import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
-class CreateProjectScreen extends ConsumerStatefulWidget {
+class ProjectCreateScreen extends ConsumerStatefulWidget {
   final String? draftId;
-
-  const CreateProjectScreen({super.key, this.draftId});
+  const ProjectCreateScreen({super.key, this.draftId});
 
   @override
-  ConsumerState<CreateProjectScreen> createState() =>
-      _CreateRequestScreenState();
+  ConsumerState<ProjectCreateScreen> createState() =>
+      _ProjectCreateScreenState();
 }
 
-class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
+class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   final TextEditingController projectNameController = TextEditingController();
   final TextEditingController projectChairmanController =
       TextEditingController();
@@ -38,7 +38,14 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
   File? _selectedFile;
 
   Future<void> _loadDraft() async {
-    if (widget.draftId == null) return;
+    print(widget.draftId);
+    if (widget.draftId == null) {
+      _dateTime = DateTime.now();
+      requestCreateDateController.text = DateFormat(
+        'dd/MM/yyyy',
+      ).format(_dateTime!);
+      return;
+    }
 
     final draft = await ref.read(projectByIdProvider(widget.draftId!).future);
 
@@ -46,7 +53,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
 
     projectNameController.text = draft.projectName ?? '';
     projectChairmanController.text = draft.chairman ?? '';
-    budgetController.text = draft.budget.toString() ?? '';
+    budgetController.text = draft.budget.toString();
 
     if (draft.date != null) {
       _dateTime = draft.date;
@@ -90,7 +97,7 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
                 Expanded(
                   child: CupertinoDatePicker(
                     mode: CupertinoDatePickerMode.date,
-                    initialDateTime: DateTime.now(),
+                    initialDateTime: _dateTime ?? DateTime.now(),
                     onDateTimeChanged: (DateTime newDateTime) {
                       setState(() {
                         requestCreateDateController.text = DateFormat(
@@ -163,15 +170,33 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
       id: '',
       userId: user.id,
       pdfPath: _fileName ?? '',
+      status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
     );
+    if (widget.draftId == null) {
+      await ref
+          .read(projectProvider.notifier)
+          .saveProject(
+            project: projectData,
+            isDraft: isDraft,
+            pdfFile: _selectedFile,
+          );
+    } else {
+      if (widget.draftId != null && !isDraft) {
+        projectData.status = ProjectStatus.pending;
+      }
+      await ref
+          .read(projectProvider.notifier)
+          .updateProject(
+            id: widget.draftId!,
+            project: projectData,
+            pdfFile: _selectedFile,
+          );
 
-    await ref
-        .read(projectProvider.notifier)
-        .saveProject(
-          project: projectData,
-          isDraft: isDraft,
-          pdfFile: _selectedFile,
-        );
+      final success = ref.read(projectProvider).value ?? false;
+      if (success) {
+        _showSnackBar(context, "แก้ไขข้อมูลสำเร็จ", Colors.green);
+      }
+    }
 
     final state = ref.read(projectProvider);
     if (!state.hasError) {
@@ -209,18 +234,14 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
-
-    requestCreateDateController.text = DateFormat(
-      'dd/MM/yyyy',
-    ).format(DateTime.now());
     return MenuWidget(
-      title: HeaderWithBackButton(),
+      title: HeaderLogoWithBackButton(),
       child: SingleChildScrollView(
         child: SafeArea(
           child: Center(
             child: Column(
               children: [
-                TitleNormal(
+                TitleSmall(
                   title:
                       widget.draftId != null ? "แก้ไขฉบับร่าง" : "ยื่นโครงการ",
                 ),
@@ -365,6 +386,15 @@ class _CreateRequestScreenState extends ConsumerState<CreateProjectScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(BuildContext context, String text, Color color) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: color,
       ),
     );
   }
