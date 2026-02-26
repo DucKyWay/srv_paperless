@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/core/constants/constants.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
@@ -62,8 +63,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   bottomRight: Radius.circular(30),
                 ),
               ),
-              child: const SafeArea(
-                child: TitleNormal(title: "ระบบโครงการออนไลน์"),
+              child: SafeArea(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 24),
+                      Image.asset(
+                        "${AppConstants.imagePath}/srv-logo.png",
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(height: 24),
+                      Text(
+                        "ระบบโครงการออนไลน์",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "นโยบายและแผนงาน โรงเรียนสารวิทยา",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             Padding(

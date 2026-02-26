@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/firebase_options.dart';
@@ -19,8 +18,6 @@ void main() async {
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
-
-  GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const ProviderScope(child: MyApp()));
 
@@ -59,6 +56,7 @@ class MyApp extends ConsumerWidget {
           title: 'SRV Paperless',
           theme: ThemeData(
             useMaterial3: true,
+            fontFamily: 'BaiJamjuree',
             colorScheme: materialTheme.light().colorScheme,
           ),
           home:
