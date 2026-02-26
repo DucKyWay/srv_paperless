@@ -24,7 +24,7 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
     final width = context.screenWidth;
 
     final authState = ref.watch(authProvider);
-    final isUserDivisionBudget = authState.currentUser?.isBudget ?? false;
+    final isUserDivisionBudget = authState.value?.currentUser?.isBudget ?? false;
 
     if (!isUserDivisionBudget) Navigator.pop(context);
 

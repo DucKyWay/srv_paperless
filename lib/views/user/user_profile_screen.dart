@@ -22,7 +22,7 @@ class UserProfile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final profileState = ref.watch(userProvider);
-    final user = authState.currentUser;
+    final user = authState.value?.currentUser;
     final phoneController = TextEditingController();
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {

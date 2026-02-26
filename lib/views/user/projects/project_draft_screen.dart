@@ -23,7 +23,7 @@ class _RequestDraftScreenState extends ConsumerState<RequestDraftScreen> {
     final width = context.screenWidth;
     
     // ใช้ select เพื่อฟังเฉพาะ userId เท่านั้น ป้องกันการ reload บ่อยเกินไป
-    final userId = ref.watch(authProvider.select((s) => s.currentUser?.id)) ?? '';
+    final userId = ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
     final draftProjects = ref.watch(draftProjectsProvider(userId));
 
     return MenuWidget(

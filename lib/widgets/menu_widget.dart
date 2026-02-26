@@ -19,7 +19,7 @@ class MenuWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final currentUser = authState.currentUser;
+    final currentUser = authState.value?.currentUser;
     final isUserDivisionBudget = currentUser?.isBudget ?? false;
     final isUserRoleAdmin = currentUser?.isAdmin ?? false;
 

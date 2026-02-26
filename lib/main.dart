@@ -16,21 +16,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
 
-  try {
-    await dotenv.load(fileName: ".env");
-    debugPrint("Env loaded");
-  } catch (e) {
-    debugPrint("Error: can't load env: $e");
-  }
-
-  await checkB2Connection();
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const ProviderScope(child: MyApp()));
+
+  Future.microtask(() async {
+    try {
+      await dotenv.load(fileName: ".env");
+      debugPrint("Env loaded");
+
+      await checkB2Connection();
+    } catch (e) {
+      debugPrint("Background init error: $e");
+    }
+  });
 }
 
 class MyApp extends ConsumerWidget {
@@ -38,25 +41,33 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final materialTheme = MaterialTheme(ThemeData.light().textTheme);
-    final authState = ref.watch(authProvider);
+    final authAsync = ref.watch(authProvider);
 
-    return MaterialApp(
-      title: 'SRV Paperless',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: materialTheme.light().colorScheme,
-        textTheme: GoogleFonts.baiJamjureeTextTheme(
-          Theme.of(context).textTheme,
-        ),
-      ),
-      home:
-          authState.isLoading
-              ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-              : (authState.currentUser != null
+    return authAsync.when(
+      loading:
+          () => const MaterialApp(
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          ),
+      error:
+          (err, stack) => const MaterialApp(
+            home: Scaffold(body: Center(child: Text("Something went wrong"))),
+          ),
+      data: (authState) {
+        final materialTheme = MaterialTheme(ThemeData.light().textTheme);
+
+        return MaterialApp(
+          title: 'SRV Paperless',
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: materialTheme.light().colorScheme,
+          ),
+          home:
+              authState.currentUser != null
                   ? const UserHomePage()
-                  : const LoginScreen()),
-      routes: AppRoutes.routes,
+                  : const LoginScreen(),
+          routes: AppRoutes.routes,
+        );
+      },
     );
   }
 }

@@ -18,22 +18,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   void _handleLogin() async {
-    if (ref.read(authProvider).isLoading) return;
+    final authAsync = ref.read(authProvider);
 
-    final authNotifier = ref.read(authProvider.notifier);
-    await authNotifier.login(usernameController.text, passwordController.text);
+    if (authAsync.isLoading) return;
+
+    await ref
+        .read(authProvider.notifier)
+        .login(usernameController.text, passwordController.text);
   }
 
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
     final height = context.screenHeight;
-    final authState = ref.watch(authProvider);
+
+    final authAsync = ref.watch(authProvider);
+
+    final isLoading = authAsync.isLoading;
+    final errorMessage = authAsync.value?.error;
 
     ref.listen(authProvider, (previous, next) {
-      if (next.error != null && next.error != previous?.error) {
+      final prevError = previous?.value?.error;
+      final nextError = next.value?.error;
+
+      if (nextError != null && nextError != prevError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!), backgroundColor: Colors.red),
+          SnackBar(content: Text(nextError), backgroundColor: Colors.red),
         );
       }
     });
@@ -52,9 +62,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   bottomRight: Radius.circular(30),
                 ),
               ),
-              child: SafeArea(child: TitleNormal(title: "ระบบโครงการออนไลน์")),
+              child: const SafeArea(
+                child: TitleNormal(title: "ระบบโครงการออนไลน์"),
+              ),
             ),
-
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: width * 0.08,
@@ -83,7 +94,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   CustomButton(
                     height: 55,
                     text:
-                        authState.isLoading
+                        isLoading
                             ? const SizedBox(
                               height: 25,
                               width: 25,
@@ -100,10 +111,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 color: Colors.white,
                               ),
                             ),
-                    onPressed: authState.isLoading ? null : _handleLogin,
+                    onPressed: isLoading ? null : _handleLogin,
                     border: 15,
                     color:
-                        authState.isLoading
+                        isLoading
                             ? Theme.of(
                               context,
                             ).colorScheme.primaryContainer.withOpacity(0.6)

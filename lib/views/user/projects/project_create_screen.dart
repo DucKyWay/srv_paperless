@@ -163,7 +163,8 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     }
 
     final authState = ref.read(authProvider);
-    final user = authState.currentUser;
+    final authAsync = ref.watch(authProvider);
+    final user = authAsync.value?.currentUser;
 
     if (user == null) return;
 

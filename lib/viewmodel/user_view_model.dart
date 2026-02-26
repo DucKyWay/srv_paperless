@@ -70,16 +70,24 @@ class UserProfileViewModel extends AsyncNotifier<void> {
     state = const AsyncValue.loading();
 
     try {
-      final user = ref.read(authProvider).currentUser!;
+      final authState = ref.read(authProvider).value;
+      final user = authState?.currentUser;
+
+      if (user == null) {
+        state = const AsyncValue.data(null);
+        return;
+      }
 
       await deleteOldUserProfileImages(user.id);
 
       final String filename =
           "profile_${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
       await uploadFile(filename, image.path);
 
       await ref.read(userServiceProvider).updateProfileImage(user.id, filename);
-      await ref.read(authProvider.notifier).getCurrentUser();
+
+      await ref.read(authProvider.notifier).refreshUser();
 
       state = const AsyncValue.data(null);
     } catch (e, stack) {
@@ -91,11 +99,19 @@ class UserProfileViewModel extends AsyncNotifier<void> {
     if (phone.isEmpty) return;
 
     state = const AsyncValue.loading();
+
     try {
-      final user = ref.read(authProvider).currentUser!;
+      final authState = ref.read(authProvider).value;
+      final user = authState?.currentUser;
+
+      if (user == null) {
+        state = const AsyncValue.data(null);
+        return;
+      }
 
       await ref.read(userServiceProvider).updatePhoneNumber(user.id, phone);
-      await ref.read(authProvider.notifier).getCurrentUser();
+
+      await ref.read(authProvider.notifier).refreshUser();
 
       state = const AsyncValue.data(null);
     } catch (e, stack) {

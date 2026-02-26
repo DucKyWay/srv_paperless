@@ -20,7 +20,7 @@ class ProjectApproved extends ConsumerStatefulWidget {
 class _ProjectApprovedState extends ConsumerState<ProjectApproved> {
   @override
   Widget build(BuildContext context) {
-    final userId = ref.watch(authProvider.select((s) => s.currentUser?.id)) ?? '';
+    final userId = ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
     final width = context.screenWidth;
     final approvedProjects = ref.watch(approvedProjectsProvider);
     return MenuWidget( title:  HeaderWithBackButton(),

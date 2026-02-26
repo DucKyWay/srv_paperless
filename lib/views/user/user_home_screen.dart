@@ -20,14 +20,14 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(authProvider.notifier).getCurrentUser();
+      ref.read(authProvider.notifier).refreshUser();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final user = authState.currentUser;
+    final user = authState.value?.currentUser;
     final isUserDivisionBudget = user?.isBudget ?? false;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
@@ -54,7 +54,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
 
               if (isUserDivisionBudget) ...[
                 card(context, "คำขออนุมัติโครงการ", 6, () {
-                  Navigator.pushNamed(context, AppRoutes.projectDraft);
+                  Navigator.pushNamed(context, AppRoutes.projectRequest);
                 }),
                 card(context, "ติดตามผลโครงการ", 6, () {}),
                 card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
