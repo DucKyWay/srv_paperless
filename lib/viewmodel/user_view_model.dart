@@ -19,7 +19,13 @@ class UserProfileViewModel extends AsyncNotifier<void> {
 
   Future<int> updateUser(String uid, User updatedUser) async {
     try {
-      return await ref.read(userServiceProvider).updateUser(uid, updatedUser);
+      final int isSuccess = await ref
+          .read(userServiceProvider)
+          .updateUser(uid, updatedUser);
+      if (isSuccess == 0) {
+        _refreshUser();
+      }
+      return isSuccess;
     } catch (e) {
       debugPrint("Failed to updated User: $e");
       return 1;
@@ -95,6 +101,11 @@ class UserProfileViewModel extends AsyncNotifier<void> {
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
+  }
+
+  void _refreshUser() {
+    ref.invalidate(allUsersProvider);
+    ref.invalidate(userByIdProvider);
   }
 }
 
