@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:srv_paperless/core/theme/theme.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/firebase_options.dart';
+import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/views/login/login_screen.dart';
 import 'package:srv_paperless/views/user/user_home_screen.dart';
 import 'package:srv_paperless/core/routes/app_routes.dart';
@@ -19,7 +19,6 @@ void main() async {
 
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
-    // cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
 
   try {
@@ -31,15 +30,17 @@ void main() async {
 
   await checkB2Connection();
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final materialTheme = MaterialTheme(ThemeData.light().textTheme);
+    final authState = ref.watch(authProvider);
+
     return MaterialApp(
       title: 'SRV Paperless',
       theme: ThemeData(
@@ -49,21 +50,12 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: StreamBuilder<fb_auth.User?>(
-        stream: fb_auth.FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (snapshot.hasData) {
-            return const UserHomePage();
-          }
-          return const LoginScreen();
-        },
-      ),
+      home:
+          authState.isLoading
+              ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+              : (authState.currentUser != null
+                  ? const UserHomePage()
+                  : const LoginScreen()),
       routes: AppRoutes.routes,
     );
   }

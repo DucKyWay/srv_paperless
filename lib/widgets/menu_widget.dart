@@ -41,12 +41,16 @@ class MenuWidget extends ConsumerWidget {
                   Navigator.pushNamed(context, AppRoutes.userHome);
                 },
               ),
-              if(isUserDivisionBudget)...[
+              if (isUserDivisionBudget) ...[
                 ListTile(
                   leading: const Icon(Icons.book_outlined),
                   title: const Text("จัดการโครงการ"),
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.projectRequest),
-                )
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.projectRequest,
+                      ),
+                ),
               ],
               ListTile(
                 leading: const Icon(Icons.add_business_outlined),
@@ -62,14 +66,14 @@ class MenuWidget extends ConsumerWidget {
                   Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },
               ),
-              if(isUserRoleAdmin)...[
+              if (isUserRoleAdmin) ...[
                 ListTile(
                   leading: const Icon(Icons.admin_panel_settings_outlined),
                   title: const Text("ตั้งค่าผู้ดูแล"),
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.adminHome);
                   },
-                )
+                ),
               ],
               const Spacer(),
               const Divider(),
@@ -88,11 +92,11 @@ class MenuWidget extends ConsumerWidget {
                 ),
                 onTap: () async {
                   Navigator.of(context).pop();
-                  ref.read(authProvider.notifier).logout();
+                  await ref.read(authProvider.notifier).logout();
                   if (context.mounted) {
                     Navigator.of(
                       context,
-                    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+                    ).pushNamedAndRemoveUntil('/', (route) => false);
                   }
                 },
               ),

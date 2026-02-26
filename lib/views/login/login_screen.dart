@@ -18,7 +18,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   void _handleLogin() async {
-    if(ref.read(authProvider).isLoading) return;
+    if (ref.read(authProvider).isLoading) return;
 
     final authNotifier = ref.read(authProvider.notifier);
     await authNotifier.login(usernameController.text, passwordController.text);
@@ -30,13 +30,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final height = context.screenHeight;
     final authState = ref.watch(authProvider);
 
+    ref.listen(authProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!), backgroundColor: Colors.red),
+        );
+      }
+    });
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               width: width,
-              height: height * 0.35, // Change height following phone
+              height: height * 0.35,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiary,
                 borderRadius: const BorderRadius.only(
@@ -44,16 +52,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   bottomRight: Radius.circular(30),
                 ),
               ),
-              child: SafeArea( 
-                child: TitleNormal(title: "ระบบโครงการออนไลน์")
-              ),
+              child: SafeArea(child: TitleNormal(title: "ระบบโครงการออนไลน์")),
             ),
 
             Padding(
-              
               padding: EdgeInsets.symmetric(
-                horizontal: width * 0.08, 
-                vertical: 30
+                horizontal: width * 0.08,
+                vertical: 30,
               ),
               child: Column(
                 children: [
@@ -77,28 +82,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 40),
                   CustomButton(
                     height: 55,
-                    text: authState.isLoading
-                        ? SizedBox(
-                      height: 25,
-                      width: 25,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 3,
-                      ),
-                    )
-                        : Text(
-                      "เข้าสู่ระบบ",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
+                    text:
+                        authState.isLoading
+                            ? const SizedBox(
+                              height: 25,
+                              width: 25,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                            )
+                            : const Text(
+                              "เข้าสู่ระบบ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
                     onPressed: authState.isLoading ? null : _handleLogin,
                     border: 15,
-                    color: authState.isLoading
-                        ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6)
-                        : Theme.of(context).colorScheme.primaryContainer,
+                    color:
+                        authState.isLoading
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer.withOpacity(0.6)
+                            : Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ],
               ),
