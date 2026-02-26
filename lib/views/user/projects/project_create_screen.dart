@@ -36,6 +36,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   String? _fileName;
   DateTime? _dateTime;
   File? _selectedFile;
+  bool _isLoading = false;
 
   Future<void> _loadDraft() async {
     print(widget.draftId);
@@ -222,155 +223,175 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final width = context.screenWidth;
     return MenuWidget(
       title: HeaderLogoWithBackButton(),
-      child:  _isLoading ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              children: [
-                TitleSmall(
-                  title:
-                      widget.draftId != null ? "แก้ไขฉบับร่าง" : "ยื่นโครงการ",
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        label: "ชื่อโครงการ",
-                        hint: "",
-                        controller: projectNameController,
-                      ),
-                      SizedBox(height: 12),
-                      CustomTextField(
-                        label: "ประธานโครงการ",
-                        hint: "",
-                        controller: projectChairmanController,
-                      ),
-                      SizedBox(height: 12),
-                      CustomTextField(
-                        label: "เสนอโครงการวันที่",
-                        hint: "เลือกวันที่",
-                        controller: requestCreateDateController,
-                        readOnly: true,
-                        onTap: () => _showDatePicker(context),
-                      ),
-                      SizedBox(height: 12),
-                      CustomTextField(
-                        label: "จำนวนเงิน(บาท)",
-                        hint: "0.00",
-                        controller: budgetController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "แนบเอกสารโครงการ (PDF)",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+      child:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                child: SafeArea(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        TitleSmall(
+                          title:
+                              widget.draftId != null
+                                  ? "แก้ไขฉบับร่าง"
+                                  : "ยื่นโครงการ",
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.08,
                           ),
-                          SizedBox(height: 8),
-                          InkWell(
-                            onTap: _pickPDF,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 15,
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                label: "ชื่อโครงการ",
+                                hint: "",
+                                controller: projectNameController,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                border: Border.all(color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(10),
+                              SizedBox(height: 12),
+                              CustomTextField(
+                                label: "ประธานโครงการ",
+                                hint: "",
+                                controller: projectChairmanController,
                               ),
-                              child: Row(
+                              SizedBox(height: 12),
+                              CustomTextField(
+                                label: "เสนอโครงการวันที่",
+                                hint: "เลือกวันที่",
+                                controller: requestCreateDateController,
+                                readOnly: true,
+                                onTap: () => _showDatePicker(context),
+                              ),
+                              SizedBox(height: 12),
+                              CustomTextField(
+                                label: "จำนวนเงิน(บาท)",
+                                hint: "0.00",
+                                controller: budgetController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.picture_as_pdf, color: Colors.red),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      _fileName ?? "คลิกเพื่อเลือกไฟล์ PDF",
-                                      style: TextStyle(
-                                        color:
-                                            _fileName == null
-                                                ? Colors.grey
-                                                : Colors.black,
-                                        overflow: TextOverflow.ellipsis,
+                                  Text(
+                                    "แนบเอกสารโครงการ (PDF)",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  InkWell(
+                                    onTap: _pickPDF,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 15,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        border: Border.all(
+                                          color: Colors.grey.shade400,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.picture_as_pdf,
+                                            color: Colors.red,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              _fileName ??
+                                                  "คลิกเพื่อเลือกไฟล์ PDF",
+                                              style: TextStyle(
+                                                color:
+                                                    _fileName == null
+                                                        ? Colors.grey
+                                                        : Colors.black,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                          if (_fileName != null)
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.close,
+                                                size: 20,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _fileName = null;
+                                                  _selectedFile = null;
+                                                });
+                                              },
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  if (_fileName != null)
-                                    IconButton(
-                                      icon: const Icon(Icons.close, size: 20),
-                                      onPressed: () {
-                                        setState(() {
-                                          _fileName = null;
-                                          _selectedFile = null;
-                                        });
-                                      },
-                                    ),
                                 ],
                               ),
-                            ),
+                              SizedBox(height: 20),
+                              CustomButton(
+                                height: 55,
+                                text: const Text(
+                                  "บันทึกฉบับร่าง",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                border: 15,
+                                color: Color(0xff3A6BB5),
+                                onPressed:
+                                    () => showDialog(
+                                      context: context,
+                                      builder:
+                                          (_) => AlertConfirmWidget(
+                                            title:
+                                                "คุณต้องการบันทึกฉบับร่างหรือไม่",
+                                            onConfirm:
+                                                () =>
+                                                    _handleSave(isDraft: true),
+                                          ),
+                                    ),
+                              ),
+                              SizedBox(height: 20),
+                              CustomButton(
+                                height: 55,
+                                text: const Text(
+                                  "สร้างโครงการ",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                border: 15,
+                                color: Color(0xff3A9AB5),
+                                onPressed:
+                                    () => showDialog(
+                                      context: context,
+                                      builder:
+                                          (_) => AlertConfirmWidget(
+                                            title:
+                                                "คุณต้องการสร้างโครงการหรือไม่",
+                                            onConfirm:
+                                                () =>
+                                                    _handleSave(isDraft: false),
+                                          ),
+                                    ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      CustomButton(
-                        height: 55,
-                        text: const Text(
-                          "บันทึกฉบับร่าง",
-                          style: TextStyle(color: Colors.white),
                         ),
-                        border: 15,
-                        color: Color(0xff3A6BB5),
-                        onPressed:
-                            () => showDialog(
-                              context: context,
-                              builder:
-                                  (_) => AlertConfirmWidget(
-                                    title: "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                    onConfirm: () => _handleSave(isDraft: true),
-                                  ),
-                            ),
-                      ),
-                      SizedBox(height: 20),
-                      CustomButton(
-                        height: 55,
-                        text: const Text(
-                          "สร้างโครงการ",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        border: 15,
-                        color: Color(0xff3A9AB5),
-                        onPressed:
-                            () => showDialog(
-                              context: context,
-                              builder:
-                                  (_) => AlertConfirmWidget(
-                                    title: "คุณต้องการสร้างโครงการหรือไม่",
-                                    onConfirm:
-                                        () => _handleSave(isDraft: false),
-                                  ),
-                            ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
     );
   }
 

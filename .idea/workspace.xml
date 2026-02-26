@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="19a98d71-4b7e-4771-92a3-b653e8ae1f02" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/model/project_location_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/model/project_location_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/project/card_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/project/card_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/project/project_list_view_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/project/project_list_view_widget.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +80,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/create-page-approved",
+    "git-widget-placeholder": "feature/admin",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
