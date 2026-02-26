@@ -69,9 +69,16 @@ class MenuWidget extends ConsumerWidget {
               if (isUserRoleAdmin) ...[
                 ListTile(
                   leading: const Icon(Icons.admin_panel_settings_outlined),
-                  title: const Text("ตั้งค่าผู้ดูแล"),
+                  title: const Text("จัดการข้อมูลระบบ"),
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.adminHome);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.admin_panel_settings_outlined),
+                  title: const Text("จัดการบัญชีผู้ใช้"),
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.adminManageUsers);
                   },
                 ),
               ],

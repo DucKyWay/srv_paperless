@@ -28,6 +28,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             children: [
               TitleNormal(des: "การตั้งค่าสำหรับผู้ดูแลระบบ"),
               _card(context, "จัดการผู้ใช้งาน", AppRoutes.adminManageUsers, Colors.blue.shade700),
+              _card(context, "จัดการฝ่ายงาน", AppRoutes.adminHome, Colors.blue.shade700),
+              _card(context, "จัดการกลุ่มสาระ", AppRoutes.adminHome, Colors.blue.shade700),
+              _card(context, "จัดการตำแหน่งาน", AppRoutes.adminHome, Colors.blue.shade700),
             ],
           ),
         ),
@@ -37,7 +40,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
 
   Widget _card(BuildContext context, String label, String routes, Color buttonColor) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
       decoration: BoxDecoration(
