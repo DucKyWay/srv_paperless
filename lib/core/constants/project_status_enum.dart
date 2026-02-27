@@ -2,6 +2,8 @@ enum ProjectStatus {
   draft("ฉบับร่าง"),
   pending("รออนุมัติ"),
   approve("อนุมัติ"),
+  started("เริ่มโครงการ"),
+  finished("เสร็จสิ้น"),
   rejected("ไม่อนุมัติ");
 
   final String label;
