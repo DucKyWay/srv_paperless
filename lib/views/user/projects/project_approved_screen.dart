@@ -35,7 +35,7 @@ class _ProjectApprovedState extends ConsumerState<ProjectApproved> {
                 child: ProjectListViewWidget(
                   projectsAsync: approvedProjects,
                   emptyMessage: "ยังไม่มีรายการที่อนุมัติ",
-                  routePath: AppRoutes.projectRequest,
+                  routePath: AppRoutes.projectApprovedSubmit,
                     onRefresh: () async {
                       ref.invalidate(approvedProjectsProvider);
                     }

@@ -8,6 +8,7 @@ import 'package:srv_paperless/views/user/projects/project_approved_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
 
 import '../../views/login/login_screen.dart';
+import '../../views/user/projects/project_approved_submit_screen.dart';
 import '../../views/user/projects/project_draft_screen.dart';
 import '../../views/user/projects/project_pending_reject_screen.dart';
 import '../../views/user/user_home_screen.dart';
@@ -32,11 +33,11 @@ class AppRoutes {
 
   //Project/ Project Approved
   static const projectApproved = '/projects/projectApproved';
+  static const projectApprovedSubmit = '/projects/projectApprovedSubmit';
 
   // Admin
   static const adminHome = '/admin/home';
   static const adminManageUsers = '/admin/manage/users';
-
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
     userHome: (context) => const UserHomePage(),
@@ -47,6 +48,13 @@ class AppRoutes {
     projectCreate: (context) => const ProjectCreateScreen(),
     projectPendingAndReject: (context) => const ProjectPendingAndRejectScreen(),
     projectApproved: (context) => const ProjectApproved(),
+    projectApprovedSubmit:(context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectApprovedSubmitScreen(projectId: args,);
+      }
+      return const ProjectApproved();
+    },
     projectDraft: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args != null && args is String) {
