@@ -14,13 +14,16 @@ class DivisionsViewModel extends AsyncNotifier<void> {
 }
 
 final allDivisions = FutureProvider<List<Divisions>>((ref) {
+  ref.keepAlive();
   return ref.watch(divisionsServiceProvider).getAllDivisions();
 });
 
 final divisionsById = FutureProvider.family<Divisions?, String>((ref, id) {
+  ref.keepAlive();
   return ref.watch(divisionsServiceProvider).getDivisionById(id);
 });
 
 final divisionsByKey = FutureProvider.family<Divisions?, String>((ref, key) {
+  ref.keepAlive();
   return ref.watch(divisionsServiceProvider).getDivisionByKey(key);
 });

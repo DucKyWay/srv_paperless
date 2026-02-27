@@ -5,14 +5,14 @@ import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import '../core/routes/app_routes.dart';
 
 class MenuWidget extends ConsumerWidget {
-  final Widget child;
   final Widget title;
+  final Widget child;
   final Widget? floatingActionButton;
 
   const MenuWidget({
     super.key,
-    required this.child,
     required this.title,
+    required this.child,
     this.floatingActionButton,
   });
 

@@ -15,6 +15,7 @@ class EmployeeStatusViewModel extends AsyncNotifier<void> {
 }
 
 final allEmployeeStatus = FutureProvider<List<EmployeeStatus>>((ref) {
+  ref.keepAlive();
   return ref.watch(employeeStatusServiceProvider).getAllEmployeeStatus();
 });
 
@@ -22,6 +23,7 @@ final employeeStatusById = FutureProvider.family<EmployeeStatus?, String>((
   ref,
   id,
 ) {
+  ref.keepAlive();
   return ref.watch(employeeStatusServiceProvider).getEmployeeStatusById(id);
 });
 
@@ -29,5 +31,6 @@ final employeeStatusByKey = FutureProvider.family<EmployeeStatus?, String>((
   ref,
   key,
 ) {
+  ref.keepAlive();
   return ref.watch(employeeStatusServiceProvider).getEmployeeStatusByKey(key);
 });

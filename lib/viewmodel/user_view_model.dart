@@ -32,35 +32,6 @@ class UserProfileViewModel extends AsyncNotifier<void> {
     }
   }
 
-  Future<List<User>> getAllUsers() async {
-    try {
-      return await ref.read(userServiceProvider).getAllUsers();
-    } catch (e) {
-      if (kDebugMode) print("Failed to get Users: $e");
-      return [];
-    }
-  }
-
-  Future<User?> getUserById(String id) async {
-    if (id.isEmpty) return null;
-
-    try {
-      return await ref.read(userServiceProvider).getUserById(id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<User?> getUserByUsername(String username) async {
-    if (username.isEmpty) return null;
-
-    try {
-      return await ref.read(userServiceProvider).getUserByUsername(username);
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<void> updateProfileImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
@@ -122,13 +93,21 @@ class UserProfileViewModel extends AsyncNotifier<void> {
   void _refreshUser() {
     ref.invalidate(allUsersProvider);
     ref.invalidate(userByIdProvider);
+    ref.invalidate(userByUsernameProvider);
   }
 }
 
 final allUsersProvider = FutureProvider<List<User>>((ref) {
+  ref.keepAlive();
   return ref.watch(userServiceProvider).getAllUsers();
 });
 
 final userByIdProvider = FutureProvider.family<User?, String>((ref, id) {
+  ref.keepAlive();
   return ref.watch(userServiceProvider).getUserById(id);
+});
+
+final userByUsernameProvider = FutureProvider.family<User?, String>((ref, username) {
+  ref.keepAlive();
+  return ref.watch(userServiceProvider).getUserByUsername(username);
 });

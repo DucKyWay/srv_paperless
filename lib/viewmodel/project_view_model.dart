@@ -94,6 +94,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
 }
 
 final allProjectsProvider = FutureProvider<List<Project>>((ref) {
+  ref.keepAlive();
   return ref.watch(projectServiceProvider).getProjectAll();
 });
 
@@ -116,11 +117,11 @@ final draftProjectsProvider = FutureProvider.family<List<Project>, String>((
   ref,
   userId,
 ) {
-  // ใช้ keepAlive เพื่อเก็บข้อมูลไว้ใน cache ไม่ต้องโหลดใหม่ทุกครั้งที่สลับหน้า
   ref.keepAlive();
   return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
 });
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {
+  ref.keepAlive();
   return ref.watch(projectServiceProvider).getProjectById(id);
 });

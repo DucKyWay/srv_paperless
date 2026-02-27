@@ -68,12 +68,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     children: [
-                      SizedBox(height: 24),
                       Image.asset(
                         "${AppConstants.imagePath}/srv-logo.png",
                         fit: BoxFit.cover,
                       ),
-                      SizedBox(height: 24),
+                      SizedBox(height: 12),
                       Text(
                         "ระบบโครงการออนไลน์",
                         style: TextStyle(

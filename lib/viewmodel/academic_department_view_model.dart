@@ -14,13 +14,16 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
 }
 
 final allAcademicDepartment = FutureProvider<List<AcademicDepartment>>((ref) {
+  ref.keepAlive();
   return ref.watch(academicDepartmentServiceProvider).getAllAcademicDepartments();
 });
 
 final academicDepartmentById = FutureProvider.family<AcademicDepartment?, String>((ref, id) {
+  ref.keepAlive();
   return ref.watch(academicDepartmentServiceProvider).getAcademicDepartmentById(id);
 });
 
 final academicDepartmentByKey = FutureProvider.family<AcademicDepartment?, String>((ref, key) {
+  ref.keepAlive();
   return ref.watch(academicDepartmentServiceProvider).getAcademicDepartmentByKey(key);
 });
