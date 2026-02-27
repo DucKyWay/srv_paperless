@@ -62,10 +62,12 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
                       (it) => _card(
                         context,
                         it.label,
-                        () { // Edit
+                        () {
+                          // Edit
                           // TODO: edit
                         },
-                        () { // Delete
+                        () {
+                          // Delete
                           //TODO: delete + it.id
                         },
                       ),
@@ -88,7 +90,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((d) => ConfigItem(id: d.id, label: d.label ?? "-"))
+                      .map((d) => ConfigItem(id: d.id!, label: d.label))
                       .toList(),
             );
 
@@ -98,7 +100,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((a) => ConfigItem(id: a.id!, label: a.label ?? "-"))
+                      .map((a) => ConfigItem(id: a.id!, label: a.label))
                       .toList(),
             );
 
@@ -108,7 +110,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((s) => ConfigItem(id: s.id, label: s.label ?? "-"))
+                      .map((s) => ConfigItem(id: s.id!, label: s.label))
                       .toList(),
             );
     }

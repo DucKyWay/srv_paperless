@@ -1,9 +1,9 @@
 class Divisions {
-  final String id;
+  String? id;
   final String key;
   final String label;
 
-  Divisions({required this.id, required this.key, required this.label});
+  Divisions({this.id, required this.key, required this.label});
 
   Divisions copyWith({String? id, String? key, String? label}) {
     return Divisions(

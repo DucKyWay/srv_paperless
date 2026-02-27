@@ -25,8 +25,12 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
 
     if (success == 0) {
       debugPrint("Create Academic Department");
+      return ref
+          .read(academicDepartmentServiceProvider)
+          .getAcademicDepartmentByKey(key);
     } else {
       debugPrint("Failed to create academic department");
+      return null;
     }
   }
 
@@ -47,10 +51,12 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
   }
 
   Future<void> deleteAcademicDepartment(String id) async {
-    if(id.isEmpty) {
+    if (id.isEmpty) {
       debugPrint("ID cannot empty");
     } else {
-      await ref.read(academicDepartmentServiceProvider).deleteAcademicDepartment(id);
+      await ref
+          .read(academicDepartmentServiceProvider)
+          .deleteAcademicDepartment(id);
     }
   }
 }

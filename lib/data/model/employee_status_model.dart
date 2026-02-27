@@ -1,9 +1,9 @@
 class EmployeeStatus {
-  final String id;
+  String? id;
   final String key;
   final String label;
 
-  EmployeeStatus({required this.id, required this.key, required this.label});
+  EmployeeStatus({this.id, required this.key, required this.label});
 
   EmployeeStatus copyWith({String? id, String? key, String? label}) {
     return EmployeeStatus(
