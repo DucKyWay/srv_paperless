@@ -15,6 +15,15 @@ class AcademicDepartmentService {
   Future<AcademicDepartment?> getAcademicDepartmentByKey(String key) async {
     return await academicDepartmentRepo.fetchAcademicDepartmentByKey(key);
   }
+  Future<int> createAcademicDepartment(AcademicDepartment ad) async {
+    return await academicDepartmentRepo.create(ad);
+  }
+  Future<int> updateAcademicDepartment(String uid, AcademicDepartment ad) async {
+    return await academicDepartmentRepo.update(uid, ad);
+  }
+  Future<int> deleteAcademicDepartment(String uid) async {
+    return await academicDepartmentRepo.delete(uid);
+  }
 }
 
 final academicDepartmentServiceProvider = Provider<AcademicDepartmentService>((ref) {

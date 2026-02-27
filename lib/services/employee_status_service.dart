@@ -16,6 +16,15 @@ class EmployeeStatusService {
   Future<EmployeeStatus?> getEmployeeStatusByKey(String key) async {
     return await employeeStatusRepo.fetchEmployeeStatusByKey(key);
   }
+  Future<int> createEmployeeStatus(EmployeeStatus es) async {
+    return await employeeStatusRepo.create(es);
+  }
+  Future<int> updateEmployeeStatus(String uid, EmployeeStatus es) async {
+    return await employeeStatusRepo.update(uid, es);
+  }
+  Future<int> deleteEmployeeStatus(String uid) async {
+    return await employeeStatusRepo.delete(uid);
+  }
 }
 
 final employeeStatusServiceProvider = Provider<EmployeeStatusService>((ref) {

@@ -48,8 +48,17 @@ class _AdminManageUsersScreenState
                           border: Border.all(color: Colors.black45, width: 1.0),
                         ),
                         child: ListTile(
-                          title: Text(user.fullname),
-                          subtitle: Text(division.value?.label ?? ''),
+                          title: Expanded(
+                            child: Text(
+                              user.fullname,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          subtitle: Expanded(
+                            child: Text(division.value?.label ?? ''),
+                          ),
+                          //TODO: use profile image?
                           leading: Icon(Icons.person),
                           tileColor: Colors.white,
                           trailing: Row(

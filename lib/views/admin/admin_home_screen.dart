@@ -85,6 +85,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           Expanded(
             child: Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -96,7 +98,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             border: 15,
             color: buttonColor,
             onPressed:
-                () => Navigator.pushNamed(context, routes,  arguments: param?.name),
+                () => Navigator.pushNamed(
+                  context,
+                  routes,
+                  arguments: param,
+                ),
           ),
         ],
       ),

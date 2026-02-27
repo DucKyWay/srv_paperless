@@ -17,6 +17,15 @@ class DivisionsService {
   Future<Divisions?> getDivisionByKey(String key) async {
     return await divisionsRepo.fetchDivisionByKey(key);
   }
+  Future<int> createDivisions(Divisions d) async {
+    return await divisionsRepo.create(d);
+  }
+  Future<int> updateDivisions(String uid, Divisions d) async {
+    return await divisionsRepo.update(uid, d);
+  }
+  Future<int> deleteDivisions(String uid) async {
+    return await divisionsRepo.delete(uid);
+  }
 }
 
 final divisionsServiceProvider = Provider<DivisionsService>((ref) {

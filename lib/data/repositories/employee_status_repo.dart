@@ -6,6 +6,9 @@ abstract class EmployeeStatusRepository {
   Future<List<EmployeeStatus>> fetchAllEmployeeStatus();
   Future<EmployeeStatus?> fetchEmployeeStatusById(String id);
   Future<EmployeeStatus?> fetchEmployeeStatusByKey(String key);
+  Future<int> create(EmployeeStatus es);
+  Future<int> update(String uid, EmployeeStatus newEs);
+  Future<int> delete(String uid);
 }
 
 class EmployeeStatusRepositoryImpl implements EmployeeStatusRepository {
@@ -43,6 +46,44 @@ class EmployeeStatusRepositoryImpl implements EmployeeStatusRepository {
     return snapshot.docs.map((doc) {
       return EmployeeStatus.fromMap(doc.data(), doc.id);
     }).toList();
+  }
+  
+  @override
+  Future<int> create(EmployeeStatus es) async {
+    try {
+      final doc = _db.collection('employee_status').doc();
+      final newEs = es.copyWith(id: doc.id);
+      await doc.set(newEs.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  @override
+  Future<int> delete(String uid) async {
+    try {
+      final es = await fetchEmployeeStatusById(uid);
+
+      if(es != null) {
+        await _db.collection('employee_status').doc(uid).delete();
+        return 0;
+      } else {
+        return 1;
+      }
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  @override
+  Future<int> update(String uid, EmployeeStatus newEs) async {
+    try {
+      await _db.collection('employee_status').doc(uid).update(newEs.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
+    }
   }
 }
 

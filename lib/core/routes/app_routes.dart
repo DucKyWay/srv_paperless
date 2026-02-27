@@ -74,7 +74,7 @@ class AppRoutes {
     },
     adminManageData: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
-      if (args != null && args is String) {
+      if (args is ConfigMode) {
         return AdminManageDataScreen(mode: args);
       }
       return const AdminHomeScreen();
