@@ -251,7 +251,7 @@
     },
     {
       "name": "meta",
-      "version": "1.17.0",
+      "version": "1.16.0",
       "dependencies": []
     },
     {
@@ -302,7 +302,7 @@
     },
     {
       "name": "matcher",
-      "version": "0.12.18",
+      "version": "0.12.17",
       "dependencies": [
         "async",
         "meta",
@@ -313,7 +313,7 @@
     },
     {
       "name": "test_api",
-      "version": "0.7.8",
+      "version": "0.7.6",
       "dependencies": [
         "async",
         "boolean_selector",
@@ -695,14 +695,14 @@
     },
     {
       "name": "material_color_utilities",
-      "version": "0.13.0",
+      "version": "0.11.1",
       "dependencies": [
         "collection"
       ]
     },
     {
       "name": "characters",
-      "version": "1.4.1",
+      "version": "1.4.0",
       "dependencies": []
     },
     {
@@ -972,7 +972,7 @@
     },
     {
       "name": "test",
-      "version": "1.28.0",
+      "version": "1.26.2",
       "dependencies": [
         "analyzer",
         "async",
@@ -981,6 +981,7 @@
         "coverage",
         "http_multi_server",
         "io",
+        "js",
         "matcher",
         "node_preamble",
         "package_config",
@@ -1003,7 +1004,7 @@
     },
     {
       "name": "test_core",
-      "version": "0.6.14",
+      "version": "0.6.11",
       "dependencies": [
         "analyzer",
         "args",
@@ -1024,6 +1025,23 @@
         "stack_trace",
         "stream_channel",
         "test_api",
+        "vm_service",
+        "yaml"
+      ]
+    },
+    {
+      "name": "coverage",
+      "version": "1.15.0",
+      "dependencies": [
+        "args",
+        "cli_config",
+        "glob",
+        "logging",
+        "meta",
+        "package_config",
+        "path",
+        "source_maps",
+        "stack_trace",
         "vm_service",
         "yaml"
       ]
@@ -1125,23 +1143,6 @@
       ]
     },
     {
-      "name": "coverage",
-      "version": "1.15.0",
-      "dependencies": [
-        "args",
-        "cli_config",
-        "glob",
-        "logging",
-        "meta",
-        "package_config",
-        "path",
-        "source_maps",
-        "stack_trace",
-        "vm_service",
-        "yaml"
-      ]
-    },
-    {
       "name": "source_maps",
       "version": "0.10.13",
       "dependencies": [
@@ -1177,13 +1178,6 @@
       ]
     },
     {
-      "name": "web_socket",
-      "version": "1.0.1",
-      "dependencies": [
-        "web"
-      ]
-    },
-    {
       "name": "cli_config",
       "version": "0.2.0",
       "dependencies": [
@@ -1192,8 +1186,20 @@
       ]
     },
     {
+      "name": "web_socket",
+      "version": "1.0.1",
+      "dependencies": [
+        "web"
+      ]
+    },
+    {
+      "name": "js",
+      "version": "0.7.2",
+      "dependencies": []
+    },
+    {
       "name": "analyzer",
-      "version": "9.0.0",
+      "version": "7.7.1",
       "dependencies": [
         "_fe_analyzer_shared",
         "collection",
@@ -1226,7 +1232,7 @@
     },
     {
       "name": "_fe_analyzer_shared",
-      "version": "92.0.0",
+      "version": "85.0.0",
       "dependencies": [
         "meta"
       ]
