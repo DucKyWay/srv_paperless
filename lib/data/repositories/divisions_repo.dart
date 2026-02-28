@@ -6,6 +6,9 @@ abstract class DivisionsRepository {
   Future<List<Divisions>> fetchAllDivisions();
   Future<Divisions?> fetchDivisionById(String id);
   Future<Divisions?> fetchDivisionByKey(String key);
+  Future<int> create(Divisions d);
+  Future<int> update(String uid, Divisions newD);
+  Future<int> delete(String uid);
 }
 
 class DivisionsRepositoryImpl implements DivisionsRepository {
@@ -43,6 +46,44 @@ class DivisionsRepositoryImpl implements DivisionsRepository {
     return snapshot.docs.map((doc) {
       return Divisions.fromMap(doc.data(), doc.id);
     }).toList();
+  }
+  
+  @override
+  Future<int> create(Divisions d) async {
+    try {
+      final doc = _db.collection('divisions').doc();
+      final newD = d.copyWith(id: doc.id);
+      await doc.set(newD.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  @override
+  Future<int> delete(String uid) async {
+    try {
+      final d = await fetchDivisionById(uid);
+
+      if(d != null) {
+        await _db.collection('divisions').doc(uid).delete();
+        return 0;
+      } else {
+        return 1;
+      }
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  @override
+  Future<int> update(String uid, Divisions newD) async {
+    try {
+      await _db.collection('divisions').doc(uid).update(newD.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
+    }
   }
 }
 

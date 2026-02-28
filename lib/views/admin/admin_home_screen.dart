@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/views/admin/admin_manage_data_screen.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
@@ -27,7 +28,34 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TitleNormal(des: "การตั้งค่าสำหรับผู้ดูแลระบบ"),
-              _card(context, "จัดการผู้ใช้งาน", AppRoutes.adminManageUsers, Colors.blue.shade700),
+              _card(
+                context,
+                "จัดการผู้ใช้งาน",
+                AppRoutes.adminManageUsers,
+                null,
+                Colors.blue.shade700,
+              ),
+              _card(
+                context,
+                "จัดการฝ่ายงาน",
+                AppRoutes.adminManageData,
+                ConfigMode.divisions,
+                Colors.blue.shade700,
+              ),
+              _card(
+                context,
+                "จัดการกลุ่มสาระ",
+                AppRoutes.adminManageData,
+                ConfigMode.academicDepartment,
+                Colors.blue.shade700,
+              ),
+              _card(
+                context,
+                "จัดการตำแหน่งงาน",
+                AppRoutes.adminManageData,
+                ConfigMode.employeeStatus,
+                Colors.blue.shade700,
+              ),
             ],
           ),
         ),
@@ -35,9 +63,15 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
     );
   }
 
-  Widget _card(BuildContext context, String label, String routes, Color buttonColor) {
+  Widget _card(
+    BuildContext context,
+    String label,
+    String routes,
+    ConfigMode? param,
+    Color buttonColor,
+  ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
       decoration: BoxDecoration(
@@ -51,6 +85,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           Expanded(
             child: Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -61,7 +97,12 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             text: const Text("จัดการ", style: TextStyle(color: Colors.white)),
             border: 15,
             color: buttonColor,
-            onPressed: () => Navigator.pushNamed(context, routes),
+            onPressed:
+                () => Navigator.pushNamed(
+                  context,
+                  routes,
+                  arguments: param,
+                ),
           ),
         ],
       ),

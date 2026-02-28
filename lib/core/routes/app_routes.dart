@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/views/admin/admin_home_screen.dart';
+import 'package:srv_paperless/views/admin/admin_manage_data_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';
 import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
@@ -29,13 +30,13 @@ class AppRoutes {
   // Project / pending and reject
   static const projectPendingAndReject = '/project/pendingAndReject';
 
-
   //Project/ Project Approved
   static const projectApproved = '/projects/projectApproved';
 
   // Admin
   static const adminHome = '/admin/home';
   static const adminManageUsers = '/admin/manage/users';
+  static const adminManageData = '/admin/manage/data';
 
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
@@ -66,10 +67,17 @@ class AppRoutes {
     adminHome: (context) => const AdminHomeScreen(),
     adminManageUsers: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
-      if(args != null && args is String) {
+      if (args != null && args is String) {
         return AdminManageUserScreen(userId: args);
       }
       return const AdminManageUsersScreen();
-    }
+    },
+    adminManageData: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is ConfigMode) {
+        return AdminManageDataScreen(mode: args);
+      }
+      return const AdminHomeScreen();
+    },
   };
 }

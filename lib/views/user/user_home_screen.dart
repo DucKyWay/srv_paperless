@@ -53,20 +53,44 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               TitleNormal(title: "หน้าแรก", des: "สรุปผลเบื้องต้น"),
 
               if (isUserDivisionBudget) ...[
-                card(context, "คำขออนุมัติโครงการ", 6, () {
-                  Navigator.pushNamed(context, AppRoutes.projectRequest);
-                }),
-                card(context, "ติดตามผลโครงการ", 6, () {}),
-                card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 6, () {}),
+                _card(
+                  context,
+                  "คำขออนุมัติโครงการ",
+                  6,
+                  Colors.blue.shade50,
+                  () {
+                    Navigator.pushNamed(context, AppRoutes.projectRequest);
+                  },
+                ),
+                _card(
+                  context,
+                  "ติดตามผลโครงการ",
+                  6,
+                  Colors.orange.shade50,
+                  () {},
+                ),
+                _card(
+                  context,
+                  "สรุปโครงการที่ดำเนินการสำเร็จ",
+                  6,
+                  Colors.green.shade50,
+                  () {},
+                ),
               ],
 
-              card(context, "ยื่นโครงการ", 1, () {
+              _card(context, "ยื่นโครงการ", 1, Colors.blue.shade50, () {
                 Navigator.pushNamed(context, AppRoutes.projectPendingAndReject);
               }),
-              card(context, "ติดตามโครงการ", 2, () {
+              _card(context, "ติดตามโครงการ", 2, Colors.orange.shade50, () {
                 Navigator.pushNamed(context, AppRoutes.projectApproved);
               }),
-              card(context, "สรุปโครงการที่ดำเนินการสำเร็จ", 3, () {}),
+              _card(
+                context,
+                "สรุปโครงการที่ดำเนินการสำเร็จ",
+                3,
+                Colors.green.shade50,
+                () {},
+              ),
             ],
           ),
         ),
@@ -74,16 +98,22 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     );
   }
 
-  Widget card(BuildContext context, String text, int num, VoidCallback onTap) {
+  Widget _card(
+    BuildContext context,
+    String text,
+    int num,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.5),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Container(
           width: MediaQuery.of(context).size.width * 0.85,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: color,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.black, width: 1.0),
           ),
@@ -92,13 +122,18 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 12),
                 Text(
                   '$num',
                   style: const TextStyle(

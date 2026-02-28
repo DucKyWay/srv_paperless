@@ -79,6 +79,12 @@ class CommentViewModel extends AsyncNotifier<void> {
   }
 }
 
+// final allComments = FutureProvider<List<Comment>>((ref) {
+//   ref.keepAlive();
+//   return ref.watch(commentsServiceProvider).getAllComments();
+// });
+
 final commentByProjectId = FutureProvider.family<List<Comment>, String>((ref, id) {
+  ref.keepAlive();
   return ref.watch(commentsServiceProvider).getCommentsByProjectId(id);
 });

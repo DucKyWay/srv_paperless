@@ -1,9 +1,17 @@
 class Divisions {
-  final String id;
+  String? id;
   final String key;
   final String label;
 
-  Divisions({required this.id, required this.key, required this.label});
+  Divisions({this.id, required this.key, required this.label});
+
+  Divisions copyWith({String? id, String? key, String? label}) {
+    return Divisions(
+      id: id ?? this.id,
+      key: key ?? this.key,
+      label: label ?? this.label,
+    );
+  }
 
   factory Divisions.fromMap(Map<String, dynamic> map, String docId) {
     return Divisions(

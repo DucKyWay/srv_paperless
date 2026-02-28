@@ -4,7 +4,6 @@ import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
-import 'package:srv_paperless/data/model/user_model.dart';
 
 import '../../data/minio.dart';
 import '../../viewmodel/user_view_model.dart';

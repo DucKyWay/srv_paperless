@@ -146,10 +146,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: isLoading ? null : _handleLogin,
                     border: 15,
                     color: isLoading
-                        ? Theme.of(context)
-                            .colorScheme
-                            .primaryContainer
-                            .withOpacity(0.6)
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.primaryContainer.withOpacity(0.6)
                         : Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ],

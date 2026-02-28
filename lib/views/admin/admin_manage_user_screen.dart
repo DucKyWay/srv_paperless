@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:srv_paperless/data/model/user_model.dart';
 import 'package:srv_paperless/viewmodel/academic_department_view_model.dart';
 import 'package:srv_paperless/viewmodel/employee_status_view_model.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
@@ -27,61 +25,55 @@ class AdminManageUserScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
-  final TextEditingController userFirstnameController = TextEditingController();
-  final TextEditingController userLastnameController = TextEditingController();
-  final TextEditingController userEmployeeStatusController =
-      TextEditingController();
-  final TextEditingController userAcademicDepartmentController =
-      TextEditingController();
-  final TextEditingController userDivisionsController = TextEditingController();
-  final TextEditingController userHomeroomClassController =
-      TextEditingController();
+  final userFirstnameController = TextEditingController();
+  final userLastnameController = TextEditingController();
+  final userHomeroomClassController = TextEditingController();
 
-  Future<void> _loadData() async {
-    debugPrint("User: ${widget.userId}");
-    final userData = await ref.read(userByIdProvider(widget.userId).future);
+  String? selectedEmployeeStatus;
+  String? selectedAcademicDepartment;
+  String? selectedDivision;
 
-    if (userData != null) {
-      userFirstnameController.text = userData.firstname;
-      userLastnameController.text = userData.lastname;
-      userEmployeeStatusController.text = userData.employeeStatus;
-      userAcademicDepartmentController.text = userData.academicDepartment;
-      userDivisionsController.text = userData.divisions;
-      userHomeroomClassController.text = userData.homeroomClass;
-    }
+  bool _initialized = false;
 
-    setState(() {});
+  @override
+  void dispose() {
+    userFirstnameController.dispose();
+    userLastnameController.dispose();
+    userHomeroomClassController.dispose();
+    super.dispose();
   }
 
   Future<void> _saveUserHandler() async {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
-      final currentUser = ref.read(userByIdProvider(widget.userId)).value;
+      final currentUser =
+          await ref.read(userByIdProvider(widget.userId).future);
 
-      if (currentUser != null) {
-        final updatedData = currentUser.copyWith(
-          firstname: userFirstnameController.text.trim(),
-          lastname: userLastnameController.text.trim(),
-          employeeStatus: userEmployeeStatusController.text,
-          academicDepartment: userAcademicDepartmentController.text,
-          divisions: userDivisionsController.text,
-          homeroomClass: userHomeroomClassController.text.trim(),
-        );
+      if (currentUser == null) return;
 
-        await ref
-            .read(userProvider.notifier)
-            .updateUser(widget.userId, updatedData);
+      final updatedData = currentUser.copyWith(
+        firstname: userFirstnameController.text.trim(),
+        lastname: userLastnameController.text.trim(),
+        employeeStatus: selectedEmployeeStatus,
+        academicDepartment: selectedAcademicDepartment,
+        divisions: selectedDivision,
+        homeroomClass: userHomeroomClassController.text.trim(),
+      );
 
-        await ref.read(userProvider.notifier).getAllUsers();
-        if (mounted) {
-          Navigator.pop(context);
-          Navigator.pop(context);
-        }
+      await ref
+          .read(userProvider.notifier)
+          .updateUser(widget.userId, updatedData);
+
+      ref.watch(allUsersProvider);
+
+      if (mounted) {
+        Navigator.pop(context); // close loading
+        Navigator.pop(context); // back
       }
     } catch (e) {
       if (mounted) Navigator.pop(context);
@@ -89,182 +81,156 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    Future.microtask(() {
-      _loadData();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
 
+    final userAsync = ref.watch(userByIdProvider(widget.userId));
     final divisionsAsync = ref.watch(allDivisions);
     final academicAsync = ref.watch(allAcademicDepartment);
     final statusAsync = ref.watch(allEmployeeStatus);
-
-    final userAsync = ref.watch(userByIdProvider(widget.userId));
 
     return MenuWidget(
       title: HeaderWithBackButton(),
       child: userAsync.when(
         data: (user) {
-          if (user == null)
+          if (user == null) {
             return const Center(child: Text("ไม่พบข้อมูลผู้ใช้"));
+          }
+
+          // initialize only once
+          if (!_initialized) {
+            userFirstnameController.text = user.firstname;
+            userLastnameController.text = user.lastname;
+            userHomeroomClassController.text = user.homeroomClass;
+
+            selectedEmployeeStatus = user.employeeStatus;
+            selectedAcademicDepartment = user.academicDepartment;
+            selectedDivision = user.divisions;
+
+            _initialized = true;
+          }
 
           return SingleChildScrollView(
             child: SafeArea(
               child: Center(
-                child: Column(
-                  children: [
-                    TitleNormal(des: "บัญชีผู้ใช้: ${user.username}"),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            label: "ชื่อ:",
-                            controller: userFirstnameController,
-                          ),
-                          const SizedBox(height: 12),
-                          CustomTextField(
-                            label: "นามสกุล:",
-                            controller: userLastnameController,
-                          ),
-                          const SizedBox(height: 12),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                  child: Column(
+                    children: [
+                      TitleNormal(des: "บัญชีผู้ใช้: ${user.username}"),
 
-                          statusAsync.when(
-                            data:
-                                (items) => CustomDropdown(
-                                  label: "ตำแหน่ง / สถานะ:",
-                                  value:
-                                      userEmployeeStatusController.text.isEmpty
-                                          ? null
-                                          : userEmployeeStatusController.text,
-                                  items:
-                                      items
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e.key,
-                                              child: Text(e.label),
-                                            ),
-                                          )
-                                          .toList(),
-                                  onChanged:
-                                      (val) => setState(
-                                        () =>
-                                            userEmployeeStatusController.text =
-                                                val!,
-                                      ),
-                                ),
-                            loading: () => const CircularProgressIndicator(),
-                            error:
-                                (_, __) =>
-                                    Text("ไม่สามารถโหลดข้อมูลตำแหน่งงานได้"),
-                          ),
-                          const SizedBox(height: 12),
-
-                          academicAsync.when(
-                            data:
-                                (items) => CustomDropdown(
-                                  label: "กลุ่มสาระ:",
-                                  value:
-                                      userAcademicDepartmentController
-                                              .text
-                                              .isEmpty
-                                          ? null
-                                          : userAcademicDepartmentController
-                                              .text,
-                                  items:
-                                      items
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e.key,
-                                              child: Text(e.label),
-                                            ),
-                                          )
-                                          .toList(),
-                                  onChanged:
-                                      (val) => setState(
-                                        () =>
-                                            userAcademicDepartmentController
-                                                .text = val!,
-                                      ),
-                                ),
-                            loading: () => const CircularProgressIndicator(),
-                            error:
-                                (_, __) =>
-                                    Text("ไม่สามารถโหลดข้อมูลกลุ่มสาระได้"),
-                          ),
-                          const SizedBox(height: 12),
-
-                          divisionsAsync.when(
-                            data:
-                                (items) => CustomDropdown(
-                                  label: "ฝ่ายงาน:",
-                                  value:
-                                      userDivisionsController.text.isEmpty
-                                          ? null
-                                          : userDivisionsController.text,
-                                  items:
-                                      items
-                                          .map(
-                                            (e) => DropdownMenuItem(
-                                              value: e.key,
-                                              child: Text(e.label),
-                                            ),
-                                          )
-                                          .toList(),
-                                  onChanged:
-                                      (val) => setState(
-                                        () =>
-                                            userDivisionsController.text = val!,
-                                      ),
-                                ),
-                            loading: () => const CircularProgressIndicator(),
-                            error:
-                                (_, __) =>
-                                    const Text("ไม่สามารถโหลดข้อมูลฝ่ายงานได้"),
-                          ),
-
-                          const SizedBox(height: 12),
-                          CustomTextField(
-                            label: "ประจำชั้น:",
-                            controller: userHomeroomClassController,
-                          ),
-                          const SizedBox(height: 16),
-
-                          CustomButton(
-                            text: const Text(
-                              "บันทึกข้อมูล",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            border: 15,
-                            color: Colors.blue.shade700,
-                            onPressed:
-                                () => showDialog(
-                                  context: context,
-                                  builder:
-                                      (_) => AlertConfirmWidget(
-                                        title:
-                                            "คุณต้องการเปลี่ยนแปลงข้อมูลหรือไม่?",
-                                        onConfirm: () => _saveUserHandler(),
-                                      ),
-                                ),
-                          ),
-                        ],
+                      CustomTextField(
+                        label: "ชื่อ:",
+                        controller: userFirstnameController,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+
+                      CustomTextField(
+                        label: "นามสกุล:",
+                        controller: userLastnameController,
+                      ),
+                      const SizedBox(height: 12),
+
+                      /// Employee Status
+                      statusAsync.when(
+                        data: (items) => CustomDropdown(
+                          label: "ตำแหน่ง / สถานะ:",
+                          value: selectedEmployeeStatus,
+                          items: items
+                              .map((e) => DropdownMenuItem(
+                                    value: e.key,
+                                    child: Text(e.label),
+                                  ))
+                              .toList(),
+                          onChanged: (val) =>
+                              setState(() => selectedEmployeeStatus = val),
+                        ),
+                        loading: () =>
+                            const CircularProgressIndicator(),
+                        error: (_, __) =>
+                            const Text("ไม่สามารถโหลดข้อมูลตำแหน่งงานได้"),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      /// Academic Department
+                      academicAsync.when(
+                        data: (items) => CustomDropdown(
+                          label: "กลุ่มสาระ:",
+                          value: selectedAcademicDepartment,
+                          items: items
+                              .map((e) => DropdownMenuItem(
+                                    value: e.key,
+                                    child: Text(e.label),
+                                  ))
+                              .toList(),
+                          onChanged: (val) =>
+                              setState(() => selectedAcademicDepartment = val),
+                        ),
+                        loading: () =>
+                            const CircularProgressIndicator(),
+                        error: (_, __) =>
+                            const Text("ไม่สามารถโหลดข้อมูลกลุ่มสาระได้"),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      /// Division
+                      divisionsAsync.when(
+                        data: (items) => CustomDropdown(
+                          label: "ฝ่ายงาน:",
+                          value: selectedDivision,
+                          items: items
+                              .map((e) => DropdownMenuItem(
+                                    value: e.key,
+                                    child: Text(e.label),
+                                  ))
+                              .toList(),
+                          onChanged: (val) =>
+                              setState(() => selectedDivision = val),
+                        ),
+                        loading: () =>
+                            const CircularProgressIndicator(),
+                        error: (_, __) =>
+                            const Text("ไม่สามารถโหลดข้อมูลฝ่ายงานได้"),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      CustomTextField(
+                        label: "ประจำชั้น:",
+                        controller: userHomeroomClassController,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      CustomButton(
+                        text: const Text(
+                          "บันทึกข้อมูล",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        border: 15,
+                        color: Colors.blue,
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (_) => AlertConfirmWidget(
+                            title:
+                                "คุณต้องการเปลี่ยนแปลงข้อมูลหรือไม่?",
+                            onConfirm: _saveUserHandler,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text("Error: $err")),
+        loading: () =>
+            const Center(child: CircularProgressIndicator()),
+        error: (err, _) =>
+            Center(child: Text("Error: $err")),
       ),
     );
   }
