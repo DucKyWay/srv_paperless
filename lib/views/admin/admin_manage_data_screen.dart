@@ -3,21 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/viewmodel/academic_department_view_model.dart';
 import 'package:srv_paperless/viewmodel/divisions_view_model.dart';
 import 'package:srv_paperless/viewmodel/employee_status_view_model.dart';
+import 'package:srv_paperless/widgets/custom_text_field.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
+import '../../widgets/alert_confirm_widget.dart';
+import '../../widgets/custom_button.dart';
+
 enum ConfigMode {
-  academicDepartment(label: "กลุ่มสาระ"),
+  academicDepartment(label: "กลุ่มสาระการเรียนรู้"),
   divisions(label: "ฝ่ายงาน"),
   employeeStatus(label: "ตำแหน่ง");
 
   final String label;
+
   const ConfigMode({required this.label});
 }
 
 class AdminManageDataScreen extends ConsumerStatefulWidget {
   final ConfigMode mode;
+
   const AdminManageDataScreen({super.key, required this.mode});
 
   @override
@@ -26,6 +32,62 @@ class AdminManageDataScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
+  Future<void> _addItem(String key, String label) async {
+    switch (widget.mode) {
+      case ConfigMode.academicDepartment:
+        await ref
+            .read(academicDepartmentProvider.notifier)
+            .createAcademicDepartment(key, label);
+        break;
+      case ConfigMode.divisions:
+        await ref.read(divisionsProvider.notifier).createDivisions(key, label);
+        break;
+      case ConfigMode.employeeStatus:
+        await ref
+            .read(employeeStatusProvider.notifier)
+            .createEmployeeStatus(key, label);
+        break;
+    }
+  }
+
+  Future<void> _updateItem(String id, String key, String label) async {
+    switch (widget.mode) {
+      case ConfigMode.academicDepartment:
+        await ref
+            .read(academicDepartmentProvider.notifier)
+            .updateAcademicDepartment(id, key, label);
+        break;
+      case ConfigMode.divisions:
+        await ref
+            .read(divisionsProvider.notifier)
+            .updateDivisions(id, key, label);
+        break;
+      case ConfigMode.employeeStatus:
+        await ref
+            .read(employeeStatusProvider.notifier)
+            .updateEmployeeStatus(id, key, label);
+        break;
+    }
+  }
+
+  Future<void> _deleteItem(String id) async {
+    switch (widget.mode) {
+      case ConfigMode.academicDepartment:
+        await ref
+            .read(academicDepartmentProvider.notifier)
+            .deleteAcademicDepartment(id);
+        break;
+      case ConfigMode.divisions:
+        await ref.read(divisionsProvider.notifier).deleteDivision(id);
+        break;
+      case ConfigMode.employeeStatus:
+        await ref
+            .read(employeeStatusProvider.notifier)
+            .deleteEmployeeStatus(id);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final itemsAsync = _itemsProvider(ref, widget.mode);
@@ -35,9 +97,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
         child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          //TODO: add new item
-        },
+        onPressed: () => _showAddDialog(),
       ),
       child: itemsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -49,7 +109,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TitleNormal(title: widget.mode.label, des: "จัดการข้อมูล"),
+                  TitleNormal(title: "จัดการข้อมูล", des: widget.mode.label),
                   const SizedBox(height: 8),
 
                   if (items.isEmpty)
@@ -62,14 +122,21 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
                       (it) => _card(
                         context,
                         it.label,
-                        () {
-                          // Edit
-                          // TODO: edit
-                        },
-                        () {
-                          // Delete
-                          //TODO: delete + it.id
-                        },
+                        // Edit
+                        () => _showEditDialog(it),
+                        // Delete
+                        () => showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertConfirmWidget(
+                                title:
+                                    "คุณต้องการลบ ${widget.mode.label + it.label} หรือไม่",
+                                onConfirm: () {
+                                  _deleteItem(it.id);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                        ),
                       ),
                     ),
                   SizedBox(height: 96),
@@ -90,7 +157,10 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((d) => ConfigItem(id: d.id!, label: d.label))
+                      .map(
+                        (d) =>
+                            ConfigItem(id: d.id!, key: d.key, label: d.label),
+                      )
                       .toList(),
             );
 
@@ -100,7 +170,13 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((a) => ConfigItem(id: a.id!, label: a.label))
+                      .map(
+                        (ad) => ConfigItem(
+                          id: ad.id!,
+                          key: ad.key,
+                          label: ad.label,
+                        ),
+                      )
                       .toList(),
             );
 
@@ -110,10 +186,128 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             .whenData(
               (list) =>
                   list
-                      .map((s) => ConfigItem(id: s.id!, label: s.label))
+                      .map(
+                        (es) => ConfigItem(
+                          id: es.id!,
+                          key: es.key,
+                          label: es.label,
+                        ),
+                      )
                       .toList(),
             );
     }
+  }
+
+  Future<void> _showAddDialog() async {
+    final keyController = TextEditingController();
+    final labelController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("เพิ่ม${widget.mode.label}"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomTextField(label: "Key", controller: keyController),
+              SizedBox(height: 8),
+              CustomTextField(label: "Label", controller: labelController),
+            ],
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    height: 55,
+                    text: const Text(
+                      "ยกเลิก",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    border: 15,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: CustomButton(
+                    height: 55,
+                    text: const Text(
+                      "บันทึก",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    border: 15,
+                    color: const Color(0xFF1D4200),
+                    onPressed: () async {
+                      await _addItem(keyController.text, labelController.text);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showEditDialog(ConfigItem item) async {
+    final labelController = TextEditingController(text: item.label);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("แก้ไข${widget.mode.label}"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomTextField(label: "Label", controller: labelController),
+            ],
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    height: 55,
+                    text: const Text(
+                      "ยกเลิก",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    border: 15,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: CustomButton(
+                    height: 55,
+                    text: const Text(
+                      "บันทึก",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    border: 15,
+                    color: const Color(0xFF1D4200),
+                    onPressed: () async {
+                      await _updateItem(
+                        item.id,
+                        item.key,
+                        labelController.text,
+                      );
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _card(
@@ -172,6 +366,8 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
 
 class ConfigItem {
   final String id;
+  final String key;
   final String label;
-  const ConfigItem({required this.id, required this.label});
+
+  const ConfigItem({required this.id, required this.key, required this.label});
 }

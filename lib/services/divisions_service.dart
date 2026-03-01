@@ -8,21 +8,26 @@ class DivisionsService {
 
   DivisionsService(this.divisionsRepo);
 
-  Future<List<Divisions>> getAllDivisions() async {
+  Future<List<Divisions>> fetchAllDivisions() async {
     return await divisionsRepo.fetchAllDivisions();
   }
-  Future<Divisions?> getDivisionById(String id) async {
+
+  Future<Divisions?> fetchDivisionById(String id) async {
     return await divisionsRepo.fetchDivisionById(id);
   }
-  Future<Divisions?> getDivisionByKey(String key) async {
+
+  Future<Divisions?> fetchDivisionByKey(String key) async {
     return await divisionsRepo.fetchDivisionByKey(key);
   }
+
   Future<int> createDivisions(Divisions d) async {
     return await divisionsRepo.create(d);
   }
+
   Future<int> updateDivisions(String uid, Divisions d) async {
     return await divisionsRepo.update(uid, d);
   }
+
   Future<int> deleteDivisions(String uid) async {
     return await divisionsRepo.delete(uid);
   }
