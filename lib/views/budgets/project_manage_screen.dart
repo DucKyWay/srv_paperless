@@ -8,7 +8,7 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
-import '../../../widgets/project/card_widget.dart';
+import '../../widgets/project/card_widget.dart';
 
 class ProjectManageScreen extends ConsumerStatefulWidget {
   const ProjectManageScreen({super.key});
@@ -24,7 +24,8 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
     final width = context.screenWidth;
 
     final authState = ref.watch(authProvider);
-    final isUserDivisionBudget = authState.value?.currentUser?.isBudget ?? false;
+    final isUserDivisionBudget =
+        authState.value?.currentUser?.isBudget ?? false;
 
     if (!isUserDivisionBudget) Navigator.pop(context);
 
@@ -64,7 +65,11 @@ Widget pendingRequest(BuildContext context, WidgetRef ref) {
       }
       return ListView.builder(
         itemCount: projects.length,
-        itemBuilder: (context, index) => ProjectCardDetail(project: projects[index], routes: AppRoutes.projectRequest),
+        itemBuilder:
+            (context, index) => ProjectCardDetail(
+              project: projects[index],
+              routes: AppRoutes.projectRequest,
+            ),
       );
     },
     loading: () => const Center(child: CircularProgressIndicator()),

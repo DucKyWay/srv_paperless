@@ -51,8 +51,9 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
     );
 
     try {
-      final currentUser =
-          await ref.read(userByIdProvider(widget.userId).future);
+      final currentUser = await ref.read(
+        userByIdProvider(widget.userId).future,
+      );
 
       if (currentUser == null) return;
 
@@ -97,7 +98,6 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
             return const Center(child: Text("ไม่พบข้อมูลผู้ใช้"));
           }
 
-          // initialize only once
           if (!_initialized) {
             userFirstnameController.text = user.firstname;
             userLastnameController.text = user.lastname;
@@ -133,66 +133,83 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
 
                       /// Employee Status
                       statusAsync.when(
-                        data: (items) => CustomDropdown(
-                          label: "ตำแหน่ง / สถานะ:",
-                          value: selectedEmployeeStatus,
-                          items: items
-                              .map((e) => DropdownMenuItem(
-                                    value: e.key,
-                                    child: Text(e.label),
-                                  ))
-                              .toList(),
-                          onChanged: (val) =>
-                              setState(() => selectedEmployeeStatus = val),
-                        ),
-                        loading: () =>
-                            const CircularProgressIndicator(),
-                        error: (_, __) =>
-                            const Text("ไม่สามารถโหลดข้อมูลตำแหน่งงานได้"),
+                        data:
+                            (items) => CustomDropdown(
+                              label: "ตำแหน่ง / สถานะ:",
+                              value: selectedEmployeeStatus,
+                              items:
+                                  items
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e.key,
+                                          child: Text(e.label),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  (val) => setState(
+                                    () => selectedEmployeeStatus = val,
+                                  ),
+                            ),
+                        loading: () => const CircularProgressIndicator(),
+                        error:
+                            (_, __) =>
+                                const Text("ไม่สามารถโหลดข้อมูลตำแหน่งงานได้"),
                       ),
 
                       const SizedBox(height: 12),
 
                       /// Academic Department
                       academicAsync.when(
-                        data: (items) => CustomDropdown(
-                          label: "กลุ่มสาระ:",
-                          value: selectedAcademicDepartment,
-                          items: items
-                              .map((e) => DropdownMenuItem(
-                                    value: e.key,
-                                    child: Text(e.label),
-                                  ))
-                              .toList(),
-                          onChanged: (val) =>
-                              setState(() => selectedAcademicDepartment = val),
-                        ),
-                        loading: () =>
-                            const CircularProgressIndicator(),
-                        error: (_, __) =>
-                            const Text("ไม่สามารถโหลดข้อมูลกลุ่มสาระได้"),
+                        data:
+                            (items) => CustomDropdown(
+                              label: "กลุ่มสาระ:",
+                              value: selectedAcademicDepartment,
+                              items:
+                                  items
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e.key,
+                                          child: Text(e.label),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  (val) => setState(
+                                    () => selectedAcademicDepartment = val,
+                                  ),
+                            ),
+                        loading: () => const CircularProgressIndicator(),
+                        error:
+                            (_, __) =>
+                                const Text("ไม่สามารถโหลดข้อมูลกลุ่มสาระได้"),
                       ),
 
                       const SizedBox(height: 12),
 
                       /// Division
                       divisionsAsync.when(
-                        data: (items) => CustomDropdown(
-                          label: "ฝ่ายงาน:",
-                          value: selectedDivision,
-                          items: items
-                              .map((e) => DropdownMenuItem(
-                                    value: e.key,
-                                    child: Text(e.label),
-                                  ))
-                              .toList(),
-                          onChanged: (val) =>
-                              setState(() => selectedDivision = val),
-                        ),
-                        loading: () =>
-                            const CircularProgressIndicator(),
-                        error: (_, __) =>
-                            const Text("ไม่สามารถโหลดข้อมูลฝ่ายงานได้"),
+                        data:
+                            (items) => CustomDropdown(
+                              label: "ฝ่ายงาน:",
+                              value: selectedDivision,
+                              items:
+                                  items
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e.key,
+                                          child: Text(e.label),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  (val) =>
+                                      setState(() => selectedDivision = val),
+                            ),
+                        loading: () => const CircularProgressIndicator(),
+                        error:
+                            (_, __) =>
+                                const Text("ไม่สามารถโหลดข้อมูลฝ่ายงานได้"),
                       ),
 
                       const SizedBox(height: 12),
@@ -211,14 +228,16 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
                         ),
                         border: 15,
                         color: Colors.blue,
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (_) => AlertConfirmWidget(
-                            title:
-                                "คุณต้องการเปลี่ยนแปลงข้อมูลหรือไม่?",
-                            onConfirm: _saveUserHandler,
-                          ),
-                        ),
+                        onPressed:
+                            () => showDialog(
+                              context: context,
+                              builder:
+                                  (_) => AlertConfirmWidget(
+                                    title:
+                                        "คุณต้องการเปลี่ยนแปลงข้อมูลหรือไม่?",
+                                    onConfirm: _saveUserHandler,
+                                  ),
+                            ),
                       ),
                     ],
                   ),
@@ -227,10 +246,8 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
             ),
           );
         },
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
-        error: (err, _) =>
-            Center(child: Text("Error: $err")),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text("Error: $err")),
       ),
     );
   }

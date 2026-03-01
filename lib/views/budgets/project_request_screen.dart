@@ -1,0 +1,342 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/utils/date_util.dart';
+import 'package:srv_paperless/core/utils/screen_size.dart';
+import 'package:srv_paperless/data/model/project_model.dart';
+import 'package:srv_paperless/viewmodel/comment_view_model.dart';
+import 'package:srv_paperless/viewmodel/project_view_model.dart';
+import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
+import 'package:srv_paperless/widgets/custom_button.dart';
+import 'package:srv_paperless/widgets/menu_header_widget.dart';
+import 'package:srv_paperless/widgets/menu_widget.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
+
+import '../../data/model/comment_model.dart';
+import '../../viewmodel/user_view_model.dart';
+import '../../widgets/project/card_widget.dart';
+
+class ProjectRequestScreen extends ConsumerStatefulWidget {
+  final String projectId;
+
+  const ProjectRequestScreen({super.key, required this.projectId});
+
+  @override
+  ConsumerState<ProjectRequestScreen> createState() =>
+      _ProjectRequestScreenState();
+}
+
+class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
+  Project? project;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      _loadData();
+    });
+  }
+
+  Future<void> _loadData() async {
+    final projectData = await ref.read(
+      projectByIdProvider(widget.projectId).future,
+    );
+    if (projectData == null) return;
+    setState(() {
+      project = projectData;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (project == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final width = context.screenWidth;
+
+    return MenuWidget(
+      title: HeaderWithBackButton(),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: width * 0.08, vertical: 16),
+        child: Column(
+          children: [
+            TitleNormal(title: "คำขออนุมัติโครงการ"),
+
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 1.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "ชื่อโครงการ: ${project!.projectName}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "ประธานโครงการ : ${project!.chairman}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "จำนวนเงินในโครงการ : ${project!.budget}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "เสนอโครงการ : ${DateUtil.formatThaiDate(project!.date)}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "อนุมัติโครงการ : ${project!.status.label}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "แก้ไขล่าสุด : ${DateUtil.formatThaiDate(project!.fixLatest)}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+
+            _projectComments(context, ref),
+
+            // TODO: pdf
+            const SizedBox(height: 24),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomButton(
+                  text: Text(
+                    "อนุมัติโครงการ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  color: Colors.green.shade700,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertConfirmWidget(
+                            title: "คุณต้องการอนุมัติโครงการนี้หรือไม่",
+                            color: Colors.green.shade50,
+                            onConfirm: () {},
+                          ),
+                    );
+                  },
+                ),
+                SizedBox(height: 12),
+                CustomButton(
+                  text: Text("หมายเหตุ", style: TextStyle(color: Colors.white)),
+                  color: Colors.yellow.shade700,
+                  onPressed: () => _showCommentDialog(context, ref),
+                ),
+                SizedBox(height: 12),
+                CustomButton(
+                  text: Text(
+                    "ปฏิเสธโครงการ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  color: Colors.red.shade700,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertConfirmWidget(
+                            title: "คุณต้องการปฏิเสธโครงการนี้หรือไม่",
+                            color: Colors.red.shade50,
+                            onConfirm: () {},
+                          ),
+                    );
+                  },
+                ),
+                SizedBox(height: 24),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _projectComments(BuildContext context, WidgetRef ref) {
+    final commentsData = ref.watch(commentsByProjectId(project!.id));
+
+    return commentsData.when(
+      data: (comments) {
+        if (comments.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: comments.length,
+          itemBuilder:
+              (context, index) => CommentCardWidget(comment: comments[index]),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (err, stack) =>
+              Center(child: Text("เกิดข้อผิดพลาดในการแสดงหมายเหตุ $err")),
+    );
+  }
+
+  void _showCommentDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: context.screenWidth * 0.85,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 4),
+                const Text(
+                  "หมายเหตุทั้งหมด",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: context.screenHeight * 0.5,
+                  ),
+                  child: _commentCard(context, ref),
+                ),
+
+                const SizedBox(height: 16),
+
+                CustomButton(
+                  text: Text(
+                    "เพิ่มหมายเหตุใหม่",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  color: Colors.blue.shade700,
+                  onPressed: () {
+                    _showAddCommentDialog(context, ref);
+                  },
+                ),
+                SizedBox(height: 8),
+                CustomButton(
+                  text: Text("ออก", style: TextStyle(color: Colors.white)),
+                  color: Colors.red.shade700,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _commentCard(BuildContext context, WidgetRef ref) {
+    final commentData = ref.watch(commentsByProjectId(project!.id));
+
+    return commentData.when(
+      data: (comments) {
+        if (comments.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return ListView.builder(
+          itemCount: comments.length,
+          itemBuilder: (context, index) => _commentItem(comments[index]),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (err, stack) =>
+              Center(child: Text("เกิดข้อผิดพลาดในการแสดงหมายเหตุ")),
+    );
+  }
+
+  void _showAddCommentDialog(BuildContext context, WidgetRef ref) {
+    final TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("เพิ่มหมายเหตุ"),
+          content: TextField(
+            controller: controller,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText: "กรอกหมายเหตุ",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            CancelAndConfirmRowWidget(
+              onConfirm: () async {
+                final message = controller.text.trim();
+                if (message.isEmpty) return;
+
+                await ref
+                    .read(commentProvider.notifier)
+                    .createComment(project!.userId, project!.id, message);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _commentItem(Comment comment) {
+    final userAsync = ref.watch(userByIdProvider(comment.userId));
+
+    return userAsync.when(
+      data:
+          (user) => Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "ผู้ลงหมายเหตุ: ${user?.fullname ?? "ไม่พบผู้ใช้"}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "วันที่: ${DateUtil.formatThaiDate(comment.commentCreatedAt)}",
+                ),
+                const SizedBox(height: 6),
+                Text("หมายเหตุ ${comment.message}"),
+              ],
+            ),
+          ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => const Text("โหลดผู้ใช้ไม่สำเร็จ"),
+    );
+  }
+}

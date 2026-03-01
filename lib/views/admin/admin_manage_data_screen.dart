@@ -171,40 +171,14 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             ],
           ),
           actions: [
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    height: 55,
-                    text: const Text(
-                      "ยกเลิก",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    border: 15,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CustomButton(
-                    height: 55,
-                    text: const Text(
-                      "บันทึก",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    border: 15,
-                    color: const Color(0xFF1D4200),
-                    onPressed: () async {
-                      await _notifier().createItem(
-                        keyController.text,
-                        labelController.text,
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ],
+            CancelAndConfirmRowWidget(
+              onConfirm: () async {
+                await _notifier().createItem(
+                  keyController.text,
+                  labelController.text,
+                );
+                Navigator.pop(context);
+              },
             ),
           ],
         );
@@ -227,41 +201,15 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
             ],
           ),
           actions: [
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    height: 55,
-                    text: const Text(
-                      "ยกเลิก",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    border: 15,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CustomButton(
-                    height: 55,
-                    text: const Text(
-                      "บันทึก",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    border: 15,
-                    color: const Color(0xFF1D4200),
-                    onPressed: () async {
-                      await _notifier().updateItem(
-                        item.id,
-                        item.key,
-                        labelController.text,
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ],
+            CancelAndConfirmRowWidget(
+              onConfirm: () async {
+                await _notifier().updateItem(
+                  item.id,
+                  item.key,
+                  labelController.text,
+                );
+                Navigator.pop(context);
+              },
             ),
           ],
         );

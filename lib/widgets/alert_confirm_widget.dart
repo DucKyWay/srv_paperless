@@ -3,11 +3,13 @@ import 'package:srv_paperless/widgets/custom_button.dart';
 
 class AlertConfirmWidget extends StatelessWidget {
   final String title;
+  final Color? color;
   final VoidCallback onConfirm;
 
   const AlertConfirmWidget({
     super.key,
     required this.title,
+    this.color,
     required this.onConfirm,
   });
 
@@ -20,6 +22,7 @@ class AlertConfirmWidget extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
+      backgroundColor: color,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [Text(title, style: Theme.of(context).textTheme.bodyMedium)],
@@ -32,7 +35,10 @@ class AlertConfirmWidget extends StatelessWidget {
               Expanded(
                 child: CustomButton(
                   height: 55,
-                  text: const Text("ยกเลิก", style: TextStyle(color: Colors.white)),
+                  text: const Text(
+                    "ยกเลิก",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   border: 15,
                   color: Theme.of(context).colorScheme.onErrorContainer,
                   onPressed: () => Navigator.pop(context),
@@ -42,7 +48,10 @@ class AlertConfirmWidget extends StatelessWidget {
               Expanded(
                 child: CustomButton(
                   height: 55,
-                  text: const Text("ยืนยัน", style: TextStyle(color: Colors.white)),
+                  text: const Text(
+                    "ยืนยัน",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   border: 15,
                   color: const Color(0xFF1D4200),
                   onPressed: onConfirm,

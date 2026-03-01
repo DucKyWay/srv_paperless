@@ -5,7 +5,9 @@ import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/repositories/comment_repo.dart';
 import 'package:srv_paperless/services/comment_service.dart';
 
-final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(CommentViewModel.new);
+final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(
+  CommentViewModel.new,
+);
 
 class CommentViewModel extends AsyncNotifier<void> {
   @override
@@ -21,18 +23,6 @@ class CommentViewModel extends AsyncNotifier<void> {
     }
   }
 
-  Future<List<Comment>> getCommentsByProjectId(String projectId) async {
-    if (projectId.isEmpty) return [];
-
-    try {
-      return await ref
-          .read(commentRepoProvider)
-          .fetchCommentsByProjectId(projectId);
-    } catch (e) {
-      return [];
-    }
-  }
-
   Future<void> createComment(
     String userId,
     String projectId,
@@ -42,20 +32,26 @@ class CommentViewModel extends AsyncNotifier<void> {
       userId: userId,
       projectId: projectId,
       message: message,
-      commentCreatedAt: DateTime.now()
+      commentCreatedAt: DateTime.now(),
     );
 
     int success = await ref.read(commentRepoProvider).create(comment);
-
-    if(success == 0) {
-      print("Crate commented"); 
+    _refreshComments();
+    if (success == 0) {
+      print("Crate commented");
     } else {
       print("Failed to create comment");
     }
   }
 
-  Future<void> updateComment(String id, String userId, String projectId, String message, DateTime commentCreatedAt) async {
-    if(id.isEmpty || userId.isEmpty || projectId.isEmpty || message.isEmpty) {
+  Future<void> updateComment(
+    String id,
+    String userId,
+    String projectId,
+    String message,
+    DateTime commentCreatedAt,
+  ) async {
+    if (id.isEmpty || userId.isEmpty || projectId.isEmpty || message.isEmpty) {
       print("Parameter cannot empty");
     } else {
       final comment = Comment(
@@ -66,16 +62,21 @@ class CommentViewModel extends AsyncNotifier<void> {
       );
 
       await ref.read(commentRepoProvider).update(id, comment);
+      _refreshComments();
     }
-
   }
 
   Future<void> deleteComment(String id) async {
-    if(id.isEmpty) {
+    if (id.isEmpty) {
       print("ID cannot empty");
     } else {
       await ref.read(commentRepoProvider).delete(id);
+      _refreshComments();
     }
+  }
+
+  void _refreshComments() {
+    ref.invalidate(commentsByProjectId);
   }
 }
 
@@ -84,7 +85,10 @@ class CommentViewModel extends AsyncNotifier<void> {
 //   return ref.watch(commentsServiceProvider).getAllComments();
 // });
 
-final commentByProjectId = FutureProvider.family<List<Comment>, String>((ref, id) {
+final commentsByProjectId = FutureProvider.family<List<Comment>, String>((
+  ref,
+  id,
+) {
   ref.keepAlive();
   return ref.watch(commentsServiceProvider).getCommentsByProjectId(id);
 });

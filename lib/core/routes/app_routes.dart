@@ -3,8 +3,8 @@ import 'package:srv_paperless/views/admin/admin_home_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_data_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';
-import 'package:srv_paperless/views/user/budgets/project_manage_screen.dart';
-import 'package:srv_paperless/views/user/budgets/project_request_screen.dart';
+import 'package:srv_paperless/views/budgets/project_manage_screen.dart';
+import 'package:srv_paperless/views/budgets/project_request_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_approved_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
 
