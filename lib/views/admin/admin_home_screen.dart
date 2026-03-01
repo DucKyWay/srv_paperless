@@ -44,7 +44,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
               ),
               _card(
                 context,
-                "จัดการกลุ่มสาระ",
+                "จัดการกลุ่มสาระการเรียนรู้",
                 AppRoutes.adminManageData,
                 ConfigMode.academicDepartment,
                 Colors.blue.shade700,
@@ -98,11 +98,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             border: 15,
             color: buttonColor,
             onPressed:
-                () => Navigator.pushNamed(
-                  context,
-                  routes,
-                  arguments: param,
-                ),
+                () => Navigator.pushNamed(context, routes, arguments: param),
           ),
         ],
       ),

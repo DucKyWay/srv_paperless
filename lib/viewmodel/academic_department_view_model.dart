@@ -25,9 +25,10 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
 
     if (success == 0) {
       debugPrint("Create Academic Department");
+      _refreshAcademicDepartment();
       return ref
           .read(academicDepartmentServiceProvider)
-          .getAcademicDepartmentByKey(key);
+          .fetchAcademicDepartmentByKey(key);
     } else {
       debugPrint("Failed to create academic department");
       return null;
@@ -47,6 +48,7 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
       await ref
           .read(academicDepartmentServiceProvider)
           .updateAcademicDepartment(id, academicDepartment);
+      _refreshAcademicDepartment();
     }
   }
 
@@ -57,7 +59,15 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
       await ref
           .read(academicDepartmentServiceProvider)
           .deleteAcademicDepartment(id);
+      debugPrint("Deleted Academic Department");
+      _refreshAcademicDepartment();
     }
+  }
+
+  void _refreshAcademicDepartment() {
+    ref.invalidate(allAcademicDepartment);
+    ref.invalidate(academicDepartmentById);
+    ref.invalidate(academicDepartmentByKey);
   }
 }
 
@@ -65,7 +75,7 @@ final allAcademicDepartment = FutureProvider<List<AcademicDepartment>>((ref) {
   ref.keepAlive();
   return ref
       .watch(academicDepartmentServiceProvider)
-      .getAllAcademicDepartments();
+      .fetchAllAcademicDepartments();
 });
 
 final academicDepartmentById =
@@ -73,7 +83,7 @@ final academicDepartmentById =
       ref.keepAlive();
       return ref
           .watch(academicDepartmentServiceProvider)
-          .getAcademicDepartmentById(id);
+          .fetchAcademicDepartmentById(id);
     });
 
 final academicDepartmentByKey =
@@ -81,5 +91,5 @@ final academicDepartmentByKey =
       ref.keepAlive();
       return ref
           .watch(academicDepartmentServiceProvider)
-          .getAcademicDepartmentByKey(key);
+          .fetchAcademicDepartmentByKey(key);
     });

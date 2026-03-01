@@ -22,9 +22,10 @@ class EmployeeStatusViewModel extends AsyncNotifier<void> {
 
     if (success == 0) {
       debugPrint("Create Employee Status");
+      _refreshEmployeeStatus();
       return ref
           .read(employeeStatusServiceProvider)
-          .getEmployeeStatusByKey(key);
+          .fetchEmployeeStatusByKey(key);
     } else {
       debugPrint("Failed to create Employee Status");
       return null;
@@ -40,6 +41,7 @@ class EmployeeStatusViewModel extends AsyncNotifier<void> {
       await ref
           .read(employeeStatusServiceProvider)
           .updateEmployeeStatus(id, employeeStatus);
+      _refreshEmployeeStatus();
     }
   }
 
@@ -48,13 +50,20 @@ class EmployeeStatusViewModel extends AsyncNotifier<void> {
       debugPrint("ID cannot empty");
     } else {
       await ref.read(employeeStatusServiceProvider).deleteEmployeeStatus(id);
+      _refreshEmployeeStatus();
     }
+  }
+
+  void _refreshEmployeeStatus() {
+    ref.invalidate(allEmployeeStatus);
+    ref.invalidate(employeeStatusById);
+    ref.invalidate(employeeStatusByKey);
   }
 }
 
 final allEmployeeStatus = FutureProvider<List<EmployeeStatus>>((ref) {
   ref.keepAlive();
-  return ref.watch(employeeStatusServiceProvider).getAllEmployeeStatus();
+  return ref.watch(employeeStatusServiceProvider).fetchAllEmployeeStatus();
 });
 
 final employeeStatusById = FutureProvider.family<EmployeeStatus?, String>((
@@ -62,7 +71,7 @@ final employeeStatusById = FutureProvider.family<EmployeeStatus?, String>((
   id,
 ) {
   ref.keepAlive();
-  return ref.watch(employeeStatusServiceProvider).getEmployeeStatusById(id);
+  return ref.watch(employeeStatusServiceProvider).fetchEmployeeStatusById(id);
 });
 
 final employeeStatusByKey = FutureProvider.family<EmployeeStatus?, String>((
@@ -70,5 +79,5 @@ final employeeStatusByKey = FutureProvider.family<EmployeeStatus?, String>((
   key,
 ) {
   ref.keepAlive();
-  return ref.watch(employeeStatusServiceProvider).getEmployeeStatusByKey(key);
+  return ref.watch(employeeStatusServiceProvider).fetchEmployeeStatusByKey(key);
 });
