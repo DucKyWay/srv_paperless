@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/viewmodel/config_crud.dart';
 import '../data/model/academic_department_model.dart';
 import '../services/academic_department_service.dart';
 
@@ -10,7 +11,8 @@ final academicDepartmentProvider =
       AcademicDepartmentViewModel.new,
     );
 
-class AcademicDepartmentViewModel extends AsyncNotifier<void> {
+class AcademicDepartmentViewModel extends AsyncNotifier<void>
+    implements ConfigCrud {
   @override
   FutureOr<void> build() {}
 
@@ -68,6 +70,21 @@ class AcademicDepartmentViewModel extends AsyncNotifier<void> {
     ref.invalidate(allAcademicDepartment);
     ref.invalidate(academicDepartmentById);
     ref.invalidate(academicDepartmentByKey);
+  }
+
+  @override
+  Future<void> createItem(String key, String label) async {
+    await createAcademicDepartment(key, label);
+  }
+
+  @override
+  Future<void> updateItem(String id, String key, String label) async {
+    await updateAcademicDepartment(id, key, label);
+  }
+
+  @override
+  Future<void> deleteItem(String id) async {
+    await deleteAcademicDepartment(id);
   }
 }
 

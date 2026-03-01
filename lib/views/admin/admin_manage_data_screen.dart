@@ -8,6 +8,7 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
+import '../../viewmodel/config_crud.dart';
 import '../../widgets/alert_confirm_widget.dart';
 import '../../widgets/custom_button.dart';
 
@@ -32,59 +33,14 @@ class AdminManageDataScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
-  Future<void> _addItem(String key, String label) async {
+  ConfigCrud _notifier() {
     switch (widget.mode) {
       case ConfigMode.academicDepartment:
-        await ref
-            .read(academicDepartmentProvider.notifier)
-            .createAcademicDepartment(key, label);
-        break;
+        return ref.read(academicDepartmentProvider.notifier);
       case ConfigMode.divisions:
-        await ref.read(divisionsProvider.notifier).createDivisions(key, label);
-        break;
+        return ref.read(divisionsProvider.notifier);
       case ConfigMode.employeeStatus:
-        await ref
-            .read(employeeStatusProvider.notifier)
-            .createEmployeeStatus(key, label);
-        break;
-    }
-  }
-
-  Future<void> _updateItem(String id, String key, String label) async {
-    switch (widget.mode) {
-      case ConfigMode.academicDepartment:
-        await ref
-            .read(academicDepartmentProvider.notifier)
-            .updateAcademicDepartment(id, key, label);
-        break;
-      case ConfigMode.divisions:
-        await ref
-            .read(divisionsProvider.notifier)
-            .updateDivisions(id, key, label);
-        break;
-      case ConfigMode.employeeStatus:
-        await ref
-            .read(employeeStatusProvider.notifier)
-            .updateEmployeeStatus(id, key, label);
-        break;
-    }
-  }
-
-  Future<void> _deleteItem(String id) async {
-    switch (widget.mode) {
-      case ConfigMode.academicDepartment:
-        await ref
-            .read(academicDepartmentProvider.notifier)
-            .deleteAcademicDepartment(id);
-        break;
-      case ConfigMode.divisions:
-        await ref.read(divisionsProvider.notifier).deleteDivision(id);
-        break;
-      case ConfigMode.employeeStatus:
-        await ref
-            .read(employeeStatusProvider.notifier)
-            .deleteEmployeeStatus(id);
-        break;
+        return ref.read(employeeStatusProvider.notifier);
     }
   }
 
@@ -132,7 +88,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
                                 title:
                                     "คุณต้องการลบ ${widget.mode.label + it.label} หรือไม่",
                                 onConfirm: () {
-                                  _deleteItem(it.id);
+                                  _notifier().deleteItem(it.id);
                                   Navigator.pop(context);
                                 },
                               ),
@@ -240,7 +196,10 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
                     border: 15,
                     color: const Color(0xFF1D4200),
                     onPressed: () async {
-                      await _addItem(keyController.text, labelController.text);
+                      await _notifier().createItem(
+                        keyController.text,
+                        labelController.text,
+                      );
                       Navigator.pop(context);
                     },
                   ),
@@ -293,7 +252,7 @@ class _AdminManageDataScreenState extends ConsumerState<AdminManageDataScreen> {
                     border: 15,
                     color: const Color(0xFF1D4200),
                     onPressed: () async {
-                      await _updateItem(
+                      await _notifier().updateItem(
                         item.id,
                         item.key,
                         labelController.text,

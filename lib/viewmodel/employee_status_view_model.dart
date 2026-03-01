@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/model/employee_status_model.dart';
 import '../services/employee_status_service.dart';
+import 'config_crud.dart';
 
 final employeeStatusProvider =
     AsyncNotifierProvider<EmployeeStatusViewModel, void>(
       EmployeeStatusViewModel.new,
     );
 
-class EmployeeStatusViewModel extends AsyncNotifier<void> {
+class EmployeeStatusViewModel extends AsyncNotifier<void>
+    implements ConfigCrud {
   @override
   FutureOr<void> build() {}
 
@@ -58,6 +60,21 @@ class EmployeeStatusViewModel extends AsyncNotifier<void> {
     ref.invalidate(allEmployeeStatus);
     ref.invalidate(employeeStatusById);
     ref.invalidate(employeeStatusByKey);
+  }
+
+  @override
+  Future<void> createItem(String key, String label) async {
+    await createEmployeeStatus(key, label);
+  }
+
+  @override
+  Future<void> updateItem(String id, String key, String label) async {
+    await updateEmployeeStatus(id, key, label);
+  }
+
+  @override
+  Future<void> deleteItem(String id) async {
+    await deleteEmployeeStatus(id);
   }
 }
 
