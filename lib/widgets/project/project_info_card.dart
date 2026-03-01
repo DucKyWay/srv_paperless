@@ -16,6 +16,8 @@ class ProjectInfoCard extends StatelessWidget {
         return Colors.orange.shade50;
       case ProjectStatus.approve:
         return Colors.green.shade50;
+      case ProjectStatus.started:
+        return Colors.purple.shade50; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
       case ProjectStatus.rejected:
         return Colors.red.shade50;
       default:
@@ -31,6 +33,8 @@ class ProjectInfoCard extends StatelessWidget {
         return Colors.orange.shade700;
       case ProjectStatus.approve:
         return Colors.green.shade700;
+      case ProjectStatus.started:
+        return Colors.purple.shade700; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
       case ProjectStatus.rejected:
         return Colors.red.shade700;
       default:
@@ -163,6 +167,7 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.draft: return Icons.edit_document;
       case ProjectStatus.pending: return Icons.hourglass_empty;
       case ProjectStatus.approve: return Icons.check_circle_outline;
+      case ProjectStatus.started: return Icons.play_circle_outline; // เพิ่มไอคอนสำหรับเริ่มโครงการ
       case ProjectStatus.rejected: return Icons.cancel_outlined;
       default: return Icons.info_outline;
     }

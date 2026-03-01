@@ -22,6 +22,10 @@ class ProjectService {
     return await projectRepo.fetchProjectsByStatus(ProjectStatus.approve.name);
   }
 
+  Future<List<Project>> getStartedProjects() async {
+    return await projectRepo.fetchProjectsByStatus(ProjectStatus.started.name);
+  }
+
   Future<List<Project>> getRejectProjects() async {
     return await projectRepo.fetchProjectsByStatus(ProjectStatus.rejected.name);
   }
@@ -41,12 +45,12 @@ class ProjectService {
 
   Future<bool> updateProject(String id, Project project) async {
     final result = await projectRepo.update(id, project);
-    return result == 0;
+    return result == 1;
   }
 
   Future<bool> deleteProject(String id) async {
     final result = await projectRepo.delete(id);
-    return result == 0;
+    return result == 1;
   }
 
   Future<String?> uploadProjectFile({
@@ -58,7 +62,7 @@ class ProjectService {
 
       final result = await projectRepo.updateProjectFile(projectId, fileName);
       debugPrint("Success to upload: $fileName");
-      return result == 0 ? fileName : null;
+      return result == 1 ? fileName : null;
     } catch (e) {
       debugPrint("Upload failed: $e");
       return null;

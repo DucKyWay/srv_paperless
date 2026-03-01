@@ -89,6 +89,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
     ref.invalidate(pendingProjectsProvider);
     ref.invalidate(draftProjectsProvider);
     ref.invalidate(approvedProjectsProvider);
+    ref.invalidate(startedProjectsProvider);
     ref.invalidate(rejectedProjectsProvider);
   }
 }
@@ -100,6 +101,11 @@ final allProjectsProvider = FutureProvider<List<Project>>((ref) {
 final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
   ref.keepAlive();
   return ref.watch(projectServiceProvider).getApprovedProjects();
+});
+
+final startedProjectsProvider = FutureProvider<List<Project>>((ref) {
+  ref.keepAlive();
+  return ref.watch(projectServiceProvider).getStartedProjects();
 });
 
 final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
@@ -116,7 +122,6 @@ final draftProjectsProvider = FutureProvider.family<List<Project>, String>((
   ref,
   userId,
 ) {
-  // ใช้ keepAlive เพื่อเก็บข้อมูลไว้ใน cache ไม่ต้องโหลดใหม่ทุกครั้งที่สลับหน้า
   ref.keepAlive();
   return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
 });
