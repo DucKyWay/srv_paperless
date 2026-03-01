@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/model/divisions_model.dart';
 import 'package:srv_paperless/services/divisions_service.dart';
+import 'package:srv_paperless/viewmodel/config_crud.dart';
 
 final divisionsProvider = AsyncNotifierProvider<DivisionsViewModel, void>(
   DivisionsViewModel.new,
 );
 
-class DivisionsViewModel extends AsyncNotifier<void> {
+class DivisionsViewModel extends AsyncNotifier<void> implements ConfigCrud {
   @override
   FutureOr<void> build() {}
 
@@ -20,11 +21,11 @@ class DivisionsViewModel extends AsyncNotifier<void> {
         .createDivisions(division);
 
     if (success == 0) {
-      debugPrint("Create Academic Department");
+      debugPrint("Create Division");
       _refreshDivisions();
       return ref.read(divisionsServiceProvider).fetchDivisionByKey(key);
     } else {
-      debugPrint("Failed to create academic department");
+      debugPrint("Failed to create division");
       return null;
     }
   }
@@ -53,6 +54,21 @@ class DivisionsViewModel extends AsyncNotifier<void> {
     ref.invalidate(allDivisions);
     ref.invalidate(divisionsById);
     ref.invalidate(divisionsByKey);
+  }
+
+  @override
+  Future<void> createItem(String key, String label) async {
+    await createDivisions(key, label);
+  }
+
+  @override
+  Future<void> updateItem(String id, String key, String label) async {
+    await updateDivisions(id, key, label);
+  }
+
+  @override
+  Future<void> deleteItem(String id) async {
+    await deleteDivision(id);
   }
 }
 
