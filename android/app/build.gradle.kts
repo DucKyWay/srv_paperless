@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -23,10 +26,20 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.srv_paperless"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+
+        // การอ่านไฟล์ .env
+        val env = Properties()
+        val envFile = project.rootProject.file("../.env")
+        if (envFile.exists()) {
+            FileInputStream(envFile).use { 
+                env.load(it) 
+            }
+        }
+        
+        // ส่งค่าไปยัง AndroidManifest.xml
+        manifestPlaceholders["GOOGLE_MAP_API_KEY"] = env.getProperty("GOOGLE_MAP_API_KEY") ?: ""
+
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -35,8 +48,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
