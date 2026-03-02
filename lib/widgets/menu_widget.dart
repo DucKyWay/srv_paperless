@@ -42,6 +42,7 @@ class MenuWidget extends ConsumerWidget {
                 },
               ),
               if (isUserDivisionBudget) ...[
+                _header("กลุ่มบริหารงานงบประมาณ"),
                 ListTile(
                   leading: const Icon(Icons.book_outlined),
                   title: const Text("จัดการโครงการ"),
@@ -52,21 +53,33 @@ class MenuWidget extends ConsumerWidget {
                       ),
                 ),
               ],
+              _header("โครงการของฉัน"),
               ListTile(
-                leading: const Icon(Icons.add_business_outlined),
-                title: const Text("ยื่นโครงการใหม่"),
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.projectCreate);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.my_library_books_outlined),
+                leading: const Icon(Icons.library_add_outlined),
                 title: const Text("ร่างโครงการของฉัน"),
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.projectDraft);
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.list_alt_outlined),
+                title: const Text("โครงการทั้งหมดของฉัน"),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.projectPendingAndReject,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.my_library_books_outlined),
+                title: const Text("โครงการที่ต้องดำเนินการ"),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.projectApproved);
+                },
+              ),
               if (isUserRoleAdmin) ...[
+                _header("ผู้ดูแลระบบ"),
                 ListTile(
                   leading: const Icon(Icons.admin_panel_settings_outlined),
                   title: const Text("จัดการข้อมูลระบบ"),
@@ -114,6 +127,23 @@ class MenuWidget extends ConsumerWidget {
       ),
       body: child,
       floatingActionButton: floatingActionButton,
+    );
+  }
+
+  Widget _header(String title) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(width: 18),
+            Text(
+              title,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        Divider(),
+      ],
     );
   }
 }

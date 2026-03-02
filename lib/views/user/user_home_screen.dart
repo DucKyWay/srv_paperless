@@ -69,27 +69,32 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                   Colors.orange.shade50,
                   () {},
                 ),
-                _card(
-                  context,
-                  "สรุปโครงการที่ดำเนินการสำเร็จ",
-                  6,
-                  Colors.green.shade50,
-                  () {},
-                ),
+                _card(context, "สรุปโครงการ", 6, Colors.green.shade50, () {}),
               ],
 
-              _card(context, "ยื่นโครงการ", 1, Colors.blue.shade50, () {
-                Navigator.pushNamed(context, AppRoutes.projectPendingAndReject);
-              }),
-              _card(context, "ติดตามโครงการ", 2, Colors.orange.shade50, () {
-                Navigator.pushNamed(context, AppRoutes.projectApproved);
+              _card(context, "ยื่นโครงการใหม่", 1, Colors.blue.shade50, () {
+                Navigator.pushNamed(context, AppRoutes.projectDraft);
               }),
               _card(
                 context,
-                "สรุปโครงการที่ดำเนินการสำเร็จ",
-                3,
+                "ติดตามโครงการของฉัน",
+                2,
+                Colors.orange.shade50,
+                () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.projectPendingAndReject,
+                  );
+                },
+              ),
+              _card(
+                context,
+                "โครงการที่ต้องดำเนินการ",
+                2,
                 Colors.green.shade50,
-                () {},
+                () {
+                  Navigator.pushNamed(context, AppRoutes.projectApproved);
+                },
               ),
             ],
           ),
