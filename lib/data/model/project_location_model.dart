@@ -5,6 +5,7 @@ class ProjectLocation {
   String? requestId;
   String? locationImagePath;
   String? locationImageDetail;
+  String? note;
   GeoPoint? location;
 
   ProjectLocation({
@@ -12,6 +13,7 @@ class ProjectLocation {
     required this.requestId,
     required this.locationImagePath,
     required this.locationImageDetail,
+    required this.note,
     required this.location,
   });
 
@@ -19,6 +21,7 @@ class ProjectLocation {
     String? id,
     String? requestId,
     String? locationImagePath,
+    String? note,
     String? locationImageDetail,
     GeoPoint? location,
   }) {
@@ -27,6 +30,7 @@ class ProjectLocation {
       requestId: requestId ?? this.requestId,
       locationImagePath: locationImagePath ?? this.locationImagePath,
       locationImageDetail: locationImageDetail ?? this.locationImageDetail,
+      note: note ?? this.note,
       location: location ?? this.location,
     );
   }
@@ -37,6 +41,7 @@ class ProjectLocation {
       requestId: map['request_id']?.toString() ?? '',
       locationImagePath: map['location_image_path']?.toString() ?? '',
       locationImageDetail: map['location_image_detail']?.toString() ?? '',
+      note: map['note']?.toString() ?? '',
       location: map['location'] as GeoPoint?,
     );
   }
@@ -46,6 +51,7 @@ class ProjectLocation {
       'request_id': requestId,
       'location_image_path': locationImagePath,
       'location_image_detail': locationImageDetail,
+      'note':note,
       'location': location,
     };
   }

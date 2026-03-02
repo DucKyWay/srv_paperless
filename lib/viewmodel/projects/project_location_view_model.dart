@@ -46,6 +46,38 @@ class ProjectLocationViewModel extends AsyncNotifier<bool> {
     });
   }
 
+  // เพิ่มฟังก์ชันอัปเดตพร้อมรูปภาพ
+  Future<void> updateLocationWithImage({
+    required String id,
+    required ProjectLocation projectLocation,
+    required XFile? imageFile,
+  }) async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      String? uploadedFileName = projectLocation.locationImagePath;
+
+      if (imageFile != null) {
+        final fileName =
+            "loc_${projectLocation.requestId}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+        await uploadFile(fileName, imageFile.path);
+        uploadedFileName = fileName;
+      }
+
+      final updatedLocation = projectLocation.copyWith(
+        locationImagePath: uploadedFileName,
+      );
+
+      final repository = ref.read(projectLocationRepoProvider);
+      final result = await repository.update(id, updatedLocation);
+
+      if (result == 1) {
+        ref.invalidate(projectLocationsProvider(projectLocation.requestId!));
+      }
+      return result == 1;
+    });
+  }
+
   Future<void> updateLocation({
     required String id,
     required ProjectLocation projectLocation,
