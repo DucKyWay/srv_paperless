@@ -59,7 +59,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                   6,
                   Colors.blue.shade50,
                   () {
-                    Navigator.pushNamed(context, AppRoutes.projectRequest);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.budgetProjectRequest,
+                    );
                   },
                 ),
                 _card(

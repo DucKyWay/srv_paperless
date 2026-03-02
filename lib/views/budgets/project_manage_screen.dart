@@ -68,7 +68,7 @@ Widget pendingRequest(BuildContext context, WidgetRef ref) {
         itemBuilder:
             (context, index) => ProjectCardDetail(
               project: projects[index],
-              routes: AppRoutes.projectRequest,
+              routes: AppRoutes.budgetProjectRequest,
             ),
       );
     },

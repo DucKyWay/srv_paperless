@@ -49,7 +49,7 @@ class MenuWidget extends ConsumerWidget {
                   onTap:
                       () => Navigator.pushNamed(
                         context,
-                        AppRoutes.projectRequest,
+                        AppRoutes.budgetProjectRequest,
                       ),
                 ),
               ],

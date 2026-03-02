@@ -20,31 +20,34 @@ class ProjectApproved extends ConsumerStatefulWidget {
 class _ProjectApprovedState extends ConsumerState<ProjectApproved> {
   @override
   Widget build(BuildContext context) {
-    final userId = ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
+    final userId =
+        ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
     final width = context.screenWidth;
     final approvedProjects = ref.watch(approvedProjectsProvider);
-    return MenuWidget( title:  HeaderWithBackButton(),
-    child: SafeArea(
-      child: Center(
-        child: Column(
-          children: [
-             TitleNormal(title: "ติดตามโครงการ"),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-                child: ProjectListViewWidget(
-                  projectsAsync: approvedProjects,
-                  emptyMessage: "ยังไม่มีรายการที่อนุมัติ",
-                  routePath: AppRoutes.projectRequest,
+    return MenuWidget(
+      title: HeaderWithBackButton(),
+      child: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              TitleNormal(title: "ติดตามโครงการ"),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                  child: ProjectListViewWidget(
+                    projectsAsync: approvedProjects,
+                    emptyMessage: "ยังไม่มีรายการที่อนุมัติ",
+                    routePath: AppRoutes.budgetProjectRequest,
                     onRefresh: () async {
                       ref.invalidate(approvedProjectsProvider);
-                    }
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),);
+    );
   }
 }

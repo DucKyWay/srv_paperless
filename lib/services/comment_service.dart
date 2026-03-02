@@ -1,4 +1,4 @@
-  import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/repositories/comment_repo.dart';
 
@@ -9,6 +9,15 @@ class CommentService {
 
   Future<List<Comment>> getCommentsByProjectId(String projectId) async {
     return await commentRepo.fetchCommentsByProjectId(projectId);
+  }
+
+  Future<Comment?> getLatestCommentByProjectId(String projectId) async {
+    final comments = await commentRepo.fetchCommentsByProjectId(projectId);
+
+    if (comments.isEmpty) return null;
+
+    comments.sort((a, b) => b.commentCreatedAt!.compareTo(a.commentCreatedAt!));
+    return comments.first;
   }
 }
 

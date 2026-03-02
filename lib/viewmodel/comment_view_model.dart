@@ -92,3 +92,11 @@ final commentsByProjectId = FutureProvider.family<List<Comment>, String>((
   ref.keepAlive();
   return ref.watch(commentsServiceProvider).getCommentsByProjectId(id);
 });
+
+final latestCommentByProjectId = FutureProvider.family<Comment?, String>((
+  ref,
+  id,
+) {
+  ref.keepAlive();
+  return ref.watch(commentsServiceProvider).getLatestCommentByProjectId(id);
+});

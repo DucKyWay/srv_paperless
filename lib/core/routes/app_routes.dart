@@ -22,20 +22,22 @@ class AppRoutes {
   static const userHome = '/user/home';
   static const userProfile = '/user/profile';
 
-  // Project / Draft
+  // Project
   static const projectCreate = '/project/create';
   static const projectDraft = '/project/draft';
-  static const projectRequest = '/project/manage/requests';
-
-  // Project / pending and reject
   static const projectPendingAndReject = '/project/pendingAndReject';
-
-  //Project/ Project Approved
   static const projectApproved = '/projects/projectApproved';
+
+  // Budget / Project
+  static const budgetProjectManage = '/budget/project/manage';
+  // ?projectId=
+  static const budgetProjectRequest = '/budget/project/manage/requests';
 
   // Admin
   static const adminHome = '/admin/home';
+  // ?userId=
   static const adminManageUsers = '/admin/manage/users';
+  // ?mode=
   static const adminManageData = '/admin/manage/data';
 
   // ===== routes =====
@@ -55,7 +57,9 @@ class AppRoutes {
       }
       return const RequestDraftScreen();
     },
-    projectRequest: (context) {
+
+    // Budget / Project
+    budgetProjectRequest: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args != null && args is String) {
         return ProjectRequestScreen(projectId: args);
