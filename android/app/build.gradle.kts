@@ -3,11 +3,8 @@ import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -28,17 +25,28 @@ android {
     defaultConfig {
         applicationId = "com.example.srv_paperless"
 
-        // การอ่านไฟล์ .env
+        // โหลดไฟล์ .env
         val env = Properties()
         val envFile = project.rootProject.file("../.env")
+        
         if (envFile.exists()) {
-            FileInputStream(envFile).use { 
-                env.load(it) 
-            }
+            FileInputStream(envFile).use { env.load(it) }
+            println("SRV Debug: .env file found at ${envFile.absolutePath}")
+        } else {
+            println("SRV Debug: .env file NOT FOUND at ${envFile.absolutePath}")
         }
         
-        // ส่งค่าไปยัง AndroidManifest.xml
-        manifestPlaceholders["GOOGLE_MAP_API_KEY"] = env.getProperty("GOOGLE_MAP_API_KEY") ?: ""
+        val mapsApiKey = env.getProperty("GOOGLE_MAP_API_KEY") 
+                        ?: env.getProperty("API_KEY_GOOGLE_MAP") 
+                        ?: ""
+        
+        if (mapsApiKey.isEmpty()) {
+            println("SRV Debug: GOOGLE_MAP_API_KEY is empty!")
+        } else {
+            println("SRV Debug: GOOGLE_MAP_API_KEY loaded successfully")
+        }
+        
+        manifestPlaceholders["GOOGLE_MAP_API_KEY"] = mapsApiKey
 
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion

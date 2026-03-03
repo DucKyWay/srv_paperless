@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/data/model/project_location_model.dart';
@@ -19,6 +22,7 @@ import '../../../widgets/menu_widget.dart';
 import '../../../widgets/project/card_widget.dart';
 import '../../../widgets/project/project_info_card.dart';
 import '../../../widgets/title_widget.dart';
+import 'location_picker_screen.dart';
 
 class ProjectApprovedSubmitScreen extends ConsumerStatefulWidget {
   final String projectId;
@@ -36,6 +40,10 @@ class _ProjectApprovedSubmitScreenState
   @override
   void initState() {
     super.initState();
+    // Debug API Key
+    final apiKey = dotenv.env['GOOGLE_MAP_API_KEY'];
+    debugPrint("[SRV DEBUG] Google Map API Key from .env: $apiKey");
+    
     Future.microtask(() => _loadData());
   }
 
@@ -67,13 +75,16 @@ class _ProjectApprovedSubmitScreenState
     required XFile? image,
     required String detail,
     required String note,
+    LatLng? pickedLocation,
     String? existingId,
     String? existingImagePath,
   }) async {
     final repository = ref.read(projectLocationProvider.notifier);
+    final geoPoint = pickedLocation != null 
+        ? GeoPoint(pickedLocation.latitude, pickedLocation.longitude) 
+        : null;
 
     if (existingId == null) {
-      // กรณีสร้างใหม่
       if (image == null) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("กรุณาเลือกรูปภาพ")));
@@ -85,18 +96,17 @@ class _ProjectApprovedSubmitScreenState
           locationImagePath: '',
           locationImageDetail: detail,
           note: note,
-          location: null);
+          location: geoPoint);
       await repository.createLocationWithImage(
           projectLocation: newLoc, imageFile: image);
     } else {
-      // กรณีแก้ไข
       final updatedLoc = ProjectLocation(
           id: existingId,
           requestId: project!.id,
           locationImagePath: existingImagePath,
           locationImageDetail: detail,
           note: note,
-          location: null);
+          location: geoPoint);
       await repository.updateLocationWithImage(
           id: existingId, projectLocation: updatedLoc, imageFile: image);
     }
@@ -111,6 +121,11 @@ class _ProjectApprovedSubmitScreenState
         TextEditingController(text: existingLoc?.note);
     XFile? selectedImage;
     String? currentImageUrl;
+    LatLng? pickedLatLng;
+
+    if (existingLoc?.location != null) {
+      pickedLatLng = LatLng(existingLoc!.location!.latitude, existingLoc.location!.longitude);
+    }
 
     if (existingLoc != null) {
       currentImageUrl = await getPrivateFileUrl(existingLoc.locationImagePath ?? '');
@@ -128,94 +143,138 @@ class _ProjectApprovedSubmitScreenState
               left: 20,
               right: 20,
               top: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(existingLoc == null ? "เพิ่มความคืบหน้า" : "แก้ไขความคืบหน้า",
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () async {
-                  final source = await showModalBottomSheet<ImageSource>(
-                    context: context,
-                    builder: (context) => const ImageSourceSheetContent(),
-                  );
-                  if (source != null) {
-                    final image = await ImagePicker().pickImage(source: source);
-                    if (image != null) setModalState(() => selectedImage = image);
-                  }
-                },
-                child: Container(
-                  height: 180,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade300)),
-                  child: selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.file(File(selectedImage!.path),
-                              fit: BoxFit.cover))
-                      : (currentImageUrl != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(currentImageUrl,
-                                  fit: BoxFit.cover))
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                  Icon(Icons.add_a_photo_rounded,
-                                      size: 50, color: Colors.grey[400]),
-                                  const SizedBox(height: 10),
-                                  const Text("แตะเพื่อเปลี่ยนรูปภาพ",
-                                      style: TextStyle(color: Colors.grey))
-                                ])),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(existingLoc == null ? "เพิ่มความคืบหน้า" : "แก้ไขความคืบหน้า",
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () async {
+                    final source = await showModalBottomSheet<ImageSource>(
+                      context: context,
+                      builder: (context) => const ImageSourceSheetContent(),
+                    );
+                    if (source != null) {
+                      final image = await ImagePicker().pickImage(source: source);
+                      if (image != null) setModalState(() => selectedImage = image);
+                    }
+                  },
+                  child: Container(
+                    height: 180,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade300)),
+                    child: selectedImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.file(File(selectedImage!.path),
+                                fit: BoxFit.cover))
+                        : (currentImageUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(currentImageUrl,
+                                    fit: BoxFit.cover))
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    Icon(Icons.add_a_photo_rounded,
+                                        size: 50, color: Colors.grey[400]),
+                                    const SizedBox(height: 10),
+                                    const Text("แตะเพื่อเปลี่ยนรูปภาพ",
+                                        style: TextStyle(color: Colors.grey))
+                                  ])),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                  label: "คำอธิบายภาพ", controller: detailController),
-              const SizedBox(height: 12),
-              CustomTextField(label: "หมายเหตุ", controller: noteController),
-              const SizedBox(height: 25),
-              Row(
-                children: [
-                  if (existingLoc != null)
+                const SizedBox(height: 20),
+                
+                CustomButton(
+                  height: 45,
+                  text: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.location_on_outlined, color: Colors.white, size: 20),
+                      const SizedBox(width: 8),
+                      Text(pickedLatLng == null ? "เลือกสถานที่จากแผนที่" : "เปลี่ยนสถานที่", 
+                        style: const TextStyle(color: Colors.white, fontSize: 14)),
+                    ],
+                  ),
+                  color: Colors.orange.shade700,
+                  border: 15,
+                  onPressed: () async {
+                    final result = await Navigator.push<LocationResult>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocationPickerScreen(
+                          initialLocation: pickedLatLng ?? const LatLng(13.8476, 100.5696),
+                        ),
+                      ),
+                    );
+                    if (result != null) {
+                      setModalState(() {
+                        pickedLatLng = result.latLng;
+                        if (detailController.text.isEmpty) {
+                          detailController.text = result.address;
+                        }
+                      });
+                    }
+                  },
+                ),
+                
+                if (pickedLatLng != null) ...[
+                  const SizedBox(height: 8),
+                  Text("พิกัดที่เลือก: ${pickedLatLng!.latitude.toStringAsFixed(4)}, ${pickedLatLng!.longitude.toStringAsFixed(4)}",
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                ],
+
+                const SizedBox(height: 20),
+                CustomTextField(
+                    label: "คำอธิบายภาพ (ชื่อสถานที่)", controller: detailController),
+                const SizedBox(height: 12),
+                CustomTextField(label: "หมายเหตุ", controller: noteController),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    if (existingLoc != null)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: CustomButton(
+                            height: 55,
+                            text: const Text("ลบ", style: TextStyle(color: Colors.white)),
+                            color: Colors.red,
+                            border: 15,
+                            onPressed: () async {
+                              await ref.read(projectLocationProvider.notifier).deleteLocation(existingLoc.id!, existingLoc.requestId!);
+                              if (mounted) Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ),
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: CustomButton(
-                          height: 55,
-                          text: const Text("ลบ", style: TextStyle(color: Colors.white)),
-                          color: Colors.red,
-                          onPressed: () async {
-                            await ref.read(projectLocationProvider.notifier).deleteLocation(existingLoc.id!, existingLoc.requestId!);
-                            if (mounted) Navigator.pop(context);
-                          },
-                          border: 15,
+                      child: CustomButton(
+                        height: 55,
+                        text: const Text("บันทึก", style: TextStyle(color: Colors.white)),
+                        color: const Color(0xff3A9AB5),
+                        border: 15,
+                        onPressed: () => _handleSaveProgress(
+                          image: selectedImage,
+                          detail: detailController.text,
+                          note: noteController.text,
+                          pickedLocation: pickedLatLng,
+                          existingId: existingLoc?.id,
+                          existingImagePath: existingLoc?.locationImagePath,
                         ),
                       ),
                     ),
-                  Expanded(
-                    child: CustomButton(
-                      height: 55,
-                      text: const Text("บันทึก", style: TextStyle(color: Colors.white)),
-                      color: const Color(0xff3A9AB5),
-                      border: 15,
-                      onPressed: () => _handleSaveProgress(
-                        image: selectedImage,
-                        detail: detailController.text,
-                        note: noteController.text,
-                        existingId: existingLoc?.id,
-                        existingImagePath: existingLoc?.locationImagePath,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),
@@ -347,6 +406,17 @@ class _ProjectApprovedSubmitScreenState
                                 Text("หมายเหตุ : ${loc.note}",
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.grey[700])),
+                              ],
+                              if (loc.location != null) ...[
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on, size: 16, color: Colors.red),
+                                    const SizedBox(width: 4),
+                                    Text("แสดงตำแหน่งในโครงการ", 
+                                      style: TextStyle(fontSize: 12, color: Colors.blue.shade700, decoration: TextDecoration.underline)),
+                                  ],
+                                ),
                               ],
                             ],
                           ),
