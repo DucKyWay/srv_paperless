@@ -103,7 +103,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "อนุมัติโครงการ : ${project!.status.label}",
+                      "สถานะโครงการ : ${project!.status.label}",
                       style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 8),

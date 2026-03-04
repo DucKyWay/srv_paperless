@@ -40,12 +40,11 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
         title: const HeaderWithBackButton(),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+              Container(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TitleNormal(
                       title: "จัดการคำขออนุมัติ",
