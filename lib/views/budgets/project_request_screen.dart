@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
@@ -141,7 +142,15 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                             (_) => AlertConfirmWidget(
                               title: "คุณต้องการอนุมัติโครงการนี้หรือไม่",
                               color: Colors.green.shade50,
-                              onConfirm: () {},
+                              onConfirm: () {
+                                ref
+                                    .watch(projectProvider.notifier)
+                                    .updateProjectStatus(
+                                      widget.projectId,
+                                      ProjectStatus.approve,
+                                    );
+                                Navigator.pop(context);
+                              },
                             ),
                       );
                     },
@@ -169,7 +178,16 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                             (_) => AlertConfirmWidget(
                               title: "คุณต้องการปฏิเสธโครงการนี้หรือไม่",
                               color: Colors.red.shade50,
-                              onConfirm: () {},
+                              onConfirm: () {
+                                ref
+                                    .watch(projectProvider.notifier)
+                                    .updateProjectStatus(
+                                      widget.projectId,
+                                      ProjectStatus.rejected,
+                                    );
+
+                                Navigator.pop(context);
+                              },
                             ),
                       );
                     },

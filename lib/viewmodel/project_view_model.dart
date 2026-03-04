@@ -71,6 +71,23 @@ class ProjectViewModel extends AsyncNotifier<bool> {
     }
   }
 
+  Future<void> updateProjectStatus(String id, ProjectStatus status) async {
+    try {
+      state = const AsyncValue.loading();
+
+      final bool isSuccess = await ref
+          .read(projectServiceProvider)
+          .updateProjectStatus(id, status);
+      if (isSuccess) {
+        _refreshProjectLists();
+      }
+
+      state = AsyncValue.data(isSuccess);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
   Future<void> deleteProject(String id) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {

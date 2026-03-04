@@ -44,6 +44,17 @@ class ProjectService {
     return result == 0;
   }
 
+  Future<bool> updateProjectStatus(String id, ProjectStatus status) async {
+    final project = await projectRepo.fetchProjectById(id);
+    if (project != null) {
+      project.status = status;
+      final result = await projectRepo.update(id, project);
+      return result == 0;
+    }
+
+    return false;
+  }
+
   Future<bool> deleteProject(String id) async {
     final result = await projectRepo.delete(id);
     return result == 0;
@@ -51,9 +62,11 @@ class ProjectService {
 
   Future<String?> uploadProjectFile({
     required String projectId,
-    required String filePath}) async {
+    required String filePath,
+  }) async {
     try {
-      final fileName = "project_${projectId}_${DateTime.now().millisecondsSinceEpoch}.pdf";
+      final fileName =
+          "project_${projectId}_${DateTime.now().millisecondsSinceEpoch}.pdf";
       uploadFile(fileName, filePath);
 
       final result = await projectRepo.updateProjectFile(projectId, fileName);
