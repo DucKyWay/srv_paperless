@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
-import 'package:srv_paperless/data/repositories/comment_repo.dart';
 import 'package:srv_paperless/services/comment_service.dart';
 
 final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(
@@ -12,16 +11,6 @@ final commentProvider = AsyncNotifierProvider<CommentViewModel, void>(
 class CommentViewModel extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
-
-  Future<Comment?> getCommentById(String id) async {
-    if (id.isEmpty) return null;
-
-    try {
-      return await ref.read(commentRepoProvider).fetchCommentById(id);
-    } catch (e) {
-      return null;
-    }
-  }
 
   Future<void> createComment(
     String userId,
@@ -35,7 +24,9 @@ class CommentViewModel extends AsyncNotifier<void> {
       commentCreatedAt: DateTime.now(),
     );
 
-    int success = await ref.read(commentRepoProvider).create(comment);
+    int success = await ref
+        .read(commentsServiceProvider)
+        .createComment(comment);
     _refreshComments();
     if (success == 0) {
       print("Crate commented");
@@ -61,7 +52,7 @@ class CommentViewModel extends AsyncNotifier<void> {
         commentCreatedAt: commentCreatedAt,
       );
 
-      await ref.read(commentRepoProvider).update(id, comment);
+      await ref.read(commentsServiceProvider).updateComment(id, comment);
       _refreshComments();
     }
   }
@@ -70,26 +61,30 @@ class CommentViewModel extends AsyncNotifier<void> {
     if (id.isEmpty) {
       print("ID cannot empty");
     } else {
-      await ref.read(commentRepoProvider).delete(id);
+      await ref.read(commentsServiceProvider).deleteComment(id);
       _refreshComments();
     }
   }
 
   void _refreshComments() {
+    ref.invalidate(allComments);
     ref.invalidate(commentsByProjectId);
+    ref.invalidate(latestCommentByProjectId);
   }
 }
 
-// final allComments = FutureProvider<List<Comment>>((ref) {
-//   ref.keepAlive();
-//   return ref.watch(commentsServiceProvider).getAllComments();
-// });
+final allComments = FutureProvider<List<Comment>>((ref) {
+  ref.keepAlive();
+  return ref.watch(commentsServiceProvider).getAllComments();
+});
 
 final commentsByProjectId = FutureProvider.family<List<Comment>, String>((
   ref,
   id,
 ) {
-  ref.keepAlive();
+  // ref.keepAlive();
+  print("FETCHING START for ID: $id");
+  ref.watch(commentProvider);
   return ref.watch(commentsServiceProvider).getCommentsByProjectId(id);
 });
 
@@ -98,5 +93,6 @@ final latestCommentByProjectId = FutureProvider.family<Comment?, String>((
   id,
 ) {
   ref.keepAlive();
+  ref.watch(commentProvider);
   return ref.watch(commentsServiceProvider).getLatestCommentByProjectId(id);
 });

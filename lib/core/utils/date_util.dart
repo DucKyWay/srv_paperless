@@ -24,7 +24,10 @@ enum ThaiMonth {
 }
 
 class DateUtil {
-  static String formatIntlDate(DateTime? date, {String errorText = 'ไม่ระบุวันที่'}) {
+  static String formatIntlDate(
+    DateTime? date, {
+    String errorText = 'ไม่ระบุวันที่',
+  }) {
     if (date == null) return errorText;
     try {
       return DateFormat('dd MMM yyyy').format(date);
@@ -33,15 +36,22 @@ class DateUtil {
     }
   }
 
-  static String formatThaiDate(DateTime? date, {String errorText = 'ไม่ระบุวันที่'}) {
+  static String formatThaiDate(
+    DateTime? date, {
+    String errorText = 'ไม่ระบุวันที่',
+  }) {
     if (date == null) return errorText;
-    
+
     try {
       final day = date.day;
       final month = ThaiMonth.getLabel(date.month);
       final year = date.year + 543;
-      
-      return "$day $month $year, ${date.hour}:${date.minute}:${date.second} น.";
+
+      final hour = date.hour.toString().padLeft(2, '0');
+      final minute = date.minute.toString().padLeft(2, '0');
+      final second = date.second.toString().padLeft(2, '0');
+
+      return "$day $month $year, $hour:$minute:$second น.";
     } catch (e) {
       return errorText;
     }

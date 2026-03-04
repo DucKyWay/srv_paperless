@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 
 abstract class CommentRepository {
+  Future<List<Comment>> fetchAllComments();
   Future<Comment?> fetchCommentById(String id);
   Future<List<Comment>> fetchCommentsByProjectId(String projectId);
   Future<int> create(Comment newComment);
@@ -42,6 +43,15 @@ class CommentRepositoryImpl implements CommentRepository {
   }
 
   @override
+  Future<List<Comment>> fetchAllComments() async {
+    final snapshot = await _db.collection('comments').get();
+
+    return snapshot.docs.map((doc) {
+      return Comment.fromMap(doc.data(), doc.id);
+    }).toList();
+  }
+
+  @override
   Future<Comment?> fetchCommentById(String id) async {
     final doc = await _db.collection('comments').doc(id).get();
     return doc.exists ? Comment.fromMap(doc.data()!, doc.id) : null;
@@ -49,14 +59,28 @@ class CommentRepositoryImpl implements CommentRepository {
 
   @override
   Future<List<Comment>> fetchCommentsByProjectId(String projectId) async {
-    final snapshot =
-        await _db
-            .collection('comments')
-            .where('project_id', isEqualTo: projectId)
-            .get();
-    return snapshot.docs
-        .map((doc) => Comment.fromMap(doc.data(), doc.id))
-        .toList();
+    try {
+      print("REPO: Fetching comments for project: $projectId");
+      final snapshot =
+          await _db
+              .collection('comments')
+              .where('project_id', isEqualTo: projectId)
+              .get();
+
+      print("REPO: Successfully fetched ${snapshot.docs.length} comments");
+
+      final comments =
+          snapshot.docs
+              .map((doc) => Comment.fromMap(doc.data(), doc.id))
+              .toList();
+
+      comments.sort((a, b) => b.commentCreatedAt.compareTo(a.commentCreatedAt));
+
+      return comments;
+    } catch (e) {
+      print("Repo Error in fetchCommentsByProjectId: $e");
+      return [];
+    }
   }
 
   @override

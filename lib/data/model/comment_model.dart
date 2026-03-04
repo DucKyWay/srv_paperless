@@ -5,7 +5,7 @@ class Comment {
   final String userId;
   final String projectId;
   final String message;
-  final DateTime? commentCreatedAt;
+  final DateTime commentCreatedAt;
 
   Comment({
     this.id,
@@ -20,14 +20,14 @@ class Comment {
     String? userId,
     String? projectId,
     String? message,
-    DateTime? commentCreatedAt
+    DateTime? commentCreatedAt,
   }) {
     return Comment(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       projectId: projectId ?? this.projectId,
       message: message ?? this.message,
-      commentCreatedAt: commentCreatedAt ?? this.commentCreatedAt
+      commentCreatedAt: commentCreatedAt ?? this.commentCreatedAt,
     );
   }
 
@@ -37,7 +37,8 @@ class Comment {
       userId: map['user_id'],
       projectId: map['project_id'],
       message: map['message'],
-      commentCreatedAt: (map['comment_created_at'] as Timestamp?)?.toDate(),
+      commentCreatedAt:
+          (map['comment_created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
