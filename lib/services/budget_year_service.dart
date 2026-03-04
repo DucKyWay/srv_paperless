@@ -28,6 +28,10 @@ class BudgetYearService {
     return await budgetYearRepo.create(budgetYear);
   }
 
+  Future<int> updateBudgetYear(String id, BudgetYear budgetYear) async {
+    return await budgetYearRepo.update(id, budgetYear);
+  }
+
   Future<int> deleteBudgetYear(String id) async {
     return await budgetYearRepo.delete(id);
   }

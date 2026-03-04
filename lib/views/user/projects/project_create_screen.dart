@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/viewmodel/budget_year_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
@@ -19,6 +20,7 @@ import 'package:srv_paperless/widgets/title_widget.dart';
 
 class ProjectCreateScreen extends ConsumerStatefulWidget {
   final String? draftId;
+
   const ProjectCreateScreen({super.key, this.draftId});
 
   @override
@@ -164,6 +166,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
 
     final authAsync = ref.watch(authProvider);
     final user = authAsync.value?.currentUser;
+    final thisBudgetYear = ref.watch(budgetYearByThisYearProvider).value?.id;
 
     if (user == null) return;
 
@@ -177,6 +180,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       userId: user.id,
       pdfPath: _fileName ?? '',
       status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
+      budgetYear: thisBudgetYear ?? '',
     );
     if (widget.draftId == null) {
       await ref

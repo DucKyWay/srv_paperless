@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/views/admin/admin_home_screen.dart';
+import 'package:srv_paperless/views/admin/admin_manage_budget_year_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_data_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';
@@ -39,6 +40,7 @@ class AppRoutes {
   static const adminManageUsers = '/admin/manage/users';
   // ?mode=
   static const adminManageData = '/admin/manage/data';
+  static const adminManageBudgetYear = '/admin/manage/data/budgetYear';
 
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
@@ -83,5 +85,6 @@ class AppRoutes {
       }
       return const AdminHomeScreen();
     },
+    adminManageBudgetYear: (context) => const AdminManageBudgetYearScreen(),
   };
 }

@@ -11,6 +11,7 @@ class Project {
   final String? pdfPath;
   final DateTime? fixLatest;
   ProjectStatus status;
+  final String? budgetYear;
 
   Project({
     required this.id,
@@ -22,6 +23,7 @@ class Project {
     this.pdfPath,
     required this.fixLatest,
     this.status = ProjectStatus.draft,
+    this.budgetYear,
   });
 
   Project copyWith({
@@ -34,6 +36,7 @@ class Project {
     String? pdfPath,
     DateTime? fixLatest,
     ProjectStatus? status,
+    String? budgetYear,
   }) {
     return Project(
       id: id ?? this.id,
@@ -45,6 +48,7 @@ class Project {
       fixLatest: fixLatest ?? this.fixLatest,
       pdfPath: pdfPath ?? this.pdfPath,
       status: status ?? this.status,
+      budgetYear: budgetYear ?? this.budgetYear,
     );
   }
 
@@ -62,6 +66,7 @@ class Project {
         (e) => e.name == map['status'],
         orElse: () => ProjectStatus.draft,
       ),
+      budgetYear: map['budget_year'],
     );
   }
 
@@ -75,6 +80,7 @@ class Project {
       'pdf_path': pdfPath,
       'fix_latest': fixLatest,
       'status': status.name,
+      'budget_year': budgetYear,
     };
   }
 }

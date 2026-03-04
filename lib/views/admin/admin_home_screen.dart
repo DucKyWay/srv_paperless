@@ -56,6 +56,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                 ConfigMode.employeeStatus,
                 Colors.blue.shade700,
               ),
+              _card(
+                context,
+                "จัดการปีงบประมาณ",
+                AppRoutes.adminManageBudgetYear,
+                null,
+                Colors.blue.shade700,
+              ),
             ],
           ),
         ),

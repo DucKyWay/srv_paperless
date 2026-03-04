@@ -9,6 +9,7 @@ abstract class BudgetYearRepository {
   Future<BudgetYear?> fetchBudgetYearByYear(int year);
   Future<BudgetYear?> fetchBudgetYearByThisYear();
   Future<int> create(BudgetYear budgetYear);
+  Future<int> update(String id, BudgetYear budgetYear);
   Future<int> delete(String id);
 }
 
@@ -28,15 +29,20 @@ class BudgetYearRepositoryImpl implements BudgetYearRepository {
   }
 
   @override
+  Future<int> update(String id, BudgetYear budgetYear) async {
+    try {
+      await _db.collection('budget_years').doc(id).update(budgetYear.toMap());
+      return 0;
+    } catch (e) {
+      return 1;
+    }
+  }
+
+  @override
   Future<int> delete(String id) async {
     try {
-      final budgetYear = await fetchBudgetYearById(id);
-      if (budgetYear != null) {
-        await _db.collection('budget_years').doc(id).delete();
-        return 0;
-      } else {
-        return 1;
-      }
+      await _db.collection('budget_years').doc(id).delete();
+      return 0;
     } catch (e) {
       return 1;
     }
@@ -94,7 +100,7 @@ class BudgetYearRepositoryImpl implements BudgetYearRepository {
     try {
       final snapshot =
           await _db
-              .collection('budget_year')
+              .collection('budget_years')
               .where('this_year', isEqualTo: true)
               .limit(1)
               .get();
