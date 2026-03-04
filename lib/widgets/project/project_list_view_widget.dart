@@ -7,7 +7,7 @@ class ProjectListViewWidget extends StatelessWidget {
   final AsyncValue<List<Project>> projectsAsync;
   final String emptyMessage;
   final String routePath;
-  final Future<void> Function()? onRefresh; // เพิ่มตัวแปร callback สำหรับการรีเฟรช
+  final Future<void> Function()? onRefresh;
 
   const ProjectListViewWidget({
     super.key,
@@ -55,10 +55,7 @@ class ProjectListViewWidget extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     "ดึงหน้าจอลงเพื่อโหลดข้อมูลใหม่",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[400],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                   ),
                 ],
               ),
@@ -69,27 +66,23 @@ class ProjectListViewWidget extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 8, bottom: 100),
             itemCount: projects.length,
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: ProjectCardDetail(
-                project: projects[index],
-                routes: routePath,
-              ),
-            ),
+            itemBuilder:
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: ProjectCardDetail(
+                    project: projects[index],
+                    routes: routePath,
+                  ),
+                ),
           );
         }
 
         if (onRefresh != null) {
-          return RefreshIndicator(
-            onRefresh: onRefresh!,
-            child: child,
-          );
+          return RefreshIndicator(onRefresh: onRefresh!, child: child);
         }
         return child;
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) {
         final errorChild = SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -108,7 +101,7 @@ class ProjectListViewWidget extends StatelessWidget {
             ),
           ),
         );
-        
+
         if (onRefresh != null) {
           return RefreshIndicator(onRefresh: onRefresh!, child: errorChild);
         }

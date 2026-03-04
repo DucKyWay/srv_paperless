@@ -5,6 +5,7 @@ import 'package:srv_paperless/viewmodel/project_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
+import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../widgets/project/project_list_view_widget.dart';
@@ -13,10 +14,12 @@ class ProjectPendingAndRejectScreen extends ConsumerStatefulWidget {
   const ProjectPendingAndRejectScreen({super.key});
 
   @override
-  ConsumerState<ProjectPendingAndRejectScreen> createState() => _ProjectPendingAndRejectScreenState();
+  ConsumerState<ProjectPendingAndRejectScreen> createState() =>
+      _ProjectPendingAndRejectScreenState();
 }
 
-class _ProjectPendingAndRejectScreenState extends ConsumerState<ProjectPendingAndRejectScreen> {
+class _ProjectPendingAndRejectScreenState
+    extends ConsumerState<ProjectPendingAndRejectScreen> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
@@ -31,23 +34,17 @@ class _ProjectPendingAndRejectScreenState extends ConsumerState<ProjectPendingAn
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ส่วนหัวข้อแบบมี Subtitle
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.08, vertical: 24),
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.08,
+                  vertical: 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "ติดตามสถานะ",
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ) ?? const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "ตรวจสอบและติดตามความคืบหน้าของโครงการ",
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    TitleSmall(
+                      title: "ติดตามสถานะ",
+                      des: "ตรวจสอบและติดตามความคืบหน้าของโครงการ",
                     ),
                   ],
                 ),
@@ -75,8 +72,14 @@ class _ProjectPendingAndRejectScreenState extends ConsumerState<ProjectPendingAn
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.grey[600],
                   dividerColor: Colors.transparent,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
                   tabs: const [
                     Tab(
                       child: Row(
@@ -116,16 +119,15 @@ class _ProjectPendingAndRejectScreenState extends ConsumerState<ProjectPendingAn
                         routePath: AppRoutes.projectDraft,
                         onRefresh: () async {
                           ref.invalidate(pendingProjectsProvider);
-                        }
-                        ,
+                        },
                       ),
                       ProjectListViewWidget(
                         projectsAsync: rejectProject,
                         emptyMessage: "ยังไม่มีรายการที่ถูกปฏิเสธ",
                         routePath: AppRoutes.projectDraft,
-                          onRefresh: () async {
-                            ref.invalidate(rejectedProjectsProvider);
-                        }
+                        onRefresh: () async {
+                          ref.invalidate(rejectedProjectsProvider);
+                        },
                       ),
                     ],
                   ),

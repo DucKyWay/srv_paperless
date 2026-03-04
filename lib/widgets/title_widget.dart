@@ -10,9 +10,7 @@ abstract class TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [buildLeading(context)]
-    );
+    return Column(children: [buildLeading(context)]);
   }
 }
 
@@ -25,7 +23,10 @@ class TitleNormal extends TitleWidget {
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Column(
         children: [
-          Image.asset("${AppConstants.imagePath}/srv-logo.png", fit: BoxFit.contain),
+          Image.asset(
+            "${AppConstants.imagePath}/srv-logo.png",
+            fit: BoxFit.contain,
+          ),
           Text(
             title ?? "ระบบโครงการออนไลน์",
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),

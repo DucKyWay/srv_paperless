@@ -162,7 +162,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       }
     }
 
-    final authState = ref.read(authProvider);
     final authAsync = ref.watch(authProvider);
     final user = authAsync.value?.currentUser;
 
@@ -236,7 +235,8 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                     child: Column(
                       children: [
                         TitleSmall(
-                          title:
+                          title: "โครงการของฉัน",
+                          des:
                               widget.draftId != null
                                   ? "แก้ไขฉบับร่าง"
                                   : "ยื่นโครงการ",

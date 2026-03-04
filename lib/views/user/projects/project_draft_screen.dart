@@ -13,25 +13,27 @@ class RequestDraftScreen extends ConsumerStatefulWidget {
   const RequestDraftScreen({super.key});
 
   @override
-  ConsumerState<RequestDraftScreen> createState() =>
-      _RequestDraftScreenState();
+  ConsumerState<RequestDraftScreen> createState() => _RequestDraftScreenState();
 }
 
 class _RequestDraftScreenState extends ConsumerState<RequestDraftScreen> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
-    
-    // ใช้ select เพื่อฟังเฉพาะ userId เท่านั้น ป้องกันการ reload บ่อยเกินไป
-    final userId = ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
+
+    final userId =
+        ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
     final draftProjects = ref.watch(draftProjectsProvider(userId));
 
     return MenuWidget(
       title: const HeaderWithBackButton(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, AppRoutes.projectCreate,
-              arguments: 'create');
+          Navigator.pushNamed(
+            context,
+            AppRoutes.projectCreate,
+            arguments: 'create',
+          );
         },
         backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
         child: const Icon(Icons.add, color: Colors.white),
