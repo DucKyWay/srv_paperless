@@ -18,16 +18,25 @@ class ProjectService {
     return await projectRepo.fetchProjectById(id);
   }
 
-  Future<List<Project>> getApprovedProjects() async {
-    return await projectRepo.fetchProjectsByStatus(ProjectStatus.approve.name);
+  Future<List<Project>> getApprovedProjects({String? budgetYear}) async {
+    return await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.approve.name,
+      budgetYear: budgetYear,
+    );
   }
 
-  Future<List<Project>> getRejectProjects() async {
-    return await projectRepo.fetchProjectsByStatus(ProjectStatus.rejected.name);
+  Future<List<Project>> getRejectProjects({String? budgetYear}) async {
+    return await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.rejected.name,
+      budgetYear: budgetYear,
+    );
   }
 
-  Future<List<Project>> getPendingProjects() async {
-    return await projectRepo.fetchProjectsByStatus(ProjectStatus.pending.name);
+  Future<List<Project>> getPendingProjects({String? budgetYear}) async {
+    return await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.pending.name,
+      budgetYear: budgetYear,
+    );
   }
 
   Future<List<Project>> getDraftProjectsByUserId(String id) async {

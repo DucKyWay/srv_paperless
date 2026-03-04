@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
+import 'package:srv_paperless/viewmodel/budget_year_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
+import 'package:srv_paperless/widgets/custom_dropdown.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
@@ -21,8 +23,21 @@ class ProjectPendingAndRejectScreen extends ConsumerStatefulWidget {
 class _ProjectPendingAndRejectScreenState
     extends ConsumerState<ProjectPendingAndRejectScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final thisYear = await ref.read(budgetYearByThisYearProvider.future);
+      if (thisYear != null && mounted) {
+        ref.read(selectedBudgetYearProvider.notifier).setYear(thisYear.id);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
+    final budgetYearsAsync = ref.watch(allBudgetYearsProvider);
+    final selectedYearId = ref.watch(selectedBudgetYearProvider);
     final pendingProject = ref.watch(pendingProjectsProvider);
     final rejectProject = ref.watch(rejectedProjectsProvider);
 
@@ -42,13 +57,44 @@ class _ProjectPendingAndRejectScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TitleSmall(
+                    const TitleSmall(
                       title: "ติดตามสถานะ",
                       des: "ตรวจสอบและติดตามความคืบหน้าของโครงการ",
                     ),
                   ],
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                child: budgetYearsAsync.when(
+                  data: (years) {
+                    return CustomDropdown(
+                      label: "เลือกปีงบประมาณ",
+                      value: selectedYearId,
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text("แสดงทั้งหมด"),
+                        ),
+                        ...years.map(
+                          (y) => DropdownMenuItem(
+                            value: y.id,
+                            child: Text("ปีงบประมาณ ${y.year}"),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        ref
+                            .read(selectedBudgetYearProvider.notifier)
+                            .setYear(val);
+                      },
+                    );
+                  },
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
+              ),
+              const SizedBox(height: 16),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: width * 0.08),
                 padding: const EdgeInsets.all(6),
@@ -63,7 +109,9 @@ class _ProjectPendingAndRejectScreenState
                     color: Theme.of(context).primaryColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -104,9 +152,7 @@ class _ProjectPendingAndRejectScreenState
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: width * 0.04),

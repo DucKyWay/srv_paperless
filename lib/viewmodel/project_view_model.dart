@@ -110,24 +110,42 @@ class ProjectViewModel extends AsyncNotifier<bool> {
   }
 }
 
+class SelectedBudgetYear extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setYear(String? year) {
+    state = year;
+  }
+}
+
+final selectedBudgetYearProvider =
+    NotifierProvider<SelectedBudgetYear, String?>(SelectedBudgetYear.new);
+
 final allProjectsProvider = FutureProvider<List<Project>>((ref) {
   ref.keepAlive();
   return ref.watch(projectServiceProvider).getProjectAll();
 });
 
 final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
-  ref.keepAlive();
-  return ref.watch(projectServiceProvider).getApprovedProjects();
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getApprovedProjects(budgetYear: selectedYear);
 });
 
 final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
-  ref.keepAlive();
-  return ref.watch(projectServiceProvider).getPendingProjects();
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getPendingProjects(budgetYear: selectedYear);
 });
 
 final rejectedProjectsProvider = FutureProvider<List<Project>>((ref) {
-  ref.keepAlive();
-  return ref.watch(projectServiceProvider).getRejectProjects();
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getRejectProjects(budgetYear: selectedYear);
 });
 
 final draftProjectsProvider = FutureProvider.family<List<Project>, String>((

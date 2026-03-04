@@ -6,7 +6,10 @@ abstract class ProjectRepository {
   Future<List<Project>> fetchAllProjects();
   Future<Project?> fetchProjectById(String id);
   Future<List<Project>> fetchProjectsByChairman(String name);
-  Future<List<Project>> fetchProjectsByStatus(String status);
+  Future<List<Project>> fetchProjectsByStatus(
+    String status, {
+    String? budgetYear,
+  });
   Future<List<Project>> fetchProjectDraftByUserId(String id);
   Future<Project?> create(Project project);
   Future<int> update(String id, Project project);
@@ -19,11 +22,13 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<List<Project>> fetchAllProjects() async {
     try {
-      final snapshot = await _db.collection('projects')
-          .orderBy('fix_latest', descending: true)
-          .limit(50)
-          .get();
-          
+      final snapshot =
+          await _db
+              .collection('projects')
+              .orderBy('fix_latest', descending: true)
+              .limit(50)
+              .get();
+
       return snapshot.docs
           .map((doc) => Project.fromMap(doc.data(), doc.id))
           .toList();
@@ -44,10 +49,12 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
   @override
   Future<List<Project>> fetchProjectsByChairman(String name) async {
-    final snapshot = await _db.collection('projects')
-        .where('chairman', isEqualTo: name)
-        .orderBy('fix_latest', descending: true)
-        .get();
+    final snapshot =
+        await _db
+            .collection('projects')
+            .where('chairman', isEqualTo: name)
+            .orderBy('fix_latest', descending: true)
+            .get();
 
     return snapshot.docs
         .map((doc) => Project.fromMap(doc.data(), doc.id))
@@ -55,14 +62,22 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<List<Project>> fetchProjectsByStatus(String status) async {
-    final snapshot = await _db.collection('projects')
-        .where('status', isEqualTo: status)
-        .orderBy('fix_latest', descending: true)
-        .get();
+  Future<List<Project>> fetchProjectsByStatus(
+    String status, {
+    String? budgetYear,
+  }) async {
+    Query query = _db.collection('projects').where('status', isEqualTo: status);
+
+    if (budgetYear != null && budgetYear.isNotEmpty) {
+      query = query.where('budget_year', isEqualTo: budgetYear);
+    }
+
+    final snapshot = await query.orderBy('fix_latest', descending: true).get();
 
     return snapshot.docs
-        .map((doc) => Project.fromMap(doc.data(), doc.id))
+        .map(
+          (doc) => Project.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+        )
         .toList();
   }
 
@@ -87,6 +102,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
       return 1;
     }
   }
+
   @override
   Future<int> delete(String id) async {
     try {
@@ -100,11 +116,13 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<List<Project>> fetchProjectDraftByUserId(String id) async {
     try {
-      final snapshot = await _db.collection('projects')
-          .where('user_id', isEqualTo: id)
-          .where('status', isEqualTo: 'draft')
-          .orderBy('fix_latest', descending: true)
-          .get();
+      final snapshot =
+          await _db
+              .collection('projects')
+              .where('user_id', isEqualTo: id)
+              .where('status', isEqualTo: 'draft')
+              .orderBy('fix_latest', descending: true)
+              .get();
 
       return snapshot.docs
           .map((doc) => Project.fromMap(doc.data(), doc.id))

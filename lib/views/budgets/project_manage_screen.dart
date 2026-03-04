@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/routes/app_routes.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
+import 'package:srv_paperless/viewmodel/budget_year_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
+import 'package:srv_paperless/widgets/custom_dropdown.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
@@ -20,6 +22,17 @@ class ProjectManageScreen extends ConsumerStatefulWidget {
 
 class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final thisYear = await ref.read(budgetYearByThisYearProvider.future);
+      if (thisYear != null && mounted) {
+        ref.read(selectedBudgetYearProvider.notifier).setYear(thisYear.id);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
     final authState = ref.watch(authProvider);
@@ -27,9 +40,13 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
         authState.value?.currentUser?.isBudget ?? false;
 
     if (!isUserDivisionBudget) {
-      Future.microtask(() => Navigator.pop(context));
+      Future.microtask(() {
+        if (mounted) Navigator.pop(context);
+      });
     }
 
+    final budgetYearsAsync = ref.watch(allBudgetYearsProvider);
+    final selectedYearId = ref.watch(selectedBudgetYearProvider);
     final pendingProject = ref.watch(pendingProjectsProvider);
     final approvedProject = ref.watch(approvedProjectsProvider);
     final rejectedProject = ref.watch(rejectedProjectsProvider);
@@ -42,17 +59,41 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TitleNormal(
-                      title: "จัดการคำขออนุมัติ",
-                      des: "ตรวจสอบและดำเนินการอนุมัติโครงการที่เสนอมา",
-                    ),
-                  ],
+              const TitleNormal(
+                title: "จัดการคำขออนุมัติ",
+                des: "ตรวจสอบและดำเนินการอนุมัติโครงการที่เสนอมา",
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                child: budgetYearsAsync.when(
+                  data: (years) {
+                    return CustomDropdown(
+                      label: "เลือกปีงบประมาณ",
+                      value: selectedYearId,
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text("แสดงทั้งหมด"),
+                        ),
+                        ...years.map(
+                          (y) => DropdownMenuItem(
+                            value: y.id,
+                            child: Text("ปีงบประมาณ ${y.year}"),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        ref
+                            .read(selectedBudgetYearProvider.notifier)
+                            .setYear(val);
+                      },
+                    );
+                  },
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const SizedBox.shrink(),
                 ),
               ),
+              const SizedBox(height: 16),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: width * 0.08),
                 decoration: BoxDecoration(
@@ -66,7 +107,9 @@ class _ProjectManageScreenState extends ConsumerState<ProjectManageScreen> {
                     color: Theme.of(context).primaryColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
