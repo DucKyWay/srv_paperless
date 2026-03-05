@@ -27,14 +27,12 @@ class AppRoutes {
   // Project / Draft
   static const projectCreate = '/project/create';
   static const projectDraft = '/project/draft';
-  static const projectRequest = '/project/manage/requests';
 
   // Project / pending and reject
   static const projectPendingAndReject = '/project/pendingAndReject';
 
   // Project / Project Approved
   static const projectApproved = '/projects/projectApproved';
-  // เพิ่มการประกาศค่าคงที่ตรงนี้
   static const projectApprovedSubmit = '/projects/projectApprovedSubmit';
 
   // Budget / Project
@@ -51,62 +49,54 @@ class AppRoutes {
 
   // ===== routes =====
   static Map<String, WidgetBuilder> get routes => {
-        userHome: (context) => const UserHomePage(),
-        userProfile: (context) => const UserProfile(),
-        login: (context) => const LoginScreen(),
+    userHome: (context) => const UserHomePage(),
+    userProfile: (context) => const UserProfile(),
+    login: (context) => const LoginScreen(),
 
-        projectCreate: (context) => const ProjectCreateScreen(),
-        projectPendingAndReject: (context) =>
-            const ProjectPendingAndRejectScreen(),
-        projectApproved: (context) => const ProjectApproved(),
-        projectApprovedSubmit: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            return ProjectApprovedSubmitScreen(projectId: args);
-          }
-          return const ProjectApproved();
-        },
-        
-        projectDraft: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            return ProjectCreateScreen(draftId: args);
-          }
-          return const RequestDraftScreen();
-        },
+    projectCreate: (context) => const ProjectCreateScreen(),
+    projectPendingAndReject: (context) => const ProjectPendingAndRejectScreen(),
+    projectApproved: (context) => const ProjectApproved(),
+    projectApprovedSubmit: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectApprovedSubmitScreen(projectId: args);
+      }
+      return const ProjectApproved();
+    },
 
-        // Budget / Project
-        budgetProjectRequest: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            return ProjectRequestScreen(projectId: args);
-          }
-          return const ProjectManageScreen();
-        },
-        projectRequest: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            return ProjectRequestScreen(projectId: args);
-          }
-          return const ProjectManageScreen();
-        },
+    projectDraft: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectCreateScreen(draftId: args);
+      }
+      return const RequestDraftScreen();
+    },
 
-        // Admin
-        adminHome: (context) => const AdminHomeScreen(),
-        adminManageUsers: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args != null && args is String) {
-            return AdminManageUserScreen(userId: args);
-          }
-          return const AdminManageUsersScreen();
-        },
-        adminManageData: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args is ConfigMode) {
-            return AdminManageDataScreen(mode: args);
-          }
-          return const AdminHomeScreen();
-        },
-        adminManageBudgetYear: (context) => const AdminManageBudgetYearScreen(),
-      };
+    // Budget / Project
+    budgetProjectRequest: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectRequestScreen(projectId: args);
+      }
+      return const ProjectManageScreen();
+    },
+
+    // Admin
+    adminHome: (context) => const AdminHomeScreen(),
+    adminManageUsers: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return AdminManageUserScreen(userId: args);
+      }
+      return const AdminManageUsersScreen();
+    },
+    adminManageData: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is ConfigMode) {
+        return AdminManageDataScreen(mode: args);
+      }
+      return const AdminHomeScreen();
+    },
+    adminManageBudgetYear: (context) => const AdminManageBudgetYearScreen(),
+  };
 }
