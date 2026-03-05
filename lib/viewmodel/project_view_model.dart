@@ -37,8 +37,9 @@ class ProjectViewModel extends AsyncNotifier<bool> {
             .read(projectServiceProvider)
             .uploadProjectFile(projectId: result.id, filePath: pdfFile.path);
       }
+      
       if (result != null) {
-        _refreshProjectLists();
+        _refreshProjectLists(result.id);
       }
       return result != null;
     });
@@ -55,6 +56,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
       final bool isSuccess = await ref
           .read(projectServiceProvider)
           .updateProject(id, project);
+          
       if (isSuccess && pdfFile != null) {
         await ref
             .read(projectServiceProvider)
@@ -62,7 +64,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
       }
 
       if (isSuccess) {
-        _refreshProjectLists();
+        _refreshProjectLists(id);
       }
 
       state = AsyncValue.data(isSuccess);
@@ -78,19 +80,25 @@ class ProjectViewModel extends AsyncNotifier<bool> {
           .read(projectServiceProvider)
           .deleteProject(id);
       if (isSuccess) {
-        _refreshProjectLists();
+        _refreshProjectLists(id);
       }
       return isSuccess;
     });
   }
 
-  void _refreshProjectLists() {
+  // ปรับปรุงให้ล้าง Cache ครอบคลุมทุก Provider
+  void _refreshProjectLists(String? projectId) {
     ref.invalidate(allProjectsProvider);
     ref.invalidate(pendingProjectsProvider);
     ref.invalidate(draftProjectsProvider);
     ref.invalidate(approvedProjectsProvider);
     ref.invalidate(startedProjectsProvider);
     ref.invalidate(rejectedProjectsProvider);
+    
+    // สำคัญ: ต้องล้างข้อมูลรายโปรเจกต์ด้วย เพื่อให้หน้ารายละเอียดอัปเดต
+    if (projectId != null) {
+      ref.invalidate(projectByIdProvider(projectId));
+    }
   }
 }
 
