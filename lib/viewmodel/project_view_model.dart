@@ -37,8 +37,9 @@ class ProjectViewModel extends AsyncNotifier<bool> {
             .read(projectServiceProvider)
             .uploadProjectFile(projectId: result.id, filePath: pdfFile.path);
       }
+      
       if (result != null) {
-        _refreshProjectLists();
+        _refreshProjectLists(result.id);
       }
       return result != null;
     });
@@ -55,6 +56,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
       final bool isSuccess = await ref
           .read(projectServiceProvider)
           .updateProject(id, project);
+          
       if (isSuccess && pdfFile != null) {
         await ref
             .read(projectServiceProvider)
@@ -62,7 +64,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
       }
 
       if (isSuccess) {
-        _refreshProjectLists();
+        _refreshProjectLists(id);
       }
 
       state = AsyncValue.data(isSuccess);
@@ -79,7 +81,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
           .read(projectServiceProvider)
           .updateProjectStatus(id, status);
       if (isSuccess) {
-        _refreshProjectLists();
+        _refreshProjectLists(id);
       }
 
       state = AsyncValue.data(isSuccess);
@@ -95,18 +97,23 @@ class ProjectViewModel extends AsyncNotifier<bool> {
           .read(projectServiceProvider)
           .deleteProject(id);
       if (isSuccess) {
-        _refreshProjectLists();
+        _refreshProjectLists(id);
       }
       return isSuccess;
     });
   }
 
-  void _refreshProjectLists() {
+  void _refreshProjectLists(String? projectId) {
     ref.invalidate(allProjectsProvider);
     ref.invalidate(pendingProjectsProvider);
     ref.invalidate(draftProjectsProvider);
     ref.invalidate(approvedProjectsProvider);
+    ref.invalidate(startedProjectsProvider);
     ref.invalidate(rejectedProjectsProvider);
+
+    if (projectId != null) {
+      ref.invalidate(projectByIdProvider(projectId));
+    }
   }
 }
 
@@ -132,6 +139,12 @@ final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
   return ref
       .watch(projectServiceProvider)
       .getApprovedProjects(budgetYear: selectedYear);
+});
+
+final startedProjectsProvider = FutureProvider<List<Project>>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  ref.keepAlive();
+  return ref.watch(projectServiceProvider).getStartedProjects(budgetYear: selectedYear);
 });
 
 final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {

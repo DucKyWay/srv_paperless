@@ -6,6 +6,7 @@ import 'package:srv_paperless/widgets/menu_widget.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../core/utils/screen_size.dart';
+import '../../../viewmodel/auth_view_model.dart';
 import '../../../viewmodel/project_view_model.dart';
 import '../../../widgets/menu_header_widget.dart';
 import '../../../widgets/project/project_list_view_widget.dart';
@@ -32,6 +33,7 @@ class _ProjectApprovedState extends ConsumerState<ProjectApproved> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = ref.watch(authProvider.select((s) => s.value?.currentUser?.id)) ?? '';
     final width = context.screenWidth;
     final budgetYearsAsync = ref.watch(allBudgetYearsProvider);
     final selectedYearId = ref.watch(selectedBudgetYearProvider);

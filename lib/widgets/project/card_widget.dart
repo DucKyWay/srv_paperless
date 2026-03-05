@@ -36,6 +36,8 @@ class ProjectCardDetail extends ProjectCardWidget {
         return Colors.orange.shade50;
       case ProjectStatus.approve:
         return Colors.green.shade50;
+      case ProjectStatus.started:
+        return Colors.purple.shade50; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
       case ProjectStatus.rejected:
         return Colors.red.shade50;
       default:
@@ -50,6 +52,8 @@ class ProjectCardDetail extends ProjectCardWidget {
         return Colors.orange.shade300;
       case ProjectStatus.approve:
         return Colors.green.shade300;
+      case ProjectStatus.started:
+        return Colors.purple.shade300; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
       case ProjectStatus.rejected:
         return Colors.red.shade300;
       default:
@@ -212,9 +216,9 @@ class CommentCardWidget extends ProjectCardWidget {
 
   @override
   Widget buildLeading(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(userByIdProvider(comment.userId));
+    final userByIdAsync = ref.watch(userByIdProvider(comment.userId));
 
-    return userAsync.when(
+    return userByIdAsync.when(
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (commentor) {

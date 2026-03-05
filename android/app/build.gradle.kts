@@ -1,10 +1,10 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -23,10 +23,31 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.srv_paperless"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+
+        // โหลดไฟล์ .env
+        val env = Properties()
+        val envFile = project.rootProject.file("../.env")
+        
+        if (envFile.exists()) {
+            FileInputStream(envFile).use { env.load(it) }
+            println("SRV Debug: .env file found at ${envFile.absolutePath}")
+        } else {
+            println("SRV Debug: .env file NOT FOUND at ${envFile.absolutePath}")
+        }
+        
+        val mapsApiKey = env.getProperty("GOOGLE_MAP_API_KEY") 
+                        ?: env.getProperty("API_KEY_GOOGLE_MAP") 
+                        ?: ""
+        
+        if (mapsApiKey.isEmpty()) {
+            println("SRV Debug: GOOGLE_MAP_API_KEY is empty!")
+        } else {
+            println("SRV Debug: GOOGLE_MAP_API_KEY loaded successfully")
+        }
+        
+        manifestPlaceholders["GOOGLE_MAP_API_KEY"] = mapsApiKey
+
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -35,8 +56,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }

@@ -24,6 +24,12 @@ class ProjectService {
       budgetYear: budgetYear,
     );
   }
+  Future<List<Project>> getStartedProjects({String? budgetYear}) async {
+    return await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.started.name,
+      budgetYear: budgetYear,
+    );
+  }
 
   Future<List<Project>> getRejectProjects({String? budgetYear}) async {
     return await projectRepo.fetchProjectsByStatus(
