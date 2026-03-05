@@ -8,6 +8,7 @@ import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/budget_year_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
+import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
@@ -16,6 +17,7 @@ import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
+import 'package:srv_paperless/widgets/project/project_detail_look_only.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 class ProjectCreateScreen extends ConsumerStatefulWidget {
@@ -39,9 +41,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   DateTime? _dateTime;
   File? _selectedFile;
   bool _isLoading = false;
+  Project? _project;
 
   Future<void> _loadDraft() async {
-    print(widget.draftId);
     if (widget.draftId == null) {
       _dateTime = DateTime.now();
       requestCreateDateController.text = DateFormat(
@@ -58,6 +60,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
         projectNameController.text = draft.projectName ?? '';
         projectChairmanController.text = draft.chairman ?? '';
         budgetController.text = draft.budget.toString();
+        _project = draft;
 
         if (draft.date != null) {
           _dateTime = draft.date;
@@ -137,11 +140,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
             _fileName = result.files.single.name;
             _selectedFile = File(filePath);
           });
-        } else {
-          debugPrint("File path is null. Trying to select from local storage?");
         }
-      } else {
-        debugPrint("User canceled the picker");
       }
     } catch (e) {
       debugPrint("Error at _pickPDF: $e");
@@ -154,19 +153,18 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
           projectChairmanController.text.isEmpty ||
           budgetController.text.isEmpty ||
           (_fileName == null && _selectedFile == null)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF'),
-            backgroundColor: Colors.red,
-          ),
+        _showSnackBar(
+          context,
+          'กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF',
+          Colors.red,
         );
         return;
       }
     }
 
-    final authAsync = ref.watch(authProvider);
+    final authAsync = ref.read(authProvider);
     final user = authAsync.value?.currentUser;
-    final thisBudgetYear = ref.watch(budgetYearByThisYearProvider).value?.id;
+    final thisBudgetYear = ref.read(budgetYearByThisYearProvider).value?.id;
 
     if (user == null) return;
 
@@ -182,6 +180,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
       budgetYear: thisBudgetYear ?? '',
     );
+
     if (widget.draftId == null) {
       await ref
           .read(projectProvider.notifier)
@@ -205,7 +204,6 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       ref.invalidate(draftProjectsProvider(user.id));
       if (mounted) {
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
         _showSnackBar(
           context,
           isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
@@ -228,8 +226,19 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
+    final authState = ref.watch(authProvider);
+    final user = authState.value?.currentUser;
+
+    // เช็คข้อมูลโปรเจกต์และผู้ใช้
+    final bool isCreatingNew = widget.draftId == null;
+    final bool isProjectLoaded = _project != null;
+    final bool isUserLoaded = user != null;
+
+    // ตรวจสอบเงื่อนไขความเป็นเจ้าของ
+    bool isOwner = isCreatingNew || (isProjectLoaded && isUserLoaded && _project!.userId == user.id);
+
     return MenuWidget(
-      title: HeaderLogoWithBackButton(),
+      title: const HeaderLogoWithBackButton(),
       child:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -238,160 +247,181 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        TitleSmall(
-                          title: "โครงการของฉัน",
-                          des:
-                              widget.draftId != null
-                                  ? "แก้ไขฉบับร่าง"
-                                  : "ยื่นโครงการ",
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: width * 0.08,
+                        if (isOwner) ...[
+                          TitleSmall(
+                            title: "โครงการของฉัน",
+                            des:
+                                widget.draftId != null
+                                    ? "แก้ไขฉบับร่าง"
+                                    : "ยื่นโครงการ",
                           ),
-                          child: Column(
-                            children: [
-                              CustomTextField(
-                                label: "ชื่อโครงการ",
-                                hint: "",
-                                controller: projectNameController,
-                              ),
-                              SizedBox(height: 12),
-                              CustomTextField(
-                                label: "ประธานโครงการ",
-                                hint: "",
-                                controller: projectChairmanController,
-                              ),
-                              SizedBox(height: 12),
-                              CustomTextField(
-                                label: "เสนอโครงการวันที่",
-                                hint: "เลือกวันที่",
-                                controller: requestCreateDateController,
-                                readOnly: true,
-                                onTap: () => _showDatePicker(context),
-                              ),
-                              SizedBox(height: 12),
-                              CustomTextField(
-                                label: "จำนวนเงิน(บาท)",
-                                hint: "0.00",
-                                controller: budgetController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "แนบเอกสารโครงการ (PDF)",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  InkWell(
-                                    onTap: _pickPDF,
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 15,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.08,
+                            ),
+                            child: Column(
+                              children: [
+                                CustomTextField(
+                                  label: "ชื่อโครงการ",
+                                  hint: "",
+                                  controller: projectNameController,
+                                ),
+                                const SizedBox(height: 12),
+                                CustomTextField(
+                                  label: "ประธานโครงการ",
+                                  hint: "",
+                                  controller: projectChairmanController,
+                                ),
+                                const SizedBox(height: 12),
+                                CustomTextField(
+                                  label: "เสนอโครงการวันที่",
+                                  hint: "เลือกวันที่",
+                                  controller: requestCreateDateController,
+                                  readOnly: true,
+                                  onTap: () => _showDatePicker(context),
+                                ),
+                                const SizedBox(height: 12),
+                                CustomTextField(
+                                  label: "จำนวนเงิน(บาท)",
+                                  hint: "0.00",
+                                  controller: budgetController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "แนบเอกสารโครงการ (PDF)",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[100],
-                                        border: Border.all(
-                                          color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    InkWell(
+                                      onTap: _pickPDF,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 15,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.picture_as_pdf,
-                                            color: Colors.red,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[100],
+                                          border: Border.all(
+                                            color: Colors.grey.shade400,
                                           ),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              _fileName ??
-                                                  "คลิกเพื่อเลือกไฟล์ PDF",
-                                              style: TextStyle(
-                                                color:
-                                                    _fileName == null
-                                                        ? Colors.grey
-                                                        : Colors.black,
-                                                overflow: TextOverflow.ellipsis,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.picture_as_pdf,
+                                              color: Colors.red,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                _fileName ??
+                                                    "คลิกเพื่อเลือกไฟล์ PDF",
+                                                style: TextStyle(
+                                                  color:
+                                                      _fileName == null
+                                                          ? Colors.grey
+                                                          : Colors.black,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          if (_fileName != null)
-                                            IconButton(
-                                              icon: const Icon(
-                                                Icons.close,
-                                                size: 20,
+                                            if (_fileName != null)
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.close,
+                                                  size: 20,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _fileName = null;
+                                                    _selectedFile = null;
+                                                  });
+                                                },
                                               ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _fileName = null;
-                                                  _selectedFile = null;
-                                                });
-                                              },
-                                            ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                CustomButton(
+                                  height: 55,
+                                  text: const Text(
+                                    "บันทึกฉบับร่าง",
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              CustomButton(
-                                height: 55,
-                                text: const Text(
-                                  "บันทึกฉบับร่าง",
-                                  style: TextStyle(color: Colors.white),
+                                  border: 15,
+                                  color: const Color(0xff3A6BB5),
+                                  onPressed:
+                                      () => showDialog(
+                                        context: context,
+                                        builder:
+                                            (_) => AlertConfirmWidget(
+                                              title:
+                                                  "คุณต้องการบันทึกฉบับร่างหรือไม่",
+                                              onConfirm:
+                                                  () =>
+                                                      _handleSave(isDraft: true),
+                                            ),
+                                      ),
                                 ),
-                                border: 15,
-                                color: Color(0xff3A6BB5),
-                                onPressed:
-                                    () => showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => AlertConfirmWidget(
-                                            title:
-                                                "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                            onConfirm:
-                                                () =>
-                                                    _handleSave(isDraft: true),
-                                          ),
-                                    ),
-                              ),
-                              SizedBox(height: 20),
-                              CustomButton(
-                                height: 55,
-                                text: const Text(
-                                  "สร้างโครงการ",
-                                  style: TextStyle(color: Colors.white),
+                                const SizedBox(height: 20),
+                                CustomButton(
+                                  height: 55,
+                                  text: const Text(
+                                    "สร้างโครงการ",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  border: 15,
+                                  color: const Color(0xff3A9AB5),
+                                  onPressed:
+                                      () => showDialog(
+                                        context: context,
+                                        builder:
+                                            (_) => AlertConfirmWidget(
+                                              title:
+                                                  "คุณต้องการสร้างโครงการหรือไม่",
+                                              onConfirm:
+                                                  () =>
+                                                      _handleSave(isDraft: false),
+                                            ),
+                                      ),
                                 ),
-                                border: 15,
-                                color: Color(0xff3A9AB5),
-                                onPressed:
-                                    () => showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => AlertConfirmWidget(
-                                            title:
-                                                "คุณต้องการสร้างโครงการหรือไม่",
-                                            onConfirm:
-                                                () =>
-                                                    _handleSave(isDraft: false),
-                                          ),
-                                    ),
-                              ),
-                            ],
+                                const SizedBox(height: 20),
+                              ],
+                            ),
                           ),
-                        ),
+                        ] else if (_project != null) ...[
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final ownerAsync = ref.watch(userByIdProvider(_project!.userId));
+                              return ownerAsync.when(
+                                data: (owner) => Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: TitleNormal(
+                                    title: "ยื่นโครงการ",
+                                    des: "ของ ${owner?.fullname ?? 'ไม่ระบุ'}",
+                                  ),
+                                ),
+                                loading: () => const TitleSmall(title: "กำลังโหลด...", des: ""),
+                                error: (_, __) => const TitleSmall(title: "ไม่สามารถโหลดชื่อเจ้าของได้", des: ""),
+                              );
+                            },
+                          ),
+                          ProjectDetailLookOnly(project: _project!)
+                        ]
                       ],
                     ),
                   ),
@@ -400,13 +430,13 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     );
   }
 
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
+  void _showSnackBar(
     BuildContext context,
     String text,
     Color color,
   ) {
-    return ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text), backgroundColor: color),
+    );
   }
 }
