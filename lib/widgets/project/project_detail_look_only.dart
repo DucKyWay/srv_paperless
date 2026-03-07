@@ -9,7 +9,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
   final Project project;
   const ProjectDetailLookOnly({super.key, required this.project});
 
-  // กำหนดสีพื้นหลังตามสถานะ
   Color _getStatusColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -29,7 +28,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
     }
   }
 
-  // กำหนดสีหลักตามสถานะ
   Color _getPrimaryColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -48,8 +46,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
         return Colors.grey.shade700;
     }
   }
-
-  // กำหนดไอคอนตามสถานะ
   IconData _getStatusIcon(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -96,7 +92,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           child: Stack(
             children: [
-              // พื้นหลังตกแต่ง
               Positioned(
                 right: -20,
                 top: -20,
@@ -111,7 +106,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ส่วนหัว: ชื่อโครงการ และ Badge สถานะ
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +128,6 @@ class ProjectDetailLookOnly extends StatelessWidget {
                     const Divider(height: 1),
                     const SizedBox(height: 16),
 
-                    // รายละเอียดโครงการ
                     _buildInfoRow(Icons.person_rounded, "ประธานโครงการ", project.chairman!, primaryColor),
                     _buildInfoRow(Icons.account_balance_wallet_rounded, "งบประมาณ", "${project.budget!.toStringAsFixed(2)} บาท", primaryColor),
                     _buildInfoRow(Icons.event_note_rounded, "วันที่เสนอโครงการ", DateUtil.formatThaiDate(project.date), primaryColor),
