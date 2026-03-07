@@ -24,6 +24,7 @@ class ProjectService {
       budgetYear: budgetYear,
     );
   }
+
   Future<List<Project>> getStartedProjects({String? budgetYear}) async {
     return await projectRepo.fetchProjectsByStatus(
       ProjectStatus.started.name,
@@ -43,6 +44,42 @@ class ProjectService {
       ProjectStatus.pending.name,
       budgetYear: budgetYear,
     );
+  }
+
+  Future<int> getApprovedProjectsCount({String? budgetYear}) async {
+    return await projectRepo
+        .fetchProjectsByStatus(
+          ProjectStatus.approve.name,
+          budgetYear: budgetYear,
+        )
+        .then((value) => value.length);
+  }
+
+  Future<int> getStartedProjectsCount({String? budgetYear}) async {
+    return await projectRepo
+        .fetchProjectsByStatus(
+          ProjectStatus.started.name,
+          budgetYear: budgetYear,
+        )
+        .then((value) => value.length);
+  }
+
+  Future<int> getRejectProjectsCount({String? budgetYear}) async {
+    return await projectRepo
+        .fetchProjectsByStatus(
+          ProjectStatus.rejected.name,
+          budgetYear: budgetYear,
+        )
+        .then((value) => value.length);
+  }
+
+  Future<int> getPendingProjectsCount({String? budgetYear}) async {
+    return await projectRepo
+        .fetchProjectsByStatus(
+          ProjectStatus.pending.name,
+          budgetYear: budgetYear,
+        )
+        .then((value) => value.length);
   }
 
   Future<List<Project>> getDraftProjectsByUserId(String id) async {

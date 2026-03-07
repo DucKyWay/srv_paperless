@@ -37,7 +37,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
             .read(projectServiceProvider)
             .uploadProjectFile(projectId: result.id, filePath: pdfFile.path);
       }
-      
+
       if (result != null) {
         _refreshProjectLists(result.id);
       }
@@ -56,7 +56,7 @@ class ProjectViewModel extends AsyncNotifier<bool> {
       final bool isSuccess = await ref
           .read(projectServiceProvider)
           .updateProject(id, project);
-          
+
       if (isSuccess && pdfFile != null) {
         await ref
             .read(projectServiceProvider)
@@ -144,7 +144,9 @@ final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
 final startedProjectsProvider = FutureProvider<List<Project>>((ref) {
   final selectedYear = ref.watch(selectedBudgetYearProvider);
   ref.keepAlive();
-  return ref.watch(projectServiceProvider).getStartedProjects(budgetYear: selectedYear);
+  return ref
+      .watch(projectServiceProvider)
+      .getStartedProjects(budgetYear: selectedYear);
 });
 
 final pendingProjectsProvider = FutureProvider<List<Project>>((ref) {
@@ -167,6 +169,34 @@ final draftProjectsProvider = FutureProvider.family<List<Project>, String>((
 ) {
   ref.keepAlive();
   return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
+});
+
+final approvedProjectsCount = FutureProvider<int>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getApprovedProjectsCount(budgetYear: selectedYear);
+});
+
+final startedProjectsCount = FutureProvider<int>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getStartedProjectsCount(budgetYear: selectedYear);
+});
+
+final rejectProjectsCount = FutureProvider<int>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getRejectProjectsCount(budgetYear: selectedYear);
+});
+
+final pendingProjectsCount = FutureProvider<int>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getPendingProjectsCount(budgetYear: selectedYear);
 });
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {

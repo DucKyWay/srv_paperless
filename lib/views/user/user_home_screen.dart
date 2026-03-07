@@ -128,7 +128,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
           child: Padding(
             padding: EdgeInsets.all(18),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
                   child: Text(
@@ -149,6 +149,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward, size: 32),
               ],
             ),
           ),
