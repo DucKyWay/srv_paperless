@@ -28,6 +28,7 @@ class ProjectCardDetail extends ProjectCardWidget {
     required this.project,
     required this.routes,
   });
+
   Color _getStatusColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -37,13 +38,16 @@ class ProjectCardDetail extends ProjectCardWidget {
       case ProjectStatus.approve:
         return Colors.green.shade50;
       case ProjectStatus.started:
-        return Colors.purple.shade50; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
+        return Colors.purple.shade50;
+      case ProjectStatus.finished:
+        return Colors.teal.shade50;
       case ProjectStatus.rejected:
         return Colors.red.shade50;
       default:
         return Colors.white;
     }
   }
+
   Color _getBorderColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -53,7 +57,9 @@ class ProjectCardDetail extends ProjectCardWidget {
       case ProjectStatus.approve:
         return Colors.green.shade300;
       case ProjectStatus.started:
-        return Colors.purple.shade300; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
+        return Colors.purple.shade300;
+      case ProjectStatus.finished:
+        return Colors.teal.shade300;
       case ProjectStatus.rejected:
         return Colors.red.shade300;
       default:
@@ -69,20 +75,23 @@ class ProjectCardDetail extends ProjectCardWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (user) {
+        final borderColor = _getBorderColor(project.status);
+        final bgColor = _getStatusColor(project.status);
+
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           width: MediaQuery.of(context).size.width * 0.85,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: _getStatusColor(project.status), // ใช้สีตามสถานะ
+            color: bgColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: _getBorderColor(project.status), // ใช้สีขอบตามสถานะ
+              color: borderColor,
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: borderColor.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -95,8 +104,8 @@ class ProjectCardDetail extends ProjectCardWidget {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircleAvatar(
-                      radius: 45,
-                      backgroundColor: Colors.blue[100],
+                      radius: 40,
+                      backgroundColor: Colors.blue.shade50,
                       child: const CircularProgressIndicator(strokeWidth: 2),
                     );
                   }
@@ -104,11 +113,17 @@ class ProjectCardDetail extends ProjectCardWidget {
                   final imageUrl = snapshot.data;
 
                   return Container(
-                    width: 90,
-                    height: 90,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 5,
+                        )
+                      ],
                     ),
                     child: ClipOval(
                       child: Image.network(
@@ -136,46 +151,25 @@ class ProjectCardDetail extends ProjectCardWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            "ชื่อโครงการ: ${project.projectName}",
-                            style: const TextStyle(
+                            project.projectName!,
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: 15,
+                              color: Colors.black.withValues(alpha: 0.8),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        // เพิ่ม Badge แสดงสถานะ
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getBorderColor(project.status),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            project.status?.label ?? '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        _buildStatusBadge(project.status),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "ผู้ยื่นโครงการ : ${user?.fullname}",
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "ยื่นเมื่อ : ${DateUtil.formatIntlDate(project.date)}",
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                    const SizedBox(height: 6),
+                    _buildInfoText(Icons.person_outline, user?.fullname ?? 'ไม่ระบุ'),
+                    _buildInfoText(Icons.calendar_today_outlined, DateUtil.formatThaiDate(project.date)),
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
-                      height: 35,
+                      height: 32,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(
@@ -185,16 +179,17 @@ class ProjectCardDetail extends ProjectCardWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff76B947),
-                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.white,
+                          foregroundColor: borderColor,
+                          side: BorderSide(color: borderColor, width: 1),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           elevation: 0,
                         ),
                         child: const Text(
                           "รายละเอียด",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ),
                     ),
@@ -205,6 +200,44 @@ class ProjectCardDetail extends ProjectCardWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatusBadge(ProjectStatus? status) {
+    final color = _getBorderColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        status?.label ?? '',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoText(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade600),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -224,95 +257,82 @@ class CommentCardWidget extends ProjectCardWidget {
       data: (commentor) {
         return Container(
           margin: const EdgeInsets.only(bottom: 20),
-          padding: const EdgeInsets.fromLTRB(10, 5, 20, 20),
+          padding: const EdgeInsets.fromLTRB(12, 12, 20, 16),
           decoration: BoxDecoration(
-            color: const Color(0xffFFDAD5),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black, width: 1.5),
+            color: const Color(0xffFFF1F0),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.red.shade100, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.shade900.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                children: [
-                  const SizedBox(height: 24),
-                  FutureBuilder<String>(
-                    future: getPrivateFileUrl(commentor?.image ?? ''),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircleAvatar(
-                          radius: 45,
-                          backgroundColor: Colors.blue[100],
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        );
-                      }
-
-                      final imageUrl = snapshot.data;
-
-                      return Container(
-                        width: 90, // radius * 2
-                        height: 90,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: ClipOval(
-                          child: Image.network(
-                            imageUrl ?? '',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                "assets/images/user.png",
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+              FutureBuilder<String>(
+                future: getPrivateFileUrl(commentor?.image ?? ''),
+                builder: (context, snapshot) {
+                  final imageUrl = snapshot.data;
+                  return Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: imageUrl != null
+                          ? Image.network(imageUrl, fit: BoxFit.cover)
+                          : Image.asset("assets/images/user.png", fit: BoxFit.cover),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: RichText(
-                        text: const TextSpan(
-                          text: "หมายเหตุ",
-                          style: TextStyle(color: Colors.black54, fontSize: 14),
-                          children: [
-                            TextSpan(
-                              text: "*",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          commentor?.fullname ?? 'ไม่ทราบชื่อ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            "หมายเหตุ",
+                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
-                      "ชื่อ: ${commentor?.fullname ?? 'ไม่ทราบชื่อ'}",
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
+                      comment.message,
+                      style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
                     ),
-                    const SizedBox(height: 4),
-                    Text(comment.message),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       DateUtil.formatThaiDate(comment.commentCreatedAt),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],

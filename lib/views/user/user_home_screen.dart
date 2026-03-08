@@ -111,6 +111,15 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                   Navigator.pushNamed(context, AppRoutes.projectApproved);
                 },
               ),
+              _card(
+                context,
+                "โครงการที่ดำเนินเสร็จสิ้น",
+                2,
+                Colors.green.shade50,
+                    () {
+                  Navigator.pushNamed(context, AppRoutes.projectFinished);
+                },
+              ),
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/views/admin/admin_home_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';
@@ -6,6 +7,7 @@ import 'package:srv_paperless/views/budgets/project_manage_screen.dart';
 import 'package:srv_paperless/views/budgets/project_request_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_approved_screen.dart';
 import 'package:srv_paperless/views/user/projects/project_create_screen.dart';
+import 'package:srv_paperless/views/user/projects/project_finished_detail_screen.dart';
 
 import '../../views/admin/admin_manage_budget_year_screen.dart';
 import '../../views/admin/admin_manage_data_screen.dart';
@@ -13,6 +15,7 @@ import '../../views/login/login_screen.dart';
 import '../../views/user/projects/project_approved_submit_screen.dart';
 import '../../views/user/projects/project_draft_screen.dart';
 import '../../views/user/projects/project_pending_reject_screen.dart';
+import '../../views/user/projects/project_finished_screen.dart';
 import '../../views/user/user_home_screen.dart';
 import '../../views/user/user_profile_screen.dart';
 
@@ -35,6 +38,9 @@ class AppRoutes {
   static const projectApproved = '/projects/projectApproved';
   static const projectApprovedSubmit = '/projects/projectApprovedSubmit';
 
+  // Project /Finished
+  static const projectFinished = '/projects/projectSuccessScreen';
+  static const projectFinishedDetail = '/projects/projectSuccessDetail';
   // Budget / Project
   static const budgetProjectManage = '/budget/project/manage';
   // ?projectId=
@@ -52,7 +58,6 @@ class AppRoutes {
     userHome: (context) => const UserHomePage(),
     userProfile: (context) => const UserProfile(),
     login: (context) => const LoginScreen(),
-
     projectCreate: (context) => const ProjectCreateScreen(),
     projectPendingAndReject: (context) => const ProjectPendingAndRejectScreen(),
     projectApproved: (context) => const ProjectApproved(),
@@ -72,6 +77,15 @@ class AppRoutes {
       return const RequestDraftScreen();
     },
 
+    //Success Project
+    projectFinished: (context) => const ProjectFinishedScreen(),
+    projectFinishedDetail: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is String) {
+        return ProjectFinishedDetailScreen(projectId: args);
+      }
+      return const ProjectFinishedScreen();
+    },
     // Budget / Project
     budgetProjectRequest: (context) {
       final args = ModalRoute.of(context)?.settings.arguments;
