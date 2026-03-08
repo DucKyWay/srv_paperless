@@ -7,6 +7,7 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../core/routes/app_routes.dart';
+import '../../viewmodel/project_view_model.dart';
 
 class UserHomePage extends ConsumerStatefulWidget {
   const UserHomePage({super.key});
@@ -29,6 +30,11 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     final authState = ref.watch(authProvider);
     final user = authState.value?.currentUser;
     final isUserDivisionBudget = user?.isBudget ?? false;
+
+    final approvedProjects = ref.watch(approvedProjectsCount).value ?? 0;
+    final startedProjects = ref.watch(startedProjectsCount).value ?? 0;
+    final rejectProjects = ref.watch(rejectProjectsCount).value ?? 0;
+    final pendingProjects = ref.watch(pendingProjectsCount).value ?? 0;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
@@ -56,7 +62,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                 _card(
                   context,
                   "คำขออนุมัติโครงการ",
-                  6,
+                  pendingProjects,
                   Colors.blue.shade50,
                   () {
                     Navigator.pushNamed(
@@ -68,14 +74,20 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                 _card(
                   context,
                   "ติดตามผลโครงการ",
-                  6,
+                  startedProjects + approvedProjects,
                   Colors.orange.shade50,
                   () {},
                 ),
-                _card(context, "สรุปโครงการ", 6, Colors.green.shade50, () {}),
+                _card(
+                  context,
+                  "สรุปโครงการ",
+                  startedProjects,
+                  Colors.green.shade50,
+                  () {},
+                ),
               ],
 
-              _card(context, "ยื่นโครงการใหม่", 1, Colors.blue.shade50, () {
+              _card(context, "ยื่นโครงการใหม่", null, Colors.blue.shade50, () {
                 Navigator.pushNamed(context, AppRoutes.projectDraft);
               }),
               _card(
@@ -109,7 +121,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
   Widget _card(
     BuildContext context,
     String text,
-    int num,
+    int? num,
     Color color,
     VoidCallback onTap,
   ) {
@@ -143,7 +155,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  '$num',
+                  num?.toString() ?? '',
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
