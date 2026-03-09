@@ -27,7 +27,7 @@ class UserProfile extends ConsumerWidget {
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
-        error: (e, _) => _showSnackBar(context, "เกิดข้อผิดพลาดซ ๓ำ", Colors.red),
+        error: (e, _) => _showSnackBar(context, "เกิดข้อผิดพลาด", Colors.red),
         data: (_) {
           if (previous is AsyncLoading) {
             _showSnackBar(context, "ดำเนินการสำเร็จ", Colors.green);
@@ -40,8 +40,12 @@ class UserProfile extends ConsumerWidget {
       Navigator.pushNamed(context, AppRoutes.login);
     }
 
-    final employeeStatusAsync = ref.watch(employeeStatusByKey(user!.employeeStatus));
-    final departmentAsync = ref.watch(academicDepartmentByKey(user.academicDepartment));
+    final employeeStatusAsync = ref.watch(
+      employeeStatusByKey(user!.employeeStatus),
+    );
+    final departmentAsync = ref.watch(
+      academicDepartmentByKey(user.academicDepartment),
+    );
     final divisionAsync = ref.watch(divisionsByKey(user.divisions));
 
     return Stack(
@@ -61,43 +65,64 @@ class UserProfile extends ConsumerWidget {
                   const SizedBox(height: 20),
                   Text(
                     user.username,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   ProfileInfoRow(topic: "ชื่อ-นามสกุล:", info: user.fullname),
-                  ProfileInfoRow(topic: "ตำแหน่ง:", info: employeeStatusAsync.value?.label ?? "-"),
-                  ProfileInfoRow(topic: "กลุ่มสาระ:", info: departmentAsync.value?.label ?? "-"),
-                  ProfileInfoRow(topic: "ฝ่ายงาน:", info: divisionAsync.value?.label ?? "-"),
+                  ProfileInfoRow(
+                    topic: "ตำแหน่ง:",
+                    info: employeeStatusAsync.value?.label ?? "-",
+                  ),
+                  ProfileInfoRow(
+                    topic: "กลุ่มสาระ:",
+                    info: departmentAsync.value?.label ?? "-",
+                  ),
+                  ProfileInfoRow(
+                    topic: "ฝ่ายงาน:",
+                    info: divisionAsync.value?.label ?? "-",
+                  ),
                   ProfileInfoRow(topic: "ประจำชั้น:", info: user.homeroomClass),
-                  
+
                   const SizedBox(height: 41),
                   CustomTextField(
                     label: "เบอร์โทร",
                     hint: user.phone,
                     controller: phoneController,
                   ),
-                  
+
                   const SizedBox(height: 45),
                   CustomButton(
                     height: 55,
-                    text: const Text("เปลี่ยนรหัสผ่าน", style: TextStyle(color: Colors.white)),
+                    text: const Text(
+                      "เปลี่ยนรหัสผ่าน",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     border: 15,
                     color: const Color(0xFF1D4200),
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (_) => const ChangePasswordDialog(),
-                    ),
+                    onPressed:
+                        () => showDialog(
+                          context: context,
+                          builder: (_) => const ChangePasswordDialog(),
+                        ),
                   ),
                   const SizedBox(height: 8),
                   CustomButton(
                     height: 55,
-                    text: const Text("ยืนยันการแก้ไข", style: TextStyle(color: Colors.white)),
+                    text: const Text(
+                      "ยืนยันการแก้ไข",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     border: 15,
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
                       if (phoneController.text.isNotEmpty) {
-                        ref.read(userProvider.notifier).updatePhoneNumber(phoneController.text);
+                        ref
+                            .read(userProvider.notifier)
+                            .updatePhoneNumber(phoneController.text);
                       }
                     },
                   ),
@@ -107,7 +132,7 @@ class UserProfile extends ConsumerWidget {
             ),
           ),
         ),
-        
+
         if (profileState is AsyncLoading)
           Container(
             color: Colors.black26,
@@ -120,20 +145,22 @@ class UserProfile extends ConsumerWidget {
   void _showImageSourceActionSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => ImageSourceSheet(
-        onSourceSelected: (source) {
-          ref.read(userProvider.notifier).updateProfileImage(source);
-        },
-      ),
+      builder:
+          (context) => ImageSourceSheet(
+            onSourceSelected: (source) {
+              ref.read(userProvider.notifier).updateProfileImage(source);
+            },
+          ),
     );
   }
 
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(BuildContext context, String text, Color color) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        backgroundColor: color,
-      ),
-    );
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
+    BuildContext context,
+    String text,
+    Color color,
+  ) {
+    return ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

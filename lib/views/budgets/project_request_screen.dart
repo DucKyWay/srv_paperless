@@ -9,6 +9,7 @@ import 'package:srv_paperless/viewmodel/comment_view_model.dart';
 import 'package:srv_paperless/viewmodel/project_view_model.dart';
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
+import 'package:srv_paperless/widgets/in_app_browser.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
@@ -122,7 +123,12 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
             ),
 
             // TODO: pdf
-            const SizedBox(height: 24),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+              child: InAppBrowserButton(url: project!.pdfPath),
+            ),
+
+            const SizedBox(height: 8),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),

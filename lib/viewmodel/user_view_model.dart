@@ -49,7 +49,7 @@ class UserProfileViewModel extends AsyncNotifier<void> {
         return;
       }
 
-      await deleteOldUserProfileImages(user.id);
+      await deleteOldFiles("profile", user.id);
 
       final String filename =
           "profile_${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg";
@@ -107,7 +107,10 @@ final userByIdProvider = FutureProvider.family<User?, String>((ref, id) {
   return ref.watch(userServiceProvider).getUserById(id);
 });
 
-final userByUsernameProvider = FutureProvider.family<User?, String>((ref, username) {
+final userByUsernameProvider = FutureProvider.family<User?, String>((
+  ref,
+  username,
+) {
   ref.keepAlive();
   return ref.watch(userServiceProvider).getUserByUsername(username);
 });

@@ -52,22 +52,20 @@ Future<void> deleteFile(String objectName) async {
 Future<String> getPrivateFileUrl(String fileName) async {
   if (fileName.isEmpty) return "";
   try {
-    return await minio.presignedGetObject(bucketName, fileName, expires: 3600);
+    return await minio.presignedGetObject(bucketName, fileName);
   } catch (e) {
     debugPrint("B2 Error: Object '$fileName' does not exist in bucket.");
     return "";
   }
 }
 
-Future<void> deleteOldUserProfileImages(String uid) async {
+Future<void> deleteOldFiles(String type, String uid) async {
   try {
-    final prefix = "profile_${uid}_";
-    
+    final prefix = "${type}_${uid}_";
+
     await for (var result in minio.listObjectsV2(bucketName, prefix: prefix)) {
-      final deleteKeys = result.objects
-          .map((obj) => obj.key)
-          .whereType<String>()
-          .toList();
+      final deleteKeys =
+          result.objects.map((obj) => obj.key).whereType<String>().toList();
 
       if (deleteKeys.isNotEmpty) {
         await minio.removeObjects(bucketName, deleteKeys);
