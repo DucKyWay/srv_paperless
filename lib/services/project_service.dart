@@ -46,6 +46,13 @@ class ProjectService {
     );
   }
 
+  Future<List<Project>> getFinishedProjects({String? budgetYear}) async {
+    return await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.finished.name,
+      budgetYear: budgetYear,
+    );
+  }
+
   Future<int> getApprovedProjectsCount({String? budgetYear}) async {
     return await projectRepo
         .fetchProjectsByStatus(

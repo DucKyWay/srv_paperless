@@ -8,6 +8,7 @@ class ProjectInfoCard extends StatelessWidget {
 
   const ProjectInfoCard({super.key, required this.project});
 
+  // กำหนดสีพื้นหลังตามสถานะ
   Color _getStatusColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -17,7 +18,9 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.approve:
         return Colors.green.shade50;
       case ProjectStatus.started:
-        return Colors.purple.shade50; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
+        return Colors.purple.shade50;
+      case ProjectStatus.finished:
+        return Colors.teal.shade50; // เพิ่มสีสำหรับเสร็จสิ้น
       case ProjectStatus.rejected:
         return Colors.red.shade50;
       default:
@@ -25,6 +28,7 @@ class ProjectInfoCard extends StatelessWidget {
     }
   }
 
+  // กำหนดสีหลักตามสถานะ
   Color _getPrimaryColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -34,11 +38,33 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.approve:
         return Colors.green.shade700;
       case ProjectStatus.started:
-        return Colors.purple.shade700; // เพิ่มสีม่วงสำหรับเริ่มโครงการ
+        return Colors.purple.shade700;
+      case ProjectStatus.finished:
+        return Colors.teal.shade700; // เพิ่มสีสำหรับเสร็จสิ้น
       case ProjectStatus.rejected:
         return Colors.red.shade700;
       default:
         return Colors.grey.shade700;
+    }
+  }
+
+  // กำหนดไอคอนตามสถานะ
+  IconData _getStatusIcon(ProjectStatus? status) {
+    switch (status) {
+      case ProjectStatus.draft:
+        return Icons.edit_document;
+      case ProjectStatus.pending:
+        return Icons.hourglass_empty;
+      case ProjectStatus.approve:
+        return Icons.check_circle_outline;
+      case ProjectStatus.started:
+        return Icons.play_circle_outline;
+      case ProjectStatus.finished:
+        return Icons.task_alt_rounded; // เพิ่มไอคอนสำหรับเสร็จสิ้น
+      case ProjectStatus.rejected:
+        return Icons.cancel_outlined;
+      default:
+        return Icons.info_outline;
     }
   }
 
@@ -85,7 +111,7 @@ class ProjectInfoCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          project.projectName!,
+                          project.projectName ?? "ไม่ระบุชื่อโครงการ",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -99,10 +125,14 @@ class ProjectInfoCard extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Divider(height: 1),
                   const SizedBox(height: 20),
-                  _buildInfoRow(Icons.person_outline, "ประธานโครงการ", project.chairman!, primaryColor),
-                  _buildInfoRow(Icons.payments_outlined, "งบประมาณ", "${project.budget!.toStringAsFixed(2)} บาท", primaryColor),
-                  _buildInfoRow(Icons.calendar_today_outlined, "ยื่นเสนอเมื่อ", DateUtil.formatThaiDate(project.date), primaryColor),
-                  _buildInfoRow(Icons.history_outlined, "แก้ไขล่าสุด", DateUtil.formatThaiDate(project.fixLatest), primaryColor),
+                  _buildInfoRow(Icons.person_outline, "ประธานโครงการ",
+                      project.chairman ?? "ไม่ระบุ", primaryColor),
+                  _buildInfoRow(Icons.payments_outlined, "งบประมาณ",
+                      "${project.budget?.toStringAsFixed(2) ?? '0.00'} บาท", primaryColor),
+                  _buildInfoRow(Icons.calendar_today_outlined, "ยื่นเสนอเมื่อ",
+                      DateUtil.formatThaiDate(project.date), primaryColor),
+                  _buildInfoRow(Icons.history_outlined, "แก้ไขล่าสุด",
+                      DateUtil.formatThaiDate(project.fixLatest), primaryColor),
                 ],
               ),
             ),
@@ -160,16 +190,5 @@ class ProjectInfoCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  IconData _getStatusIcon(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft: return Icons.edit_document;
-      case ProjectStatus.pending: return Icons.hourglass_empty;
-      case ProjectStatus.approve: return Icons.check_circle_outline;
-      case ProjectStatus.started: return Icons.play_circle_outline; // เพิ่มไอคอนสำหรับเริ่มโครงการ
-      case ProjectStatus.rejected: return Icons.cancel_outlined;
-      default: return Icons.info_outline;
-    }
   }
 }
