@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
+import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/comment_view_model.dart';
@@ -30,6 +31,7 @@ class ProjectRequestScreen extends ConsumerStatefulWidget {
 
 class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
   Project? project;
+  String? pdfUrl;
 
   @override
   void initState() {
@@ -44,9 +46,18 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
       projectByIdProvider(widget.projectId).future,
     );
     if (projectData == null) return;
-    setState(() {
-      project = projectData;
-    });
+
+    String? url;
+    if (projectData.pdfPath != null && projectData.pdfPath!.isNotEmpty) {
+      url = await getPrivateFileUrl(projectData.pdfPath!);
+    }
+
+    if (mounted) {
+      setState(() {
+        project = projectData;
+        pdfUrl = url;
+      });
+    }
   }
 
   @override
@@ -122,10 +133,9 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
               child: _projectComments(context, ref),
             ),
 
-            // TODO: pdf
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: InAppBrowserButton(url: project!.pdfPath),
+              child: InAppBrowserButton(url: pdfUrl),
             ),
 
             const SizedBox(height: 8),
