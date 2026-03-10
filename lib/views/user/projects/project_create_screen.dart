@@ -43,6 +43,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   DateTime? _dateTime;
   File? _selectedFile;
   bool _isLoading = false;
+  bool _isSaving = false;
   Project? _project;
   String? pdfUrl;
 
@@ -152,6 +153,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   }
 
   Future<void> _handleSave({required bool isDraft}) async {
+    if (_isSaving) return;
     if (!isDraft) {
       if (projectNameController.text.isEmpty ||
           projectChairmanController.text.isEmpty ||
@@ -172,6 +174,8 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
 
     if (user == null) return;
 
+    setState(() => _isSaving = true);
+
     final projectData = Project(
       projectName: projectNameController.text,
       chairman: projectChairmanController.text,
@@ -185,39 +189,43 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       budgetYear: thisBudgetYear ?? '',
     );
 
-    if (widget.draftId == null) {
-      await ref
-          .read(projectProvider.notifier)
-          .saveProject(
-            project: projectData,
-            isDraft: isDraft,
-            pdfFile: _selectedFile,
-          );
-    } else {
-      await ref
-          .read(projectProvider.notifier)
-          .updateProject(
-            id: widget.draftId!,
-            project: projectData,
-            pdfFile: _selectedFile,
-          );
-    }
+    try {
+      if (widget.draftId == null) {
+        await ref
+            .read(projectProvider.notifier)
+            .saveProject(
+              project: projectData,
+              isDraft: isDraft,
+              pdfFile: _selectedFile,
+            );
+      } else {
+        await ref
+            .read(projectProvider.notifier)
+            .updateProject(
+              id: widget.draftId!,
+              project: projectData,
+              pdfFile: _selectedFile,
+            );
+      }
 
-    final state = ref.read(projectProvider);
-    if (!state.hasError) {
-      ref.invalidate(draftProjectsProvider(user.id));
-      if (mounted) {
-        Navigator.of(context).pop();
-        _showSnackBar(
-          context,
-          isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
-          Colors.green,
-        );
+      final state = ref.read(projectProvider);
+      if (!state.hasError) {
+        ref.invalidate(draftProjectsProvider(user.id));
+        if (mounted) {
+          Navigator.of(context).pop();
+          _showSnackBar(
+            context,
+            isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
+            Colors.green,
+          );
+        }
+      } else {
+        if (mounted) {
+          _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
+        }
       }
-    } else {
-      if (mounted) {
-        _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
-      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -251,8 +259,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        if (isOwner && _project == null ||
-                            _project!.status == ProjectStatus.draft) ...[
+                        if (isOwner &&
+                            (_project == null ||
+                                _project!.status == ProjectStatus.draft)) ...[
                           TitleSmall(
                             title: "โครงการของฉัน",
                             des:
@@ -350,7 +359,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                                 onPressed: () {
                                                   InAppBrowser.launch(pdfUrl!);
                                                 },
-                                                icon: Icon(
+                                                icon: const Icon(
                                                   Icons.open_in_browser,
                                                 ),
                                               ),
@@ -376,52 +385,76 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                 const SizedBox(height: 20),
                                 CustomButton(
                                   height: 55,
-                                  text: const Text(
-                                    "บันทึกฉบับร่าง",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                                  text:
+                                      _isSaving
+                                          ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                          : const Text(
+                                            "บันทึกฉบับร่าง",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                   border: 15,
                                   color: const Color(0xff3A6BB5),
                                   onPressed:
-                                      () => showDialog(
-                                        context: context,
-                                        builder:
-                                            (_) => AlertConfirmWidget(
-                                              title:
-                                                  "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                              onConfirm: () {
-                                                _handleSave(isDraft: true);
-                                                if (mounted) {
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                            ),
-                                      ),
+                                      _isSaving
+                                          ? null
+                                          : () => showDialog(
+                                            context: context,
+                                            builder:
+                                                (_) => AlertConfirmWidget(
+                                                  title:
+                                                      "คุณต้องการบันทึกฉบับร่างหรือไม่",
+                                                  onConfirm: () {
+                                                    Navigator.pop(context);
+                                                    _handleSave(isDraft: true);
+                                                  },
+                                                ),
+                                          ),
                                 ),
                                 const SizedBox(height: 20),
                                 CustomButton(
                                   height: 55,
-                                  text: const Text(
-                                    "สร้างโครงการ",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                                  text:
+                                      _isSaving
+                                          ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                          : const Text(
+                                            "สร้างโครงการ",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                   border: 15,
                                   color: const Color(0xff3A9AB5),
                                   onPressed:
-                                      () => showDialog(
-                                        context: context,
-                                        builder:
-                                            (_) => AlertConfirmWidget(
-                                              title:
-                                                  "คุณต้องการสร้างโครงการหรือไม่",
-                                              onConfirm: () {
-                                                _handleSave(isDraft: false);
-                                                if (mounted) {
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                            ),
-                                      ),
+                                      _isSaving
+                                          ? null
+                                          : () => showDialog(
+                                            context: context,
+                                            builder:
+                                                (_) => AlertConfirmWidget(
+                                                  title:
+                                                      "คุณต้องการสร้างโครงการหรือไม่",
+                                                  onConfirm: () {
+                                                    Navigator.pop(context);
+                                                    _handleSave(isDraft: false);
+                                                  },
+                                                ),
+                                          ),
                                 ),
                                 const SizedBox(height: 20),
                               ],
