@@ -23,66 +23,78 @@ class _AdminManageUsersScreenState
     final usersAsync = ref.watch(allUsersProvider);
 
     return MenuWidget(
-      title: HeaderWithBackButton(),
+      title: const HeaderWithBackButton(),
       child: Column(
         children: [
-          TitleNormal(),
+          const TitleNormal(des: "จัดการข้อมูลผู้ใช้"),
           Expanded(
             child: usersAsync.when(
-              data:
-                  (users) => ListView.builder(
-                    itemCount: users.length,
-                    padding: EdgeInsets.all(16),
+              data: (users) {
+                if (users.isEmpty) {
+                  return const Center(child: Text("ไม่พบข้อมูลผู้ใช้"));
+                }
+                return ListView.builder(
+                  itemCount: users.length,
+                  padding: const EdgeInsets.all(16),
+                  itemBuilder: (context, index) {
+                    final user = users[index];
+                    final division = ref.watch(divisionsByKey(user.divisions));
 
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      final division = ref.watch(
-                        divisionsByKey(user.divisions),
-                      );
-
-                      return Container(
-                        margin: EdgeInsets.symmetric(vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.black45, width: 1.0),
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.black12, width: 1.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
                         ),
-                        child: ListTile(
-                          title: Expanded(
-                            child: Text(
-                              user.fullname,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                        title: Text(
+                          user.fullname,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          division.value?.label ?? 'ไม่ระบุฝ่ายงาน',
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).primaryColor.withOpacity(0.1),
+                          child: Icon(
+                            Icons.person,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey.shade400,
+                        ),
+                        onTap:
+                            () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.adminManageUsers,
+                              arguments: user.id,
                             ),
-                          ),
-                          subtitle: Expanded(
-                            child: Text(division.value?.label ?? ''),
-                          ),
-                          //TODO: use profile image?
-                          leading: Icon(Icons.person),
-                          tileColor: Colors.white,
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.grey.shade700,
-                                ),
-                                onPressed:
-                                    () => Navigator.pushNamed(
-                                      context,
-                                      AppRoutes.adminManageUsers,
-                                      arguments: user.id,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+                      ),
+                    );
+                  },
+                );
+              },
+              error:
+                  (err, stack) => Center(child: Text('เกิดข้อผิดพลาด: $err')),
               loading: () => const Center(child: CircularProgressIndicator()),
             ),
           ),
