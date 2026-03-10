@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
+import 'package:srv_paperless/widgets/in_app_browser.dart';
 
 import '../../core/utils/date_util.dart';
 import '../../core/utils/screen_size.dart';
+import '../../data/minio.dart';
 import '../../data/model/project_model.dart';
 import '../../viewmodel/comment_view_model.dart';
 import 'card_widget.dart';
+
 class ProjectDetailLookOnly extends ConsumerStatefulWidget {
   final Project project;
   const ProjectDetailLookOnly({super.key, required this.project});
 
   @override
-  ConsumerState<ProjectDetailLookOnly> createState() => _ProjectDetailLookOnlyState();
+  ConsumerState<ProjectDetailLookOnly> createState() =>
+      _ProjectDetailLookOnlyState();
 }
 
 class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
@@ -74,13 +78,23 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (widget.project.pdfPath != null &&
+          widget.project.pdfPath!.isNotEmpty) {
+        getPrivateFileUrl(widget.project.pdfPath!);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
     final primaryColor = _getPrimaryColor(widget.project.status);
     final bgColor = _getStatusColor(widget.project.status);
-
-
     final commentsAsync = ref.watch(commentsByProjectId(widget.project.id));
+    String? pdfUrl;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.08),
@@ -93,7 +107,10 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: primaryColor.withOpacity(0.3), width: 1.5),
+              border: Border.all(
+                color: primaryColor.withOpacity(0.3),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: primaryColor.withOpacity(0.1),
@@ -135,7 +152,10 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            _buildStatusBadge(widget.project.status, primaryColor),
+                            _buildStatusBadge(
+                              widget.project.status,
+                              primaryColor,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -165,7 +185,11 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                           DateUtil.formatThaiDate(widget.project.fixLatest),
                           primaryColor,
                         ),
-
+                        InAppBrowserButton(
+                          url: pdfUrl,
+                          color: primaryColor,
+                          height: 32,
+                        ),
                       ],
                     ),
                   ),
@@ -188,7 +212,8 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
           ),
           commentsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Text("เกิดข้อผิดพลาดในการโหลดหมายเหตุ: $err"),
+            error:
+                (err, stack) => Text("เกิดข้อผิดพลาดในการโหลดหมายเหตุ: $err"),
             data: (comments) {
               if (comments.isEmpty) {
                 return const Padding(
@@ -203,9 +228,9 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: comments.length,
-                itemBuilder: (context, index) => CommentCardWidget(
-                  comment: comments[index],
-                ),
+                itemBuilder:
+                    (context, index) =>
+                        CommentCardWidget(comment: comments[index]),
               );
             },
           ),
@@ -262,60 +287,6 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProjectCard extends StatelessWidget {
-  final Project project;
-  const ProjectCard({super.key, required this.project});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 1.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "ชื่อโครงการ: ${project.projectName}",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "ประธานโครงการ : ${project.chairman}",
-            style: const TextStyle(fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "จำนวนเงินในโครงการ : ${project.budget}",
-            style: const TextStyle(fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "เสนอโครงการ : ${DateUtil.formatThaiDate(project.date)}",
-            style: const TextStyle(fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "สถานะโครงการ : ${project.status.label}",
-            style: const TextStyle(fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "แก้ไขล่าสุด : ${DateUtil.formatThaiDate(project.fixLatest)}",
-            style: const TextStyle(fontSize: 14),
           ),
         ],
       ),

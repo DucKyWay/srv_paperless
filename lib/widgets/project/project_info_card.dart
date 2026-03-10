@@ -1,12 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
+import 'package:srv_paperless/widgets/in_app_browser.dart';
 
-class ProjectInfoCard extends StatelessWidget {
+import '../../data/minio.dart';
+import '../../viewmodel/user_view_model.dart';
+
+class ProjectInfoCard extends ConsumerStatefulWidget {
   final Project project;
 
   const ProjectInfoCard({super.key, required this.project});
+
+  @override
+  ConsumerState<ProjectInfoCard> createState() => _ProjectInfoCardState();
+}
+
+class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
+  String? pdfUrl;
+  String? projectUserOwner;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPdfUrl();
+    _loadUser();
+  }
+
+  Future<void> _loadPdfUrl() async {
+    if (widget.project.pdfPath != null && widget.project.pdfPath!.isNotEmpty) {
+      final url = await getPrivateFileUrl(widget.project.pdfPath!);
+      if (mounted) {
+        setState(() {
+          pdfUrl = url;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadUser() async {
+    if (widget.project.userId.isNotEmpty) {
+      final user = await ref.read(
+        userByIdProvider(widget.project.userId).future,
+      );
+      if (user != null) {
+        setState(() {
+          projectUserOwner = user.fullname;
+        });
+      }
+    }
+  }
 
   // กำหนดสีพื้นหลังตามสถานะ
   Color _getStatusColor(ProjectStatus? status) {
@@ -20,7 +64,7 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.started:
         return Colors.purple.shade50;
       case ProjectStatus.finished:
-        return Colors.teal.shade50; // เพิ่มสีสำหรับเสร็จสิ้น
+        return Colors.teal.shade50;
       case ProjectStatus.rejected:
         return Colors.red.shade50;
       default:
@@ -40,7 +84,7 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.started:
         return Colors.purple.shade700;
       case ProjectStatus.finished:
-        return Colors.teal.shade700; // เพิ่มสีสำหรับเสร็จสิ้น
+        return Colors.teal.shade700;
       case ProjectStatus.rejected:
         return Colors.red.shade700;
       default:
@@ -60,7 +104,7 @@ class ProjectInfoCard extends StatelessWidget {
       case ProjectStatus.started:
         return Icons.play_circle_outline;
       case ProjectStatus.finished:
-        return Icons.task_alt_rounded; // เพิ่มไอคอนสำหรับเสร็จสิ้น
+        return Icons.task_alt_rounded;
       case ProjectStatus.rejected:
         return Icons.cancel_outlined;
       default:
@@ -70,8 +114,9 @@ class ProjectInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = _getPrimaryColor(project.status);
-    final bgColor = _getStatusColor(project.status);
+    final primaryColor = _getPrimaryColor(widget.project.status);
+    final bgColor = _getStatusColor(widget.project.status);
+    String? pdfUrl;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
@@ -96,7 +141,7 @@ class ProjectInfoCard extends StatelessWidget {
               right: -20,
               top: -20,
               child: Icon(
-                _getStatusIcon(project.status),
+                _getStatusIcon(widget.project.status),
                 size: 150,
                 color: primaryColor.withOpacity(0.05),
               ),
@@ -111,7 +156,7 @@ class ProjectInfoCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          project.projectName ?? "ไม่ระบุชื่อโครงการ",
+                          widget.project.projectName ?? "ไม่ระบุชื่อโครงการ",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -119,20 +164,48 @@ class ProjectInfoCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      _buildStatusBadge(project.status, primaryColor),
+                      _buildStatusBadge(widget.project.status, primaryColor),
                     ],
                   ),
                   const SizedBox(height: 20),
                   const Divider(height: 1),
                   const SizedBox(height: 20),
-                  _buildInfoRow(Icons.person_outline, "ประธานโครงการ",
-                      project.chairman ?? "ไม่ระบุ", primaryColor),
-                  _buildInfoRow(Icons.payments_outlined, "งบประมาณ",
-                      "${project.budget?.toStringAsFixed(2) ?? '0.00'} บาท", primaryColor),
-                  _buildInfoRow(Icons.calendar_today_outlined, "ยื่นเสนอเมื่อ",
-                      DateUtil.formatThaiDate(project.date), primaryColor),
-                  _buildInfoRow(Icons.history_outlined, "แก้ไขล่าสุด",
-                      DateUtil.formatThaiDate(project.fixLatest), primaryColor),
+                  _buildInfoRow(
+                    Icons.person_pin_outlined,
+                    "ประธานโครงการ",
+                    widget.project.chairman ?? "ไม่ระบุ",
+                    primaryColor,
+                  ),
+                  _buildInfoRow(
+                    Icons.person_outline,
+                    "ผู้ยื่นโครงการ",
+                    projectUserOwner ?? "ไม่ระบุ",
+                    primaryColor,
+                  ),
+                  _buildInfoRow(
+                    Icons.payments_outlined,
+                    "งบประมาณ",
+                    "${widget.project.budget?.toStringAsFixed(2) ?? '0.00'} บาท",
+                    primaryColor,
+                  ),
+                  _buildInfoRow(
+                    Icons.calendar_today_outlined,
+                    "ยื่นเสนอเมื่อ",
+                    DateUtil.formatThaiDate(widget.project.date),
+                    primaryColor,
+                  ),
+                  _buildInfoRow(
+                    Icons.history_outlined,
+                    "แก้ไขล่าสุด",
+                    DateUtil.formatThaiDate(widget.project.fixLatest),
+                    primaryColor,
+                  ),
+                  const SizedBox(height: 8),
+                  InAppBrowserButton(
+                    url: pdfUrl,
+                    color: primaryColor,
+                    height: 32,
+                  ),
                 ],
               ),
             ),
@@ -172,10 +245,7 @@ class ProjectInfoCard extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color.withOpacity(0.6),
-                ),
+                style: TextStyle(fontSize: 12, color: color.withOpacity(0.6)),
               ),
               Text(
                 value,

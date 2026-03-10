@@ -13,12 +13,12 @@ import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
-import 'package:srv_paperless/widgets/project/project_detail_look_only.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../data/model/comment_model.dart';
 import '../../viewmodel/user_view_model.dart';
 import '../../widgets/project/card_widget.dart';
+import '../../widgets/project/project_info_card.dart';
 
 class ProjectRequestScreen extends ConsumerStatefulWidget {
   final String projectId;
@@ -79,17 +79,12 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: ProjectCard(project: project!),
+              child: ProjectInfoCard(project: project!),
             ),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),
               child: _projectComments(context, ref),
-            ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: InAppBrowserButton(url: pdfUrl),
             ),
 
             const SizedBox(height: 8),

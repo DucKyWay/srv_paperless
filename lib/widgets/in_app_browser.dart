@@ -15,8 +15,15 @@ class InAppBrowserButton extends StatelessWidget {
   final String? url;
   final String? label;
   final Color? color;
+  final double? height;
 
-  const InAppBrowserButton({super.key, this.url, this.label, this.color});
+  const InAppBrowserButton({
+    super.key,
+    this.url,
+    this.label,
+    this.color,
+    this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +33,7 @@ class InAppBrowserButton extends StatelessWidget {
         style: const TextStyle(color: Colors.white, fontSize: 14),
       ),
       color: color ?? Colors.blue.shade700,
+      height: height,
       onPressed: () {
         if (url != null && url!.isNotEmpty) {
           InAppBrowser.launch(url!);

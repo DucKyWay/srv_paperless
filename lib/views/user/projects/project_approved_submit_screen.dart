@@ -68,7 +68,6 @@ class _ProjectApprovedSubmitScreenState
   Project? _project;
   bool _isOwner = false;
   bool _isActionProcessing = false;
-  String? pdfUrl;
 
   @override
   void initState() {
@@ -81,10 +80,6 @@ class _ProjectApprovedSubmitScreenState
     if (data == null) return;
 
     final currentUser = ref.read(authProvider).value?.currentUser;
-
-    if (data.pdfPath != null && data.pdfPath!.isNotEmpty) {
-      pdfUrl = await getPrivateFileUrl(data.pdfPath!);
-    }
 
     if (mounted) {
       setState(() {
@@ -243,8 +238,6 @@ class _ProjectApprovedSubmitScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InAppBrowserButton(url: pdfUrl, color: Colors.purple.shade200),
-                const SizedBox(height: 16),
                 Text(
                   isStarted ? 'ความคืบหน้าโครงการ' : 'หมายเหตุ/ความคิดเห็น',
                   style: const TextStyle(
