@@ -251,7 +251,8 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        if (isOwner && _project == null || _project!.status == ProjectStatus.draft) ...[
+                        if (isOwner && _project == null ||
+                            _project!.status == ProjectStatus.draft) ...[
                           TitleSmall(
                             title: "โครงการของฉัน",
                             des:
@@ -388,10 +389,12 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                             (_) => AlertConfirmWidget(
                                               title:
                                                   "คุณต้องการบันทึกฉบับร่างหรือไม่",
-                                              onConfirm:
-                                                  () => _handleSave(
-                                                    isDraft: true,
-                                                  ),
+                                              onConfirm: () {
+                                                _handleSave(isDraft: true);
+                                                if (mounted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              },
                                             ),
                                       ),
                                 ),
@@ -411,10 +414,12 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                             (_) => AlertConfirmWidget(
                                               title:
                                                   "คุณต้องการสร้างโครงการหรือไม่",
-                                              onConfirm:
-                                                  () => _handleSave(
-                                                    isDraft: false,
-                                                  ),
+                                              onConfirm: () {
+                                                _handleSave(isDraft: false);
+                                                if (mounted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              },
                                             ),
                                       ),
                                 ),
@@ -422,7 +427,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                               ],
                             ),
                           ),
-                        ] else if (_project != null ) ...[
+                        ] else if (_project != null) ...[
                           Consumer(
                             builder: (context, ref, child) {
                               final ownerAsync = ref.watch(

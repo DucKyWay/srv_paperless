@@ -17,7 +17,6 @@ import 'package:srv_paperless/viewmodel/projects/project_location_view_model.dar
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
-import 'package:srv_paperless/widgets/in_app_browser.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/project/card_widget.dart';
@@ -201,16 +200,6 @@ class _ProjectApprovedSubmitScreenState
     );
   }
 
-  void _showConfirmDialog({
-    required String title,
-    required VoidCallback onConfirm,
-  }) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertConfirmWidget(title: title, onConfirm: onConfirm),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_project == null) {
@@ -254,11 +243,17 @@ class _ProjectApprovedSubmitScreenState
                         _isOwner
                             ? (loc) => _openProgressSheet(existing: loc)
                             : (loc) {},
-                    onFinish:
-                        () => _showConfirmDialog(
-                          title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
-                          onConfirm: _finishProject,
-                        ),
+                    onFinish: () {
+                      AlertConfirmWidget(
+                        title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
+                        onConfirm: () {
+                          _finishProject;
+                          if (mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                      );
+                    },
                   )
                 else
                   _ProjectComments(projectId: _project!.id),
@@ -272,13 +267,19 @@ class _ProjectApprovedSubmitScreenState
                 height: 55,
                 color: _kPrimaryColor,
                 border: 15,
-                onPressed:
-                    _isActionProcessing
-                        ? null
-                        : () => _showConfirmDialog(
-                          title: 'ยืนยันการเริ่มโครงการ?',
-                          onConfirm: _startProject,
-                        ),
+                onPressed: () {
+                  if (!_isActionProcessing) {
+                    AlertConfirmWidget(
+                      title: 'ยืนยันการเริ่มโครงการ',
+                      onConfirm: () {
+                        _startProject;
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                    );
+                  }
+                },
                 text: const Text(
                   'เริ่มโครงการ',
                   style: TextStyle(

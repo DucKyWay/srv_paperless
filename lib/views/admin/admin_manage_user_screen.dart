@@ -235,7 +235,12 @@ class _AdminManageUserScreenState extends ConsumerState<AdminManageUserScreen> {
                                   (_) => AlertConfirmWidget(
                                     title:
                                         "คุณต้องการเปลี่ยนแปลงข้อมูลหรือไม่?",
-                                    onConfirm: _saveUserHandler,
+                                    onConfirm: () {
+                                      _saveUserHandler;
+                                      if (mounted) {
+                                        Navigator.pop(context);
+                                      }
+                                    },
                                   ),
                             ),
                       ),
