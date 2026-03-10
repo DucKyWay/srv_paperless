@@ -13,6 +13,7 @@ import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
+import 'package:srv_paperless/widgets/project/project_detail_look_only.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../data/model/comment_model.dart';
@@ -78,54 +79,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.black, width: 1.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "ชื่อโครงการ: ${project!.projectName}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "ประธานโครงการ : ${project!.chairman}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "จำนวนเงินในโครงการ : ${project!.budget}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "เสนอโครงการ : ${DateUtil.formatThaiDate(project!.date)}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "สถานะโครงการ : ${project!.status.label}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "แก้ไขล่าสุด : ${DateUtil.formatThaiDate(project!.fixLatest)}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
+              child: ProjectCard(project: project!),
             ),
 
             Padding(

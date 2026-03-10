@@ -17,6 +17,7 @@ import 'package:srv_paperless/viewmodel/projects/project_location_view_model.dar
 import 'package:srv_paperless/widgets/alert_confirm_widget.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
+import 'package:srv_paperless/widgets/in_app_browser.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/project/card_widget.dart';
@@ -36,14 +37,15 @@ const _kDefaultLatLng = LatLng(13.8476, 100.5696);
 // Typedefs
 // ---------------------------------------------------------------------------
 
-typedef SaveProgressCallback = Future<bool> Function({
-  required XFile? image,
-  required String detail,
-  required String note,
-  LatLng? location,
-  String? existingId,
-  String? existingImagePath,
-});
+typedef SaveProgressCallback =
+    Future<bool> Function({
+      required XFile? image,
+      required String detail,
+      required String note,
+      LatLng? location,
+      String? existingId,
+      String? existingImagePath,
+    });
 
 typedef DeleteLocationCallback = Future<void> Function(ProjectLocation loc);
 
@@ -66,6 +68,7 @@ class _ProjectApprovedSubmitScreenState
   Project? _project;
   bool _isOwner = false;
   bool _isActionProcessing = false;
+  String? pdfUrl;
 
   @override
   void initState() {
@@ -79,6 +82,10 @@ class _ProjectApprovedSubmitScreenState
 
     final currentUser = ref.read(authProvider).value?.currentUser;
 
+    if (data.pdfPath != null && data.pdfPath!.isNotEmpty) {
+      pdfUrl = await getPrivateFileUrl(data.pdfPath!);
+    }
+
     if (mounted) {
       setState(() {
         _project = data;
@@ -89,7 +96,10 @@ class _ProjectApprovedSubmitScreenState
     }
   }
 
-  Future<void> _updateStatus(ProjectStatus newStatus, String successMessage) async {
+  Future<void> _updateStatus(
+    ProjectStatus newStatus,
+    String successMessage,
+  ) async {
     if (_project == null || _isActionProcessing) return;
 
     setState(() => _isActionProcessing = true);
@@ -99,7 +109,9 @@ class _ProjectApprovedSubmitScreenState
       fixLatest: DateTime.now(),
     );
 
-    await ref.read(projectProvider.notifier).updateProject(id: _project!.id, project: updated);
+    await ref
+        .read(projectProvider.notifier)
+        .updateProject(id: _project!.id, project: updated);
 
     if (!mounted) return;
     setState(() => _isActionProcessing = false);
@@ -125,7 +137,10 @@ class _ProjectApprovedSubmitScreenState
     String? existingImagePath,
   }) async {
     final repo = ref.read(projectLocationProvider.notifier);
-    final geoPoint = location != null ? GeoPoint(location.latitude, location.longitude) : null;
+    final geoPoint =
+        location != null
+            ? GeoPoint(location.latitude, location.longitude)
+            : null;
 
     try {
       if (existingId == null) {
@@ -171,11 +186,17 @@ class _ProjectApprovedSubmitScreenState
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
-      builder: (_) => _ProgressSheetContent(
-        existing: existing,
-        onSave: _saveProgress,
-        onDelete: existing == null ? null : (loc) => ref.read(projectLocationProvider.notifier).deleteLocation(loc.id!, loc.requestId!),
-      ),
+      builder:
+          (_) => _ProgressSheetContent(
+            existing: existing,
+            onSave: _saveProgress,
+            onDelete:
+                existing == null
+                    ? null
+                    : (loc) => ref
+                        .read(projectLocationProvider.notifier)
+                        .deleteLocation(loc.id!, loc.requestId!),
+          ),
     );
   }
 
@@ -185,7 +206,10 @@ class _ProjectApprovedSubmitScreenState
     );
   }
 
-  void _showConfirmDialog({required String title, required VoidCallback onConfirm}) {
+  void _showConfirmDialog({
+    required String title,
+    required VoidCallback onConfirm,
+  }) {
     showDialog(
       context: context,
       builder: (_) => AlertConfirmWidget(title: title, onConfirm: onConfirm),
@@ -213,24 +237,35 @@ class _ProjectApprovedSubmitScreenState
             child: ProjectInfoCard(project: _project!),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.screenWidth * 0.08),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.screenWidth * 0.08,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                InAppBrowserButton(url: pdfUrl, color: Colors.purple.shade200),
+                const SizedBox(height: 16),
                 Text(
                   isStarted ? 'ความคืบหน้าโครงการ' : 'หมายเหตุ/ความคิดเห็น',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 if (isStarted)
                   _ProjectProgressList(
                     projectId: widget.projectId,
                     isOwner: _isOwner,
-                    onTapItem: _isOwner ? (loc) => _openProgressSheet(existing: loc) : (loc) {},
-                    onFinish: () => _showConfirmDialog(
-                      title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
-                      onConfirm: _finishProject,
-                    ),
+                    onTapItem:
+                        _isOwner
+                            ? (loc) => _openProgressSheet(existing: loc)
+                            : (loc) {},
+                    onFinish:
+                        () => _showConfirmDialog(
+                          title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
+                          onConfirm: _finishProject,
+                        ),
                   )
                 else
                   _ProjectComments(projectId: _project!.id),
@@ -244,11 +279,21 @@ class _ProjectApprovedSubmitScreenState
                 height: 55,
                 color: _kPrimaryColor,
                 border: 15,
-                onPressed: _isActionProcessing ? null : () => _showConfirmDialog(
-                  title: 'ยืนยันการเริ่มโครงการ?',
-                  onConfirm: _startProject,
+                onPressed:
+                    _isActionProcessing
+                        ? null
+                        : () => _showConfirmDialog(
+                          title: 'ยืนยันการเริ่มโครงการ?',
+                          onConfirm: _startProject,
+                        ),
+                text: const Text(
+                  'เริ่มโครงการ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-                text: const Text('เริ่มโครงการ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
               ),
             ),
         ],
@@ -260,7 +305,10 @@ class _ProjectApprovedSubmitScreenState
     onPressed: () => _openProgressSheet(),
     backgroundColor: _kPrimaryColor,
     icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-    label: const Text('อัปเดตงาน', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+    label: const Text(
+      'อัปเดตงาน',
+      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    ),
   );
 }
 
@@ -269,7 +317,12 @@ class _ProjectApprovedSubmitScreenState
 // ---------------------------------------------------------------------------
 
 class _ProgressSheetContent extends StatefulWidget {
-  const _ProgressSheetContent({super.key, this.existing, required this.onSave, this.onDelete});
+  const _ProgressSheetContent({
+    super.key,
+    this.existing,
+    required this.onSave,
+    this.onDelete,
+  });
 
   final ProjectLocation? existing;
   final SaveProgressCallback onSave;
@@ -291,11 +344,16 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
   @override
   void initState() {
     super.initState();
-    _detailController = TextEditingController(text: widget.existing?.locationImageDetail);
+    _detailController = TextEditingController(
+      text: widget.existing?.locationImageDetail,
+    );
     _noteController = TextEditingController(text: widget.existing?.note);
 
     if (widget.existing?.location != null) {
-      _pickedLatLng = LatLng(widget.existing!.location!.latitude, widget.existing!.location!.longitude);
+      _pickedLatLng = LatLng(
+        widget.existing!.location!.latitude,
+        widget.existing!.location!.longitude,
+      );
     }
 
     _loadExistingImage();
@@ -325,7 +383,7 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
       return;
     }
 
-    setState(() => _isSaving = true); 
+    setState(() => _isSaving = true);
 
     final success = await widget.onSave(
       image: _selectedImage,
@@ -367,9 +425,10 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
     final result = await Navigator.push<LocationResult>(
       context,
       MaterialPageRoute(
-        builder: (_) => LocationPickerScreen(
-          initialLocation: _pickedLatLng ?? _kDefaultLatLng,
-        ),
+        builder:
+            (_) => LocationPickerScreen(
+              initialLocation: _pickedLatLng ?? _kDefaultLatLng,
+            ),
       ),
     );
     if (result != null && mounted) {
@@ -385,11 +444,23 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
   void _showError(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(children: [Icon(Icons.warning_amber_rounded, color: Colors.orange), SizedBox(width: 10), Text('แจ้งเตือน')]),
-        content: Text(message),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('เข้าใจแล้ว'))],
-      ),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                SizedBox(width: 10),
+                Text('แจ้งเตือน'),
+              ],
+            ),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('เข้าใจแล้ว'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -400,42 +471,107 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20, right: 20, top: 20,
+        left: 20,
+        right: 20,
+        top: 20,
       ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(isEditing ? 'แก้ไขความคืบหน้า' : 'เพิ่มความคืบหน้า', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              isEditing ? 'แก้ไขความคืบหน้า' : 'เพิ่มความคืบหน้า',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
             GestureDetector(
               onTap: _isSaving ? null : _pickImage,
               child: Container(
-                height: 180, width: double.infinity,
-                decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.grey.shade300)),
-                child: _ImagePreview(selectedImage: _selectedImage, currentImageUrl: _currentImageUrl),
+                height: 180,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: _ImagePreview(
+                  selectedImage: _selectedImage,
+                  currentImageUrl: _currentImageUrl,
+                ),
               ),
             ),
             const SizedBox(height: 20),
             CustomButton(
-              height: 45, color: Colors.orange.shade700, border: 15, onPressed: _isSaving ? null : _pickLocation,
-              text: Row(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.location_on_outlined, color: Colors.white, size: 20), const SizedBox(width: 8), Text(_pickedLatLng == null ? 'เลือกสถานที่' : 'เปลี่ยนสถานที่', style: const TextStyle(color: Colors.white))]),
+              height: 45,
+              color: Colors.orange.shade700,
+              border: 15,
+              onPressed: _isSaving ? null : _pickLocation,
+              text: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.location_on_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _pickedLatLng == null ? 'เลือกสถานที่' : 'เปลี่ยนสถานที่',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            CustomTextField(label: 'คำอธิบายภาพ', controller: _detailController, hint: 'ระบุสถานที่หรือกิจกรรม'),
+            CustomTextField(
+              label: 'คำอธิบายภาพ',
+              controller: _detailController,
+              hint: 'ระบุสถานที่หรือกิจกรรม',
+            ),
             const SizedBox(height: 12),
-            CustomTextField(label: 'หมายเหตุ (ถ้ามี)', controller: _noteController, hint: 'ข้อมูลเพิ่มเติม'),
+            CustomTextField(
+              label: 'หมายเหตุ (ถ้ามี)',
+              controller: _noteController,
+              hint: 'ข้อมูลเพิ่มเติม',
+            ),
             const SizedBox(height: 25),
             Row(
               children: [
                 if (isEditing) ...[
-                  Expanded(child: CustomButton(height: 55, color: Colors.red, border: 15, onPressed: _isSaving ? null : _handleDelete, text: const Text('ลบ', style: TextStyle(color: Colors.white)))),
+                  Expanded(
+                    child: CustomButton(
+                      height: 55,
+                      color: Colors.red,
+                      border: 15,
+                      onPressed: _isSaving ? null : _handleDelete,
+                      text: const Text(
+                        'ลบ',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 10),
                 ],
                 Expanded(
                   child: CustomButton(
-                    height: 55, color: _kPrimaryColor, border: 15, onPressed: _isSaving ? null : _handleSave,
-                    text: _isSaving ? const SizedBox(height: 25, width: 25, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('บันทึก', style: TextStyle(color: Colors.white)),
+                    height: 55,
+                    color: _kPrimaryColor,
+                    border: 15,
+                    onPressed: _isSaving ? null : _handleSave,
+                    text:
+                        _isSaving
+                            ? const SizedBox(
+                              height: 25,
+                              width: 25,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Text(
+                              'บันทึก',
+                              style: TextStyle(color: Colors.white),
+                            ),
                   ),
                 ),
               ],
@@ -453,7 +589,12 @@ class _ProgressSheetContentState extends State<_ProgressSheetContent> {
 // ---------------------------------------------------------------------------
 
 class _ProjectProgressList extends ConsumerWidget {
-  const _ProjectProgressList({required this.projectId, required this.isOwner, required this.onTapItem, required this.onFinish});
+  const _ProjectProgressList({
+    required this.projectId,
+    required this.isOwner,
+    required this.onTapItem,
+    required this.onFinish,
+  });
   final String projectId;
   final bool isOwner;
   final ValueChanged<ProjectLocation> onTapItem;
@@ -464,18 +605,46 @@ class _ProjectProgressList extends ConsumerWidget {
     final progressAsync = ref.watch(projectLocationsProvider(projectId));
     return progressAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล')),
+      error:
+          (_, __) => const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล')),
       data: (locations) {
-        if (locations.isEmpty) return const Padding(padding: EdgeInsets.symmetric(vertical: 20), child: Center(child: Text('ยังไม่มีข้อมูลความคืบหน้า', style: TextStyle(color: Colors.grey))));
+        if (locations.isEmpty)
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Text(
+                'ยังไม่มีข้อมูลความคืบหน้า',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
         return Column(
           children: [
             ListView.builder(
-              shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: locations.length,
-              itemBuilder: (context, index) => _ProgressCard(location: locations[index], onTap: () => onTapItem(locations[index])),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: locations.length,
+              itemBuilder:
+                  (context, index) => _ProgressCard(
+                    location: locations[index],
+                    onTap: () => onTapItem(locations[index]),
+                  ),
             ),
             if (isOwner) ...[
               const SizedBox(height: 10),
-              CustomButton(border: 15, color: Theme.of(context).colorScheme.primaryContainer, onPressed: onFinish, text: const Text('จบโครงการ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white))),
+              CustomButton(
+                border: 15,
+                color: Theme.of(context).colorScheme.primaryContainer,
+                onPressed: onFinish,
+                text: const Text(
+                  'จบโครงการ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ],
           ],
         );
@@ -493,7 +662,9 @@ class _ProgressCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        margin: const EdgeInsets.only(bottom: 20), elevation: 4, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: const EdgeInsets.only(bottom: 20),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -503,9 +674,41 @@ class _ProgressCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('คำอธิบายภาพ : ${location.locationImageDetail ?? ''}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                  if (location.note?.isNotEmpty == true) ...[const SizedBox(height: 8), Text('หมายเหตุ : ${location.note}', style: TextStyle(fontSize: 14, color: Colors.grey[700]))],
-                  if (location.location != null) ...[const SizedBox(height: 10), Row(children: [const Icon(Icons.location_on, size: 16, color: Colors.red), const SizedBox(width: 4), Text('แสดงตำแหน่งในโครงการ', style: TextStyle(fontSize: 12, color: Colors.blue.shade700, decoration: TextDecoration.underline))])],
+                  Text(
+                    'คำอธิบายภาพ : ${location.locationImageDetail ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (location.note?.isNotEmpty == true) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'หมายเหตุ : ${location.note}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                  ],
+                  if (location.location != null) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'แสดงตำแหน่งในโครงการ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue.shade700,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -521,12 +724,28 @@ class _ProgressImage extends StatelessWidget {
   const _ProgressImage({this.imagePath});
   @override
   Widget build(BuildContext context) {
-    if (imagePath == null || imagePath!.isEmpty) return const SizedBox(height: 200, child: Center(child: Icon(Icons.image_not_supported, size: 50)));
+    if (imagePath == null || imagePath!.isEmpty)
+      return const SizedBox(
+        height: 200,
+        child: Center(child: Icon(Icons.image_not_supported, size: 50)),
+      );
     return FutureBuilder<String>(
       future: getPrivateFileUrl(imagePath!),
       builder: (context, snapshot) {
-        if (snapshot.hasData) return ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(20)), child: Image.network(snapshot.data!, height: 200, width: double.infinity, fit: BoxFit.cover));
-        return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+        if (snapshot.hasData)
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: Image.network(
+              snapshot.data!,
+              height: 200,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          );
+        return const SizedBox(
+          height: 200,
+          child: Center(child: CircularProgressIndicator()),
+        );
       },
     );
   }
@@ -538,9 +757,24 @@ class _ImagePreview extends StatelessWidget {
   final String? currentImageUrl;
   @override
   Widget build(BuildContext context) {
-    if (selectedImage != null) return ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.file(File(selectedImage!.path), fit: BoxFit.cover));
-    if (currentImageUrl != null) return ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.network(currentImageUrl!, fit: BoxFit.cover));
-    return const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.add_a_photo_rounded, size: 50, color: Colors.grey), SizedBox(height: 10), Text('แตะเพื่อแนบรูปภาพ', style: TextStyle(color: Colors.grey))]);
+    if (selectedImage != null)
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.file(File(selectedImage!.path), fit: BoxFit.cover),
+      );
+    if (currentImageUrl != null)
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.network(currentImageUrl!, fit: BoxFit.cover),
+      );
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add_a_photo_rounded, size: 50, color: Colors.grey),
+        SizedBox(height: 10),
+        Text('แตะเพื่อแนบรูปภาพ', style: TextStyle(color: Colors.grey)),
+      ],
+    );
   }
 }
 
@@ -555,7 +789,13 @@ class _ProjectComments extends ConsumerWidget {
       error: (_, __) => const Center(child: Text('โหลดหมายเหตุไม่สำเร็จ')),
       data: (comments) {
         if (comments.isEmpty) return const SizedBox.shrink();
-        return ListView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: comments.length, itemBuilder: (_, index) => CommentCardWidget(comment: comments[index]));
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: comments.length,
+          itemBuilder:
+              (_, index) => CommentCardWidget(comment: comments[index]),
+        );
       },
     );
   }
@@ -565,6 +805,21 @@ class ImageSourceSheetContent extends StatelessWidget {
   const ImageSourceSheetContent({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Wrap(children: [ListTile(leading: const Icon(Icons.camera_alt), title: const Text('ถ่ายรูป'), onTap: () => Navigator.pop(context, ImageSource.camera)), ListTile(leading: const Icon(Icons.photo_library), title: const Text('เลือกจากแกลเลอรี'), onTap: () => Navigator.pop(context, ImageSource.gallery))]));
+    return SafeArea(
+      child: Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('ถ่ายรูป'),
+            onTap: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('เลือกจากแกลเลอรี'),
+            onTap: () => Navigator.pop(context, ImageSource.gallery),
+          ),
+        ],
+      ),
+    );
   }
 }

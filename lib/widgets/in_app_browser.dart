@@ -2,40 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+class InAppBrowser {
+  static Future<void> launch(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.inAppBrowserView)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+}
+
 class InAppBrowserButton extends StatelessWidget {
   final String? url;
+  final String? label;
+  final Color? color;
 
-  const InAppBrowserButton({super.key, this.url});
+  const InAppBrowserButton({super.key, this.url, this.label, this.color});
 
   @override
   Widget build(BuildContext context) {
     return CustomButton(
-      text: Text("เปิดเอกสาร", style: TextStyle(color: Colors.white)),
-      color: Colors.blue.shade700,
+      text: Text(
+        label ?? "เปิดเอกสาร",
+        style: const TextStyle(color: Colors.white, fontSize: 14),
+      ),
+      color: color ?? Colors.blue.shade700,
       onPressed: () {
-        if (url != null) {
-          _launchURL(url!);
+        if (url != null && url!.isNotEmpty) {
+          InAppBrowser.launch(url!);
         } else {
-          _showSnackBar(context, "ไม่พบเอกสาร", Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("ไม่พบเอกสาร"),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
     );
-  }
-
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
-    BuildContext context,
-    String text,
-    Color color,
-  ) {
-    return ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

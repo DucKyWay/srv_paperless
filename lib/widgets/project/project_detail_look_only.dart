@@ -46,6 +46,7 @@ class ProjectDetailLookOnly extends StatelessWidget {
         return Colors.grey.shade700;
     }
   }
+
   IconData _getStatusIcon(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -128,10 +129,30 @@ class ProjectDetailLookOnly extends StatelessWidget {
                     const Divider(height: 1),
                     const SizedBox(height: 16),
 
-                    _buildInfoRow(Icons.person_rounded, "ประธานโครงการ", project.chairman!, primaryColor),
-                    _buildInfoRow(Icons.account_balance_wallet_rounded, "งบประมาณ", "${project.budget!.toStringAsFixed(2)} บาท", primaryColor),
-                    _buildInfoRow(Icons.event_note_rounded, "วันที่เสนอโครงการ", DateUtil.formatThaiDate(project.date), primaryColor),
-                    _buildInfoRow(Icons.update_rounded, "อัปเดตล่าสุด", DateUtil.formatThaiDate(project.fixLatest), primaryColor),
+                    _buildInfoRow(
+                      Icons.person_rounded,
+                      "ประธานโครงการ",
+                      project.chairman!,
+                      primaryColor,
+                    ),
+                    _buildInfoRow(
+                      Icons.account_balance_wallet_rounded,
+                      "งบประมาณ",
+                      "${project.budget!.toStringAsFixed(2)} บาท",
+                      primaryColor,
+                    ),
+                    _buildInfoRow(
+                      Icons.event_note_rounded,
+                      "วันที่เสนอโครงการ",
+                      DateUtil.formatThaiDate(project.date),
+                      primaryColor,
+                    ),
+                    _buildInfoRow(
+                      Icons.update_rounded,
+                      "อัปเดตล่าสุด",
+                      DateUtil.formatThaiDate(project.fixLatest),
+                      primaryColor,
+                    ),
                   ],
                 ),
               ),
@@ -190,6 +211,60 @@ class ProjectDetailLookOnly extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProjectCard extends StatelessWidget {
+  final Project project;
+  const ProjectCard({super.key, required this.project});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 1.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "ชื่อโครงการ: ${project.projectName}",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "ประธานโครงการ : ${project.chairman}",
+            style: const TextStyle(fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "จำนวนเงินในโครงการ : ${project.budget}",
+            style: const TextStyle(fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "เสนอโครงการ : ${DateUtil.formatThaiDate(project.date)}",
+            style: const TextStyle(fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "สถานะโครงการ : ${project.status.label}",
+            style: const TextStyle(fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "แก้ไขล่าสุด : ${DateUtil.formatThaiDate(project.fixLatest)}",
+            style: const TextStyle(fontSize: 14),
           ),
         ],
       ),

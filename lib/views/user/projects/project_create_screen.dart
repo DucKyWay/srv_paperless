@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
+import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/budget_year_view_model.dart';
@@ -19,6 +20,7 @@ import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/project/project_detail_look_only.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
+import 'package:srv_paperless/widgets/in_app_browser.dart';
 
 class ProjectCreateScreen extends ConsumerStatefulWidget {
   final String? draftId;
@@ -42,6 +44,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
   File? _selectedFile;
   bool _isLoading = false;
   Project? _project;
+  String? pdfUrl;
 
   Future<void> _loadDraft() async {
     if (widget.draftId == null) {
@@ -71,6 +74,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
 
         if (draft.pdfPath != null && draft.pdfPath!.isNotEmpty) {
           _fileName = draft.pdfPath;
+          pdfUrl = await getPrivateFileUrl(draft.pdfPath!);
         }
       }
     } catch (e) {
@@ -229,13 +233,13 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     final authState = ref.watch(authProvider);
     final user = authState.value?.currentUser;
 
-    // เช็คข้อมูลโปรเจกต์และผู้ใช้
     final bool isCreatingNew = widget.draftId == null;
     final bool isProjectLoaded = _project != null;
     final bool isUserLoaded = user != null;
 
-    // ตรวจสอบเงื่อนไขความเป็นเจ้าของ
-    bool isOwner = isCreatingNew || (isProjectLoaded && isUserLoaded && _project!.userId == user.id);
+    bool isOwner =
+        isCreatingNew ||
+        (isProjectLoaded && isUserLoaded && _project!.userId == user.id);
 
     return MenuWidget(
       title: const HeaderLogoWithBackButton(),
@@ -314,7 +318,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                           border: Border.all(
                                             color: Colors.grey.shade400,
                                           ),
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
@@ -332,10 +338,21 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                                       _fileName == null
                                                           ? Colors.grey
                                                           : Colors.black,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ),
+                                            if (pdfUrl != null)
+                                              IconButton(
+                                                onPressed:
+                                                    () => InAppBrowser.launch(
+                                                      pdfUrl!,
+                                                    ),
+                                                icon: const Icon(
+                                                  Icons.open_in_browser,
+                                                ),
+                                              ),
                                             if (_fileName != null)
                                               IconButton(
                                                 icon: const Icon(
@@ -372,8 +389,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                               title:
                                                   "คุณต้องการบันทึกฉบับร่างหรือไม่",
                                               onConfirm:
-                                                  () =>
-                                                      _handleSave(isDraft: true),
+                                                  () => _handleSave(
+                                                    isDraft: true,
+                                                  ),
                                             ),
                                       ),
                                 ),
@@ -394,8 +412,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                               title:
                                                   "คุณต้องการสร้างโครงการหรือไม่",
                                               onConfirm:
-                                                  () =>
-                                                      _handleSave(isDraft: false),
+                                                  () => _handleSave(
+                                                    isDraft: false,
+                                                  ),
                                             ),
                                       ),
                                 ),
@@ -406,22 +425,34 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                         ] else if (_project != null) ...[
                           Consumer(
                             builder: (context, ref, child) {
-                              final ownerAsync = ref.watch(userByIdProvider(_project!.userId));
+                              final ownerAsync = ref.watch(
+                                userByIdProvider(_project!.userId),
+                              );
                               return ownerAsync.when(
-                                data: (owner) => Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: TitleNormal(
-                                    title: "ยื่นโครงการ",
-                                    des: "ของ ${owner?.fullname ?? 'ไม่ระบุ'}",
-                                  ),
-                                ),
-                                loading: () => const TitleSmall(title: "กำลังโหลด...", des: ""),
-                                error: (_, __) => const TitleSmall(title: "ไม่สามารถโหลดชื่อเจ้าของได้", des: ""),
+                                data:
+                                    (owner) => Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: TitleNormal(
+                                        title: "ยื่นโครงการ",
+                                        des:
+                                            "ของ ${owner?.fullname ?? 'ไม่ระบุ'}",
+                                      ),
+                                    ),
+                                loading:
+                                    () => const TitleSmall(
+                                      title: "กำลังโหลด...",
+                                      des: "",
+                                    ),
+                                error:
+                                    (_, __) => const TitleSmall(
+                                      title: "ไม่สามารถโหลดชื่อเจ้าของได้",
+                                      des: "",
+                                    ),
                               );
                             },
                           ),
-                          ProjectDetailLookOnly(project: _project!)
-                        ]
+                          ProjectDetailLookOnly(project: _project!),
+                        ],
                       ],
                     ),
                   ),
@@ -430,13 +461,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     );
   }
 
-  void _showSnackBar(
-    BuildContext context,
-    String text,
-    Color color,
-  ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text), backgroundColor: color),
-    );
+  void _showSnackBar(BuildContext context, String text, Color color) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }
