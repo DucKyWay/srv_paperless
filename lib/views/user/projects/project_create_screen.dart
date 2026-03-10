@@ -343,13 +343,13 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                                 ),
                                               ),
                                             ),
-                                            if (pdfUrl != null)
+                                            if (pdfUrl != null &&
+                                                _selectedFile == null)
                                               IconButton(
-                                                onPressed:
-                                                    () => InAppBrowser.launch(
-                                                      pdfUrl!,
-                                                    ),
-                                                icon: const Icon(
+                                                onPressed: () {
+                                                  InAppBrowser.launch(pdfUrl!);
+                                                },
+                                                icon: Icon(
                                                   Icons.open_in_browser,
                                                 ),
                                               ),
