@@ -6,7 +6,6 @@ import 'package:srv_paperless/widgets/menu_widget.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../core/utils/screen_size.dart';
-import '../../../viewmodel/auth_view_model.dart';
 import '../../../viewmodel/project_view_model.dart';
 import '../../../widgets/menu_header_widget.dart';
 import '../../../widgets/project/project_list_view_widget.dart';

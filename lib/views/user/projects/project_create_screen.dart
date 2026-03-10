@@ -251,7 +251,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        if (isOwner) ...[
+                        if (isOwner && _project == null || _project!.status == ProjectStatus.draft) ...[
                           TitleSmall(
                             title: "โครงการของฉัน",
                             des:
@@ -422,7 +422,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                               ],
                             ),
                           ),
-                        ] else if (_project != null) ...[
+                        ] else if (_project != null ) ...[
                           Consumer(
                             builder: (context, ref, child) {
                               final ownerAsync = ref.watch(

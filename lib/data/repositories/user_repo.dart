@@ -135,7 +135,6 @@ class UserRepositoryImpl implements UserRepository {
         return 1;
       }
     } catch (e) {
-      print("Delete user error: $e");
       return -1;
     }
   }

@@ -60,14 +60,11 @@ class CommentRepositoryImpl implements CommentRepository {
   @override
   Future<List<Comment>> fetchCommentsByProjectId(String projectId) async {
     try {
-      print("REPO: Fetching comments for project: $projectId");
       final snapshot =
           await _db
               .collection('comments')
               .where('project_id', isEqualTo: projectId)
               .get();
-
-      print("REPO: Successfully fetched ${snapshot.docs.length} comments");
 
       final comments =
           snapshot.docs
@@ -78,7 +75,6 @@ class CommentRepositoryImpl implements CommentRepository {
 
       return comments;
     } catch (e) {
-      print("Repo Error in fetchCommentsByProjectId: $e");
       return [];
     }
   }

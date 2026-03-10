@@ -130,7 +130,6 @@ final selectedBudgetYearProvider =
     NotifierProvider<SelectedBudgetYear, String?>(SelectedBudgetYear.new);
 
 final allProjectsProvider = FutureProvider<List<Project>>((ref) {
-  ref.keepAlive();
   return ref.watch(projectServiceProvider).getProjectAll();
 });
 
@@ -143,7 +142,6 @@ final approvedProjectsProvider = FutureProvider<List<Project>>((ref) {
 
 final startedProjectsProvider = FutureProvider<List<Project>>((ref) {
   final selectedYear = ref.watch(selectedBudgetYearProvider);
-  ref.keepAlive();
   return ref
       .watch(projectServiceProvider)
       .getStartedProjects(budgetYear: selectedYear);
@@ -167,7 +165,6 @@ final draftProjectsProvider = FutureProvider.family<List<Project>, String>((
   ref,
   userId,
 ) {
-  ref.keepAlive();
   return ref.watch(projectServiceProvider).getDraftProjectsByUserId(userId);
 });
 
@@ -208,6 +205,5 @@ final pendingProjectsCount = FutureProvider<int>((ref) {
 
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {
-  ref.keepAlive();
   return ref.watch(projectServiceProvider).getProjectById(id);
 });

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/views/admin/admin_home_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_user_screen.dart';
 import 'package:srv_paperless/views/admin/admin_manage_users_screen.dart';

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 
 import '../../core/utils/date_util.dart';
 import '../../core/utils/screen_size.dart';
 import '../../data/model/project_model.dart';
-
-class ProjectDetailLookOnly extends StatelessWidget {
+import '../../viewmodel/comment_view_model.dart';
+import 'card_widget.dart';
+class ProjectDetailLookOnly extends ConsumerStatefulWidget {
   final Project project;
   const ProjectDetailLookOnly({super.key, required this.project});
 
+  @override
+  ConsumerState<ProjectDetailLookOnly> createState() => _ProjectDetailLookOnlyState();
+}
+
+class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
   Color _getStatusColor(ProjectStatus? status) {
     switch (status) {
       case ProjectStatus.draft:
@@ -69,96 +76,140 @@ class ProjectDetailLookOnly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
-    final primaryColor = _getPrimaryColor(project.status);
-    final bgColor = _getStatusColor(project.status);
+    final primaryColor = _getPrimaryColor(widget.project.status);
+    final bgColor = _getStatusColor(widget.project.status);
+
+
+    final commentsAsync = ref.watch(commentsByProjectId(widget.project.id));
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16, top: 16),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: primaryColor.withOpacity(0.3), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: primaryColor.withOpacity(0.1),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -20,
-                top: -20,
-                child: Icon(
-                  _getStatusIcon(project.status),
-                  size: 140,
-                  color: primaryColor.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 16, top: 16),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: primaryColor.withOpacity(0.3), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -20,
+                    top: -20,
+                    child: Icon(
+                      _getStatusIcon(widget.project.status),
+                      size: 140,
+                      color: primaryColor.withOpacity(0.05),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            project.projectName!,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.project.projectName!,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryColor,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            _buildStatusBadge(widget.project.status, primaryColor),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        _buildStatusBadge(project.status, primaryColor),
+                        const SizedBox(height: 16),
+                        const Divider(height: 1),
+                        const SizedBox(height: 16),
+                        _buildInfoRow(
+                          Icons.person_rounded,
+                          "ประธานโครงการ",
+                          widget.project.chairman!,
+                          primaryColor,
+                        ),
+                        _buildInfoRow(
+                          Icons.account_balance_wallet_rounded,
+                          "งบประมาณ",
+                          "${widget.project.budget!.toStringAsFixed(2)} บาท",
+                          primaryColor,
+                        ),
+                        _buildInfoRow(
+                          Icons.event_note_rounded,
+                          "วันที่เสนอโครงการ",
+                          DateUtil.formatThaiDate(widget.project.date),
+                          primaryColor,
+                        ),
+                        _buildInfoRow(
+                          Icons.update_rounded,
+                          "อัปเดตล่าสุด",
+                          DateUtil.formatThaiDate(widget.project.fixLatest),
+                          primaryColor,
+                        ),
+
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(height: 1),
-                    const SizedBox(height: 16),
-
-                    _buildInfoRow(
-                      Icons.person_rounded,
-                      "ประธานโครงการ",
-                      project.chairman!,
-                      primaryColor,
-                    ),
-                    _buildInfoRow(
-                      Icons.account_balance_wallet_rounded,
-                      "งบประมาณ",
-                      "${project.budget!.toStringAsFixed(2)} บาท",
-                      primaryColor,
-                    ),
-                    _buildInfoRow(
-                      Icons.event_note_rounded,
-                      "วันที่เสนอโครงการ",
-                      DateUtil.formatThaiDate(project.date),
-                      primaryColor,
-                    ),
-                    _buildInfoRow(
-                      Icons.update_rounded,
-                      "อัปเดตล่าสุด",
-                      DateUtil.formatThaiDate(project.fixLatest),
-                      primaryColor,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+
+          // ส่วนแสดงคอมเมนต์/หมายเหตุ
+          const Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 12),
+            child: Text(
+              "หมายเหตุ/ความคิดเห็น",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          commentsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Text("เกิดข้อผิดพลาดในการโหลดหมายเหตุ: $err"),
+            data: (comments) {
+              if (comments.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    "ไม่มีหมายเหตุเพิ่มเติม",
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                );
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: comments.length,
+                itemBuilder: (context, index) => CommentCardWidget(
+                  comment: comments[index],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
