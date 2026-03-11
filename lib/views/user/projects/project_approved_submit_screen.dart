@@ -244,14 +244,15 @@ class _ProjectApprovedSubmitScreenState
                             ? (loc) => _openProgressSheet(existing: loc)
                             : (loc) {},
                     onFinish: () {
-                      AlertConfirmWidget(
-                        title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
-                        onConfirm: () {
-                          _finishProject();
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
+                      showDialog(
+                          context: context,
+                          builder: (ctx) => AlertConfirmWidget(
+                            title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
+                            onConfirm: () {
+                              Navigator.pop(ctx);
+                              _finishProject();
+                            },
+                          ),
                       );
                     },
                   )
