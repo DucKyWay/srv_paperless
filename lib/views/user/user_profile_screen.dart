@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/routes/app_routes.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
 import 'package:srv_paperless/viewmodel/academic_department_view_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/divisions_view_model.dart';
@@ -27,10 +28,10 @@ class UserProfile extends ConsumerWidget {
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
-        error: (e, _) => _showSnackBar(context, "เกิดข้อผิดพลาด", Colors.red),
+        error: (e, _) => SnackBarWidget.error(context, "เกิดข้อผิดพลาด"),
         data: (_) {
           if (previous is AsyncLoading) {
-            _showSnackBar(context, "ดำเนินการสำเร็จ", Colors.green);
+            SnackBarWidget.success(context, "ดำเนินการสำเร็จ");
           }
         },
       );
@@ -152,15 +153,5 @@ class UserProfile extends ConsumerWidget {
             },
           ),
     );
-  }
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
-    BuildContext context,
-    String text,
-    Color color,
-  ) {
-    return ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

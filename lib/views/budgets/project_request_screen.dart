@@ -15,6 +15,7 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
+import '../../core/utils/snackbar_util.dart';
 import '../../data/model/comment_model.dart';
 import '../../viewmodel/user_view_model.dart';
 import '../../widgets/project/card_widget.dart';
@@ -88,80 +89,88 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
             ),
 
             const SizedBox(height: 8),
-            if(project!.status == ProjectStatus.pending) ...[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomButton(
-                    text: Text(
-                      "อนุมัติโครงการ",
-                      style: TextStyle(color: Colors.white),
+            if (project!.status == ProjectStatus.pending) ...[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomButton(
+                      text: Text(
+                        "อนุมัติโครงการ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.green.shade700,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertConfirmWidget(
+                                title: "คุณต้องการอนุมัติโครงการนี้หรือไม่",
+                                color: Colors.green.shade50,
+                                onConfirm: () {
+                                  ref
+                                      .watch(projectProvider.notifier)
+                                      .updateProjectStatus(
+                                        widget.projectId,
+                                        ProjectStatus.approve,
+                                      );
+                                  Navigator.pop(context);
+                                  SnackBarWidget.success(
+                                    context,
+                                    "อนุมัติโครงการ ${project!.projectName}",
+                                  );
+                                },
+                              ),
+                        );
+                      },
                     ),
-                    color: Colors.green.shade700,
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertConfirmWidget(
-                              title: "คุณต้องการอนุมัติโครงการนี้หรือไม่",
-                              color: Colors.green.shade50,
-                              onConfirm: () {
-                                ref
-                                    .watch(projectProvider.notifier)
-                                    .updateProjectStatus(
-                                      widget.projectId,
-                                      ProjectStatus.approve,
-                                    );
-                                Navigator.pop(context);
-                              },
-                            ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 12),
-                  CustomButton(
-                    text: Text(
-                      "หมายเหตุ",
-                      style: TextStyle(color: Colors.white),
+                    SizedBox(height: 12),
+                    CustomButton(
+                      text: Text(
+                        "หมายเหตุ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.yellow.shade700,
+                      onPressed: () => _showCommentDialog(context, ref),
                     ),
-                    color: Colors.yellow.shade700,
-                    onPressed: () => _showCommentDialog(context, ref),
-                  ),
-                  SizedBox(height: 12),
-                  CustomButton(
-                    text: Text(
-                      "ปฏิเสธโครงการ",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    color: Colors.red.shade700,
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertConfirmWidget(
-                              title: "คุณต้องการปฏิเสธโครงการนี้หรือไม่",
-                              color: Colors.red.shade50,
-                              onConfirm: () {
-                                ref
-                                    .watch(projectProvider.notifier)
-                                    .updateProjectStatus(
-                                      widget.projectId,
-                                      ProjectStatus.rejected,
-                                    );
+                    SizedBox(height: 12),
+                    CustomButton(
+                      text: Text(
+                        "ปฏิเสธโครงการ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.red.shade700,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertConfirmWidget(
+                                title: "คุณต้องการปฏิเสธโครงการนี้หรือไม่",
+                                color: Colors.red.shade50,
+                                onConfirm: () {
+                                  ref
+                                      .watch(projectProvider.notifier)
+                                      .updateProjectStatus(
+                                        widget.projectId,
+                                        ProjectStatus.rejected,
+                                      );
 
-                                Navigator.pop(context);
-                              },
-                            ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 24),
-                ],
+                                  Navigator.pop(context);
+                                  SnackBarWidget.success(
+                                    context,
+                                    "ปฏิเสธโครงการ ${project!.projectName} แล้ว",
+                                  );
+                                },
+                              ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 24),
+                  ],
+                ),
               ),
-            ),
-            ]
+            ],
           ],
         ),
       ),
@@ -266,6 +275,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
     return commentData.when(
       data: (comments) {
         if (comments.isEmpty) {
+          SnackBarWidget.warning(context, "ยังไม่มีหมายเหตุ");
           return const Center(child: Text("ยังไม่มีหมายเหตุ"));
         }
         debugPrint(
@@ -287,6 +297,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
       error: (err, stack) {
         print("DEBUG: Error loading comments: $err");
         print(stack);
+        SnackBarWidget.error(context, "เกิดข้อผิดพลาดในการแสดงหมายเหตุ");
         return Center(child: Text("เกิดข้อผิดพลาด: $err"));
       },
     );
@@ -322,6 +333,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                     .createComment(userId!, project!.id, message);
 
                 Navigator.pop(context);
+                SnackBarWidget.success(context, "เพิ่มหมายเหตุสำเร็จ");
               },
             ),
           ],

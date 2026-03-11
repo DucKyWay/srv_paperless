@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
 import 'package:srv_paperless/services/auth_service.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 
@@ -13,7 +16,12 @@ class ChangePasswordDialog extends ConsumerWidget {
         TextEditingController();
 
     return AlertDialog(
-      title: const Center(child: Text("เปลี่ยนรหัสผ่านใหม่", style: TextStyle(fontWeight: FontWeight.bold))),
+      title: const Center(
+        child: Text(
+          "เปลี่ยนรหัสผ่านใหม่",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -41,16 +49,16 @@ class ChangePasswordDialog extends ConsumerWidget {
 
                 if (context.mounted) {
                   Navigator.pop(context); // ปิด Dialog
-                  _showSnackBar(context, "เปลี่ยนรหัสผ่านสำเร็จ", Colors.green);
+                  SnackBarWidget.success(context, "เปลี่ยนรหัสผ่านสำเร็จ");
                 }
               } catch (e) {
-                _showSnackBar(context, e.toString(), Colors.red);
+                SnackBarWidget.error(context, e.toString());
               }
             } else {
-              _showSnackBar(context, "รหัสผ่านไม่ตรงกัน", Colors.orange);
+              SnackBarWidget.warning(context, "รหัสผ่านไม่ตรงกัน");
             }
           },
-          text: const Text("บันทึก", style: TextStyle(color: Colors.white),),
+          text: const Text("บันทึก", style: TextStyle(color: Colors.white)),
           color: Color(0xFF1D4200),
           height: 55,
           border: 15,
@@ -58,21 +66,12 @@ class ChangePasswordDialog extends ConsumerWidget {
         SizedBox(height: 8),
         CustomButton(
           onPressed: () => Navigator.pop(context),
-          text: const Text("ยกเลิก", style: TextStyle(color: Colors.white),),
+          text: const Text("ยกเลิก", style: TextStyle(color: Colors.white)),
           color: Theme.of(context).colorScheme.onErrorContainer,
           height: 55,
           border: 15,
         ),
       ],
-    );
-  }
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(BuildContext context, String text, Color color) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        backgroundColor: color,
-      ),
     );
   }
 }

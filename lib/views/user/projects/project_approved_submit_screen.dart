@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/model/project_location_model.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
@@ -112,7 +113,7 @@ class _ProjectApprovedSubmitScreenState
 
     if (!ref.read(projectProvider).hasError) {
       Navigator.of(context).pop();
-      _showSnackBar(successMessage);
+      SnackBarWidget.success(context, successMessage);
     }
   }
 
@@ -194,12 +195,6 @@ class _ProjectApprovedSubmitScreenState
     );
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.green),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
@@ -245,14 +240,15 @@ class _ProjectApprovedSubmitScreenState
                             : (loc) {},
                     onFinish: () {
                       showDialog(
-                          context: context,
-                          builder: (ctx) => AlertConfirmWidget(
-                            title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
-                            onConfirm: () {
-                              Navigator.pop(ctx);
-                              _finishProject();
-                            },
-                          ),
+                        context: context,
+                        builder:
+                            (ctx) => AlertConfirmWidget(
+                              title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
+                              onConfirm: () {
+                                Navigator.pop(ctx);
+                                _finishProject();
+                              },
+                            ),
                       );
                     },
                   )

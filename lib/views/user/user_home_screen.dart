@@ -7,6 +7,7 @@ import 'package:srv_paperless/widgets/menu_header_widget.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../core/routes/app_routes.dart';
+import '../../core/utils/snackbar_util.dart';
 import '../../viewmodel/project_view_model.dart';
 
 class UserHomePage extends ConsumerStatefulWidget {
@@ -39,11 +40,10 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
-        error:
-            (e, _) => _showSnackBar(context, "เกิดข้อผิดพลาด: $e", Colors.red),
+        error: (e, _) => SnackBarWidget.error(context, "เกิดข้อผิดพลาด: $e"),
         data: (_) {
           if (previous is AsyncLoading) {
-            _showSnackBar(context, "ดำเนินการสำเร็จ", Colors.green);
+            SnackBarWidget.success(context, "ดำเนินการสำเร็จ");
           }
         },
       );
@@ -157,15 +157,5 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
         ),
       ),
     );
-  }
-
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
-    BuildContext context,
-    String text,
-    Color color,
-  ) {
-    return ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }

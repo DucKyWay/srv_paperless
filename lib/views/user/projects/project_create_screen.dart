@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
 import 'package:srv_paperless/data/minio.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
@@ -163,16 +169,16 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       if (!state.hasError) {
         if (mounted) {
           Navigator.of(context).pop();
-          _showSnackBar(context, 'ลบฉบับร่างสำเร็จ', Colors.green);
+          SnackBarWidget.success(context, 'ลบฉบับร่างสำเร็จ');
         }
       } else {
         if (mounted) {
-          _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
+          SnackBarWidget.error(context, 'เกิดข้อผิดพลาด: ${state.error}');
         }
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar(context, 'เกิดข้อผิดพลาดในการลบโครงการ', Colors.red);
+        SnackBarWidget.error(context, 'เกิดข้อผิดพลาดในการลบโครงการ');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -186,10 +192,9 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
           projectChairmanController.text.isEmpty ||
           budgetController.text.isEmpty ||
           (_fileName == null && _selectedFile == null)) {
-        _showSnackBar(
+        SnackBarWidget.warning(
           context,
           'กรุณากรอกข้อมูลให้ครบทุกช่องและแนบไฟล์ PDF',
-          Colors.red,
         );
         return;
       }
@@ -240,15 +245,14 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
         ref.invalidate(draftProjectsProvider(user.id));
         if (mounted) {
           Navigator.of(context).pop();
-          _showSnackBar(
+          SnackBarWidget.success(
             context,
             isDraft ? 'บันทึกฉบับร่างสำเร็จ' : 'สร้างโครงการสำเร็จ',
-            Colors.green,
           );
         }
       } else {
         if (mounted) {
-          _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
+          SnackBarWidget.error(context, 'เกิดข้อผิดพลาด: ${state.error}');
         }
       }
     } finally {
@@ -561,11 +565,5 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                 ),
               ),
     );
-  }
-
-  void _showSnackBar(BuildContext context, String text, Color color) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
   }
 }
