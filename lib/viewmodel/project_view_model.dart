@@ -203,6 +203,13 @@ final pendingProjectsCount = FutureProvider<int>((ref) {
       .getPendingProjectsCount(budgetYear: selectedYear);
 });
 
+final finishedProjectsCount = FutureProvider<int>((ref) {
+  final selectedYear = ref.watch(selectedBudgetYearProvider);
+  return ref
+      .watch(projectServiceProvider)
+      .getFinishedProjectsCount(budgetYear: selectedYear);
+});
+
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {
   return ref.watch(projectServiceProvider).getProjectById(id);
