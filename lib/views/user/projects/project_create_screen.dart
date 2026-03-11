@@ -277,7 +277,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
         (isProjectLoaded && isUserLoaded && _project!.userId == user.id);
 
     return MenuWidget(
-      title: const HeaderLogoWithBackButton(),
+      title: const HeaderWithBackButton(),
       child:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -289,7 +289,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                         if (isOwner &&
                             (_project == null ||
                                 _project!.status == ProjectStatus.draft)) ...[
-                          TitleSmall(
+                          TitleNormal(
                             title: "โครงการของฉัน",
                             des:
                                 widget.draftId != null

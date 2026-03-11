@@ -15,7 +15,8 @@ class ProjectFinishedScreen extends ConsumerStatefulWidget {
   const ProjectFinishedScreen({super.key});
 
   @override
-  ConsumerState<ProjectFinishedScreen> createState() => _ProjectFinishedScreenState();
+  ConsumerState<ProjectFinishedScreen> createState() =>
+      _ProjectFinishedScreenState();
 }
 
 class _ProjectFinishedScreenState extends ConsumerState<ProjectFinishedScreen> {
@@ -38,7 +39,7 @@ class _ProjectFinishedScreenState extends ConsumerState<ProjectFinishedScreen> {
     final finishedProject = ref.watch(finishedProjectProvider);
 
     return MenuWidget(
-      title: const HeaderWithBackButton(),
+      title: HeaderLogoWithBackButton(),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +73,9 @@ class _ProjectFinishedScreenState extends ConsumerState<ProjectFinishedScreen> {
                           ),
                         ],
                         onChanged: (val) {
-                          ref.read(selectedBudgetYearProvider.notifier).setYear(val);
+                          ref
+                              .read(selectedBudgetYearProvider.notifier)
+                              .setYear(val);
                         },
                       );
                     },
