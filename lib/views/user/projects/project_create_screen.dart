@@ -152,6 +152,33 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
     }
   }
 
+  Future<void> _deleteProject() async {
+    if (widget.draftId == null || _isSaving) return;
+
+    setState(() => _isSaving = true);
+    try {
+      await ref.read(projectProvider.notifier).deleteProject(widget.draftId!);
+
+      final state = ref.read(projectProvider);
+      if (!state.hasError) {
+        if (mounted) {
+          Navigator.of(context).pop(); 
+          _showSnackBar(context, 'ลบฉบับร่างสำเร็จ', Colors.green);
+        }
+      } else {
+        if (mounted) {
+          _showSnackBar(context, 'เกิดข้อผิดพลาด: ${state.error}', Colors.red);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(context, 'เกิดข้อผิดพลาดในการลบโครงการ', Colors.red);
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   Future<void> _handleSave({required bool isDraft}) async {
     if (_isSaving) return;
     if (!isDraft) {
@@ -383,6 +410,45 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 20),
+                                if (widget.draftId != null) ...[
+                                  CustomButton(
+                                    height: 55,
+                                    text:
+                                        _isSaving
+                                            ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                            : const Text(
+                                              "ลบฉบับร่าง",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                    border: 15,
+                                    color: Colors.red.shade700,
+                                    onPressed:
+                                        _isSaving
+                                            ? null
+                                            : () => showDialog(
+                                              context: context,
+                                              builder:
+                                                  (_) => AlertConfirmWidget(
+                                                    title:
+                                                        "คุณต้องการลบฉบับร่างหรือไม่",
+                                                    onConfirm: () {
+                                                      Navigator.pop(context);
+                                                      _deleteProject();
+                                                    },
+                                                  ),
+                                            ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
                                 CustomButton(
                                   height: 55,
                                   text:

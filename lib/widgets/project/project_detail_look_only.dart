@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
+import 'package:srv_paperless/core/utils/project_status_ui_utils.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 
 import '../../core/utils/date_util.dart';
@@ -20,63 +21,6 @@ class ProjectDetailLookOnly extends ConsumerStatefulWidget {
 }
 
 class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
-  Color _getStatusColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade50;
-      case ProjectStatus.pending:
-        return Colors.orange.shade50;
-      case ProjectStatus.approve:
-        return Colors.green.shade50;
-      case ProjectStatus.started:
-        return Colors.purple.shade50;
-      case ProjectStatus.finished:
-        return Colors.teal.shade50;
-      case ProjectStatus.rejected:
-        return Colors.red.shade50;
-      default:
-        return Colors.grey.shade50;
-    }
-  }
-
-  Color _getPrimaryColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade700;
-      case ProjectStatus.pending:
-        return Colors.orange.shade700;
-      case ProjectStatus.approve:
-        return Colors.green.shade700;
-      case ProjectStatus.started:
-        return Colors.purple.shade700;
-      case ProjectStatus.finished:
-        return Colors.teal.shade700;
-      case ProjectStatus.rejected:
-        return Colors.red.shade700;
-      default:
-        return Colors.grey.shade700;
-    }
-  }
-
-  IconData _getStatusIcon(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Icons.edit_note_rounded;
-      case ProjectStatus.pending:
-        return Icons.hourglass_empty_rounded;
-      case ProjectStatus.approve:
-        return Icons.check_circle_outline_rounded;
-      case ProjectStatus.started:
-        return Icons.play_circle_outline_rounded;
-      case ProjectStatus.finished:
-        return Icons.task_alt_rounded;
-      case ProjectStatus.rejected:
-        return Icons.cancel_outlined;
-      default:
-        return Icons.info_outline_rounded;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -91,8 +35,8 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
   @override
   Widget build(BuildContext context) {
     final width = context.screenWidth;
-    final primaryColor = _getPrimaryColor(widget.project.status);
-    final bgColor = _getStatusColor(widget.project.status);
+    final primaryColor = widget.project.status.mainColor;
+    final bgColor = widget.project.status.backgroundColor;
     final commentsAsync = ref.watch(commentsByProjectId(widget.project.id));
     String? pdfUrl;
 
@@ -127,7 +71,7 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                     right: -20,
                     top: -20,
                     child: Icon(
-                      _getStatusIcon(widget.project.status),
+                      widget.project.status.icon,
                       size: 140,
                       color: primaryColor.withOpacity(0.05),
                     ),

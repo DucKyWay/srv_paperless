@@ -50,6 +50,9 @@ class _RequestDraftScreenState extends ConsumerState<RequestDraftScreen> {
                     projectsAsync: draftProjects,
                     emptyMessage: "คุณยังไม่มีรายการฉบับร่าง",
                     routePath: AppRoutes.projectDraft,
+                    onRefresh: () async {
+                      ref.invalidate(draftProjectsProvider(userId));
+                    },
                   ),
                 ),
               ),

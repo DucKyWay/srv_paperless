@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
+import 'package:srv_paperless/core/utils/project_status_ui_utils.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 
@@ -52,71 +53,10 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
     }
   }
 
-  // กำหนดสีพื้นหลังตามสถานะ
-  Color _getStatusColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade50;
-      case ProjectStatus.pending:
-        return Colors.orange.shade50;
-      case ProjectStatus.approve:
-        return Colors.green.shade50;
-      case ProjectStatus.started:
-        return Colors.purple.shade50;
-      case ProjectStatus.finished:
-        return Colors.teal.shade50;
-      case ProjectStatus.rejected:
-        return Colors.red.shade50;
-      default:
-        return Colors.white;
-    }
-  }
-
-  // กำหนดสีหลักตามสถานะ
-  Color _getPrimaryColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade700;
-      case ProjectStatus.pending:
-        return Colors.orange.shade700;
-      case ProjectStatus.approve:
-        return Colors.green.shade700;
-      case ProjectStatus.started:
-        return Colors.purple.shade700;
-      case ProjectStatus.finished:
-        return Colors.teal.shade700;
-      case ProjectStatus.rejected:
-        return Colors.red.shade700;
-      default:
-        return Colors.grey.shade700;
-    }
-  }
-
-  // กำหนดไอคอนตามสถานะ
-  IconData _getStatusIcon(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Icons.edit_document;
-      case ProjectStatus.pending:
-        return Icons.hourglass_empty;
-      case ProjectStatus.approve:
-        return Icons.check_circle_outline;
-      case ProjectStatus.started:
-        return Icons.play_circle_outline;
-      case ProjectStatus.finished:
-        return Icons.task_alt_rounded;
-      case ProjectStatus.rejected:
-        return Icons.cancel_outlined;
-      default:
-        return Icons.info_outline;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final primaryColor = _getPrimaryColor(widget.project.status);
-    final bgColor = _getStatusColor(widget.project.status);
-    String? pdfUrl;
+    final primaryColor = widget.project.status.mainColor;
+    final bgColor = widget.project.status.backgroundColor;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
@@ -141,7 +81,7 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
               right: -20,
               top: -20,
               child: Icon(
-                _getStatusIcon(widget.project.status),
+                widget.project.status.icon,
                 size: 150,
                 color: primaryColor.withOpacity(0.05),
               ),
