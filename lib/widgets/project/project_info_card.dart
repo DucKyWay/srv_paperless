@@ -6,7 +6,7 @@ import 'package:srv_paperless/core/utils/project_status_ui_utils.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 
-import '../../data/minio.dart';
+import '../../viewmodel/projects/project_pdf_view_model.dart';
 import '../../viewmodel/user_view_model.dart';
 
 class ProjectInfoCard extends ConsumerStatefulWidget {
@@ -25,18 +25,15 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
   @override
   void initState() {
     super.initState();
-    _loadPdfUrl();
     _loadUser();
   }
 
-  Future<void> _loadPdfUrl() async {
-    if (widget.project.pdfPath != null && widget.project.pdfPath!.isNotEmpty) {
-      final url = await getPrivateFileUrl(widget.project.pdfPath!);
-      if (mounted) {
-        setState(() {
-          pdfUrl = url;
-        });
-      }
+  @override
+  void didUpdateWidget(covariant ProjectInfoCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.project.id != widget.project.id) {
+      pdfUrl = null;
     }
   }
 
@@ -57,6 +54,10 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
   Widget build(BuildContext context) {
     final primaryColor = widget.project.status.mainColor;
     final bgColor = widget.project.status.backgroundColor;
+
+    final pdfAsync = ref.watch(
+      projectPdfUrlProvider(widget.project.pdfPath ?? ""),
+    );
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
@@ -141,10 +142,25 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
                     primaryColor,
                   ),
                   const SizedBox(height: 8),
-                  InAppBrowserButton(
-                    url: pdfUrl,
-                    color: primaryColor,
-                    height: 32,
+                  pdfAsync.when(
+                    data:
+                        (url) => InAppBrowserButton(
+                          url: url,
+                          color: primaryColor,
+                          height: 32,
+                        ),
+                    loading:
+                        () => const SizedBox(
+                          height: 32,
+                          child: Center(
+                            child: SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                    error: (e, _) => const Text("ไม่พบเอกสาร"),
                   ),
                 ],
               ),

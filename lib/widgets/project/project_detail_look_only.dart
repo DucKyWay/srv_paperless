@@ -9,6 +9,7 @@ import '../../core/utils/screen_size.dart';
 import '../../data/minio.dart';
 import '../../data/model/project_model.dart';
 import '../../viewmodel/comment_view_model.dart';
+import '../../viewmodel/projects/project_pdf_view_model.dart';
 import 'card_widget.dart';
 
 class ProjectDetailLookOnly extends ConsumerStatefulWidget {
@@ -38,7 +39,10 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
     final primaryColor = widget.project.status.mainColor;
     final bgColor = widget.project.status.backgroundColor;
     final commentsAsync = ref.watch(commentsByProjectId(widget.project.id));
-    String? pdfUrl;
+
+    final pdfAsync = ref.watch(
+      projectPdfUrlProvider(widget.project.pdfPath ?? ""),
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.08),
@@ -129,10 +133,27 @@ class _ProjectDetailLookOnlyState extends ConsumerState<ProjectDetailLookOnly> {
                           DateUtil.formatThaiDate(widget.project.fixLatest),
                           primaryColor,
                         ),
-                        InAppBrowserButton(
-                          url: pdfUrl,
-                          color: primaryColor,
-                          height: 32,
+                        pdfAsync.when(
+                          data:
+                              (url) => InAppBrowserButton(
+                                url: url,
+                                color: primaryColor,
+                                height: 32,
+                              ),
+                          loading:
+                              () => const SizedBox(
+                                height: 32,
+                                child: Center(
+                                  child: SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          error: (e, _) => const Text("ไม่พบเอกสาร"),
                         ),
                       ],
                     ),
