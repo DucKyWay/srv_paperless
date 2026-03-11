@@ -18,7 +18,7 @@ import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:srv_paperless/widgets/menu_header_widget.dart';
-import 'package:srv_paperless/widgets/project/project_detail_look_only.dart';
+import 'package:srv_paperless/widgets/project/project_info_card.dart';
 import 'package:srv_paperless/widgets/title_widget.dart';
 import 'package:srv_paperless/widgets/in_app_browser.dart';
 
@@ -162,7 +162,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       final state = ref.read(projectProvider);
       if (!state.hasError) {
         if (mounted) {
-          Navigator.of(context).pop(); 
+          Navigator.of(context).pop();
           _showSnackBar(context, 'ลบฉบับร่างสำเร็จ', Colors.green);
         }
       } else {
@@ -537,9 +537,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                                     (owner) => Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: TitleNormal(
-                                        title: "ยื่นโครงการ",
-                                        des:
-                                            "ของ ${owner?.fullname ?? 'ไม่ระบุ'}",
+                                        title: "โครงการที่รอดำเนินการ",
                                       ),
                                     ),
                                 loading:
@@ -555,7 +553,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                               );
                             },
                           ),
-                          ProjectDetailLookOnly(project: _project!),
+                          ProjectInfoCard(project: _project!),
                         ],
                       ],
                     ),

@@ -1,6 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/data/minio.dart';
 
+import 'package:flutter/material.dart';
+import 'package:srv_paperless/data/minio.dart';
+
+class UserAvatar extends StatelessWidget {
+  final String? imageName;
+  final double radius;
+
+  const UserAvatar({super.key, this.imageName, this.radius = 22});
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageName == null || imageName!.isEmpty) {
+      return CircleAvatar(radius: radius, child: const Icon(Icons.person));
+    }
+
+    return FutureBuilder<String>(
+      future: getPrivateFileUrl(imageName!),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircleAvatar(
+            radius: radius,
+            child: const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        }
+
+        final url = snapshot.data;
+
+        return CircleAvatar(
+          radius: radius,
+          backgroundImage:
+              (url != null && url.isNotEmpty) ? NetworkImage(url) : null,
+          child: (url == null || url.isEmpty) ? const Icon(Icons.person) : null,
+        );
+      },
+    );
+  }
+}
+
 class ProfileAvatar extends StatelessWidget {
   final String imageName;
   final VoidCallback onTap;

@@ -44,7 +44,7 @@ class _ProjectPendingAndRejectScreenState
     return DefaultTabController(
       length: 2,
       child: MenuWidget(
-        title: const HeaderWithBackButton(),
+        title: const HeaderLogoWithBackButton(),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

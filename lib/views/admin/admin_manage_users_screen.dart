@@ -7,6 +7,7 @@ import 'package:srv_paperless/widgets/title_widget.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../viewmodel/divisions_view_model.dart';
+import '../../widgets/user_profile/profile_avatar.dart';
 
 class AdminManageUsersScreen extends ConsumerStatefulWidget {
   const AdminManageUsersScreen({super.key});
@@ -69,15 +70,7 @@ class _AdminManageUsersScreenState
                           division.value?.label ?? 'ไม่ระบุฝ่ายงาน',
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
-                        leading: CircleAvatar(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).primaryColor.withOpacity(0.1),
-                          child: Icon(
-                            Icons.person,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
+                        leading: UserAvatar(imageName: user.image),
                         trailing: Icon(
                           Icons.chevron_right,
                           color: Colors.grey.shade400,

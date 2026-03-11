@@ -202,6 +202,8 @@ class _ProjectApprovedSubmitScreenState
 
   @override
   Widget build(BuildContext context) {
+    final width = context.screenWidth;
+
     if (_project == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -213,17 +215,15 @@ class _ProjectApprovedSubmitScreenState
       title: const HeaderWithBackButton(),
       floatingActionButton: (isStarted && _isOwner) ? _buildFAB() : null,
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 100),
+        padding: EdgeInsets.symmetric(vertical: 16),
         children: [
           const TitleNormal(title: 'รายละเอียดโครงการ'),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.08),
             child: ProjectInfoCard(project: _project!),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.screenWidth * 0.08,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: width * 0.08),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -270,14 +270,15 @@ class _ProjectApprovedSubmitScreenState
                 onPressed: () {
                   if (!_isActionProcessing) {
                     showDialog(
-                        context: context,
-                        builder: (ctx) => AlertConfirmWidget(
-                          title: 'ยืนยันการเริ่มโครงการ',
-                          onConfirm: () {
-                            Navigator.pop(ctx);
-                            _startProject();
-                          },
-                        ),
+                      context: context,
+                      builder:
+                          (ctx) => AlertConfirmWidget(
+                            title: 'ยืนยันการเริ่มโครงการ',
+                            onConfirm: () {
+                              Navigator.pop(ctx);
+                              _startProject();
+                            },
+                          ),
                     );
                   }
                 },
@@ -714,20 +715,52 @@ class _ProgressCard extends StatelessWidget {
   }
 }
 
-class _ProgressImage extends StatelessWidget {
+class _ProgressImage extends StatefulWidget {
   final String? imagePath;
+
   const _ProgressImage({this.imagePath});
+
+  @override
+  State<_ProgressImage> createState() => _ProgressImageState();
+}
+
+class _ProgressImageState extends State<_ProgressImage> {
+  late Future<String> _futureUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureUrl = _loadImage();
+  }
+
+  Future<String> _loadImage() async {
+    if (widget.imagePath == null || widget.imagePath!.isEmpty) {
+      throw Exception("no image path");
+    }
+    return await getPrivateFileUrl(widget.imagePath!);
+  }
+
+  void _retry() {
+    setState(() {
+      _futureUrl = _loadImage();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (imagePath == null || imagePath!.isEmpty)
-      return const SizedBox(
-        height: 200,
-        child: Center(child: Icon(Icons.image_not_supported, size: 50)),
-      );
     return FutureBuilder<String>(
-      future: getPrivateFileUrl(imagePath!),
+      future: _futureUrl,
       builder: (context, snapshot) {
-        if (snapshot.hasData)
+        /// loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        /// success
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             child: Image.network(
@@ -737,9 +770,42 @@ class _ProgressImage extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           );
-        return const SizedBox(
+        }
+
+        /// error
+        return Container(
           height: 200,
-          child: Center(child: CircularProgressIndicator()),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.broken_image_outlined,
+                  size: 45,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "โหลดภาพไม่สำเร็จ",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextButton.icon(
+                  onPressed: _retry,
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text("ลองใหม่"),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

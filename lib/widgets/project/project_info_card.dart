@@ -19,7 +19,6 @@ class ProjectInfoCard extends ConsumerStatefulWidget {
 }
 
 class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
-  String? pdfUrl;
   String? projectUserOwner;
 
   @override
@@ -28,26 +27,16 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
     _loadUser();
   }
 
-  @override
-  void didUpdateWidget(covariant ProjectInfoCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.project.id != widget.project.id) {
-      pdfUrl = null;
-    }
-  }
-
   Future<void> _loadUser() async {
-    if (widget.project.userId.isNotEmpty) {
-      final user = await ref.read(
-        userByIdProvider(widget.project.userId).future,
-      );
-      if (user != null) {
-        setState(() {
-          projectUserOwner = user.fullname;
-        });
-      }
-    }
+    if (widget.project.userId.isEmpty) return;
+
+    final user = await ref.read(userByIdProvider(widget.project.userId).future);
+
+    if (!mounted) return;
+
+    setState(() {
+      projectUserOwner = user?.fullname ?? "ไม่ระบุ";
+    });
   }
 
   @override
@@ -88,12 +77,12 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// HEADER
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
@@ -108,47 +97,64 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
                       _buildStatusBadge(widget.project.status, primaryColor),
                     ],
                   ),
+
                   const SizedBox(height: 20),
-                  const Divider(height: 1),
+                  const Divider(),
                   const SizedBox(height: 20),
+
                   _buildInfoRow(
                     Icons.person_pin_outlined,
                     "ประธานโครงการ",
                     widget.project.chairman ?? "ไม่ระบุ",
                     primaryColor,
                   ),
+
                   _buildInfoRow(
                     Icons.person_outline,
                     "ผู้ยื่นโครงการ",
-                    projectUserOwner ?? "ไม่ระบุ",
+                    projectUserOwner ?? "กำลังโหลด...",
                     primaryColor,
                   ),
+
                   _buildInfoRow(
                     Icons.payments_outlined,
                     "งบประมาณ",
                     "${widget.project.budget?.toStringAsFixed(2) ?? '0.00'} บาท",
                     primaryColor,
                   ),
+
                   _buildInfoRow(
                     Icons.calendar_today_outlined,
                     "ยื่นเสนอเมื่อ",
                     DateUtil.formatThaiDate(widget.project.date),
                     primaryColor,
                   ),
+
                   _buildInfoRow(
                     Icons.history_outlined,
                     "แก้ไขล่าสุด",
                     DateUtil.formatThaiDate(widget.project.fixLatest),
                     primaryColor,
                   ),
-                  const SizedBox(height: 8),
+
+                  const SizedBox(height: 12),
+
+                  /// PDF BUTTON
                   pdfAsync.when(
-                    data:
-                        (url) => InAppBrowserButton(
-                          url: url,
-                          color: primaryColor,
-                          height: 32,
-                        ),
+                    data: (url) {
+                      if (url == null || url.isEmpty) {
+                        return const Text(
+                          "ไม่พบเอกสาร",
+                          style: TextStyle(color: Colors.red),
+                        );
+                      }
+
+                      return InAppBrowserButton(
+                        url: url,
+                        color: primaryColor,
+                        height: 32,
+                      );
+                    },
                     loading:
                         () => const SizedBox(
                           height: 32,
@@ -160,7 +166,11 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
                             ),
                           ),
                         ),
-                    error: (e, _) => const Text("ไม่พบเอกสาร"),
+                    error:
+                        (_, __) => const Text(
+                          "ไม่พบเอกสาร",
+                          style: TextStyle(color: Colors.red),
+                        ),
                   ),
                 ],
               ),
@@ -193,25 +203,28 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 20, color: color.withOpacity(0.7)),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(fontSize: 12, color: color.withOpacity(0.6)),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 12, color: color.withOpacity(0.6)),
                 ),
-              ),
-            ],
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
