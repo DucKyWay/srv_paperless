@@ -247,7 +247,7 @@ class _ProjectApprovedSubmitScreenState
                       AlertConfirmWidget(
                         title: 'คุณต้องการสิ้นสุดโครงการหรือไม่?',
                         onConfirm: () {
-                          _finishProject;
+                          _finishProject();
                           if (mounted) {
                             Navigator.pop(context);
                           }
@@ -269,14 +269,15 @@ class _ProjectApprovedSubmitScreenState
                 border: 15,
                 onPressed: () {
                   if (!_isActionProcessing) {
-                    AlertConfirmWidget(
-                      title: 'ยืนยันการเริ่มโครงการ',
-                      onConfirm: () {
-                        _startProject;
-                        if (mounted) {
-                          Navigator.pop(context);
-                        }
-                      },
+                    showDialog(
+                        context: context,
+                        builder: (ctx) => AlertConfirmWidget(
+                          title: 'ยืนยันการเริ่มโครงการ',
+                          onConfirm: () {
+                            Navigator.pop(ctx);
+                            _startProject();
+                          },
+                        ),
                     );
                   }
                 },
