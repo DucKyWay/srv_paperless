@@ -35,6 +35,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     final startedProjects = ref.watch(startedProjectsCount).value ?? 0;
     final pendingProjects = ref.watch(pendingProjectsCount).value ?? 0;
     final rejectProjects = ref.watch(rejectProjectsCount).value ?? 0;
+    final finishedProjects = ref.watch(finishedProjectsCount).value ?? 0;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
@@ -94,7 +95,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               _card(
                 context,
                 "โครงการที่ดำเนินเสร็จสิ้น",
-                2,
+                finishedProjects,
                 Colors.green.shade50,
                 () => Navigator.pushNamed(context, AppRoutes.projectFinished),
               ),
