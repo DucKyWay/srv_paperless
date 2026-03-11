@@ -87,7 +87,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               _card(
                 context,
                 "โครงการที่ต้องดำเนินการ",
-                approvedProjects,
+                approvedProjects + startedProjects,
                 Colors.yellow.shade50,
                 () => Navigator.pushNamed(context, AppRoutes.projectApproved),
               ),
