@@ -88,7 +88,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
             ),
 
             const SizedBox(height: 8),
-
+            if(project!.status == ProjectStatus.pending) ...[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.08),
               child: Column(
@@ -161,6 +161,7 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
                 ],
               ),
             ),
+            ]
           ],
         ),
       ),

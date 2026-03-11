@@ -28,6 +28,7 @@ class AuthService {
 
       return user;
     } on fb_auth.FirebaseAuthException catch (e) {
+      print("Firebase Auth Error Code: ${e.code}");
       if (e.code == 'user-not-found') {
         throw AuthException.userNotFound();
       } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
