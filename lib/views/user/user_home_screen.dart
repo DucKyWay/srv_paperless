@@ -34,6 +34,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     final approvedProjects = ref.watch(approvedProjectsCount).value ?? 0;
     final startedProjects = ref.watch(startedProjectsCount).value ?? 0;
     final pendingProjects = ref.watch(pendingProjectsCount).value ?? 0;
+    final rejectProjects = ref.watch(rejectProjectsCount).value ?? 0;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
@@ -75,8 +76,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               }),
               _card(
                 context,
-                "ติดตามโครงการของฉัน",
-                2,
+                "ติดตามโครงการ",
+                pendingProjects + rejectProjects,
                 Colors.orange.shade50,
                 () => Navigator.pushNamed(
                   context,
@@ -86,7 +87,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
               _card(
                 context,
                 "โครงการที่ต้องดำเนินการ",
-                2,
+                approvedProjects,
                 Colors.yellow.shade50,
                 () => Navigator.pushNamed(context, AppRoutes.projectApproved),
               ),
