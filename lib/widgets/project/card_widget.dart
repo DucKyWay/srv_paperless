@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:srv_paperless/core/constants/project_status_enum.dart';
 import 'package:srv_paperless/core/utils/date_util.dart';
+import 'package:srv_paperless/core/utils/project_status_ui_utils.dart';
 import 'package:srv_paperless/data/model/comment_model.dart';
 import 'package:srv_paperless/data/model/project_model.dart';
 
@@ -29,44 +30,6 @@ class ProjectCardDetail extends ProjectCardWidget {
     required this.routes,
   });
 
-  Color _getStatusColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade50;
-      case ProjectStatus.pending:
-        return Colors.orange.shade50;
-      case ProjectStatus.approve:
-        return Colors.green.shade50;
-      case ProjectStatus.started:
-        return Colors.purple.shade50;
-      case ProjectStatus.finished:
-        return Colors.teal.shade50;
-      case ProjectStatus.rejected:
-        return Colors.red.shade50;
-      default:
-        return Colors.white;
-    }
-  }
-
-  Color _getBorderColor(ProjectStatus? status) {
-    switch (status) {
-      case ProjectStatus.draft:
-        return Colors.blue.shade300;
-      case ProjectStatus.pending:
-        return Colors.orange.shade300;
-      case ProjectStatus.approve:
-        return Colors.green.shade300;
-      case ProjectStatus.started:
-        return Colors.purple.shade300;
-      case ProjectStatus.finished:
-        return Colors.teal.shade300;
-      case ProjectStatus.rejected:
-        return Colors.red.shade300;
-      default:
-        return Colors.black12;
-    }
-  }
-
   @override
   Widget buildLeading(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(userByIdProvider(project.userId));
@@ -75,8 +38,8 @@ class ProjectCardDetail extends ProjectCardWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (user) {
-        final borderColor = _getBorderColor(project.status);
-        final bgColor = _getStatusColor(project.status);
+        final borderColor = project.status.borderColor;
+        final bgColor = project.status.backgroundColor;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
@@ -91,7 +54,7 @@ class ProjectCardDetail extends ProjectCardWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: borderColor.withValues(alpha: 0.1),
+                color: borderColor.withAlpha(25),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -120,7 +83,7 @@ class ProjectCardDetail extends ProjectCardWidget {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withAlpha(12),
                           blurRadius: 5,
                         )
                       ],
@@ -155,7 +118,7 @@ class ProjectCardDetail extends ProjectCardWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
-                              color: Colors.black.withValues(alpha: 0.8),
+                              color: Colors.black.withAlpha(204),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -204,7 +167,7 @@ class ProjectCardDetail extends ProjectCardWidget {
   }
 
   Widget _buildStatusBadge(ProjectStatus? status) {
-    final color = _getBorderColor(status);
+    final color = status.borderColor;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -264,7 +227,7 @@ class CommentCardWidget extends ProjectCardWidget {
             border: Border.all(color: Colors.red.shade100, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.shade900.withValues(alpha: 0.05),
+                color: Colors.red.shade900.withAlpha(12),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
