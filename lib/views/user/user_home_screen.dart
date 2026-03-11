@@ -62,27 +62,11 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                   context,
                   "คำขออนุมัติโครงการ",
                   pendingProjects,
-                  Colors.blue.shade50,
-                  () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.budgetProjectRequest,
-                    );
-                  },
-                ),
-                _card(
-                  context,
-                  "ติดตามผลโครงการ",
-                  startedProjects + approvedProjects,
-                  Colors.orange.shade50,
-                  () {},
-                ),
-                _card(
-                  context,
-                  "สรุปโครงการ",
-                  startedProjects,
-                  Colors.green.shade50,
-                  () {},
+                  Colors.purple.shade50,
+                  () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.budgetProjectRequest,
+                  ),
                 ),
               ],
 
@@ -94,30 +78,24 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
                 "ติดตามโครงการของฉัน",
                 2,
                 Colors.orange.shade50,
-                () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.projectPendingAndReject,
-                  );
-                },
+                () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.projectPendingAndReject,
+                ),
               ),
               _card(
                 context,
                 "โครงการที่ต้องดำเนินการ",
                 2,
-                Colors.green.shade50,
-                () {
-                  Navigator.pushNamed(context, AppRoutes.projectApproved);
-                },
+                Colors.yellow.shade50,
+                () => Navigator.pushNamed(context, AppRoutes.projectApproved),
               ),
               _card(
                 context,
                 "โครงการที่ดำเนินเสร็จสิ้น",
                 2,
                 Colors.green.shade50,
-                    () {
-                  Navigator.pushNamed(context, AppRoutes.projectFinished);
-                },
+                () => Navigator.pushNamed(context, AppRoutes.projectFinished),
               ),
             ],
           ),
