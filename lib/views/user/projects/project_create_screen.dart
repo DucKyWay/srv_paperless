@@ -557,7 +557,12 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
                               );
                             },
                           ),
-                          ProjectInfoCard(project: _project!),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.08,
+                            ),
+                            child: ProjectInfoCard(project: _project!),
+                          ),
                         ],
                       ],
                     ),
