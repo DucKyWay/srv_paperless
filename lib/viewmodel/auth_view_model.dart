@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth_service.dart';
 import '../services/auth_state.dart';
 
-final authProvider =
-    AsyncNotifierProvider<AuthNotifier, AuthState>(
+final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
   AuthNotifier.new,
 );
 
@@ -35,12 +34,14 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final user = await authService.login(username, password);
 
       state = AsyncData(
-        AuthState(currentUser: user, isLoading: false),
+        AuthState(
+          currentUser: user,
+          isLoading: false,
+          message: "เข้าสู่ระบบสำเร็จ",
+        ),
       );
     } on AuthException catch (e) {
-      state = AsyncData(
-        AuthState(isLoading: false, error: e.message),
-      );
+      state = AsyncData(AuthState(isLoading: false, error: e.message));
     } catch (e) {
       state = AsyncData(
         AuthState(isLoading: false, error: "เกิดข้อผิดพลาดบางอย่าง"),
@@ -60,9 +61,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final authService = ref.read(authServiceProvider);
       final updatedUser = await authService.getCurrentUser();
 
-      state = AsyncData(
-        AuthState(currentUser: updatedUser, isLoading: false),
-      );
+      state = AsyncData(AuthState(currentUser: updatedUser, isLoading: false));
     } catch (e) {
       debugPrint("Failed to refresh");
     }

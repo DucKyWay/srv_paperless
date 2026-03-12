@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:srv_paperless/core/constants/constants.dart';
 import 'package:srv_paperless/core/utils/screen_size.dart';
+import 'package:srv_paperless/core/utils/snackbar_util.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/widgets/custom_button.dart';
 import 'package:srv_paperless/widgets/custom_text_field.dart';
@@ -17,10 +18,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _handleLogin() async {
-    await ref
+  void _handleLogin() {
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      SnackBarWidget.warning(context, "กรุณากรอกข้อมูลให้ครบ");
+      return;
+    }
+
+    ref
         .read(authProvider.notifier)
         .login(usernameController.text, passwordController.text);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.listenManual(authProvider, (previous, next) {
+      next.whenOrNull(
+        data: (authState) {
+          if (authState.error != null) {
+            SnackBarWidget.error(context, authState.error!);
+          }
+
+          if (authState.message != null) {
+            SnackBarWidget.success(context, authState.message!);
+          }
+        },
+        error: (error, stack) {
+          SnackBarWidget.error(context, error.toString());
+        },
+      );
+    });
   }
 
   @override
@@ -30,31 +58,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final authAsync = ref.watch(authProvider);
     final isLoading = authAsync.isLoading;
-
-    ref.listen(authProvider, (previous, next) {
-      next.whenOrNull(
-        data: (authState) {
-          if (authState.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(authState.error!),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
-        error: (error, stack) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        },
-      );
-    });
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -126,30 +129,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 40),
                   CustomButton(
                     height: 55,
-                    text: isLoading
-                        ? const SizedBox(
-                            height: 25,
-                            width: 25,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
+                    text:
+                        isLoading
+                            ? const SizedBox(
+                              height: 25,
+                              width: 25,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                            )
+                            : const Text(
+                              "เข้าสู่ระบบ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
                             ),
-                          )
-                        : const Text(
-                            "เข้าสู่ระบบ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
                     onPressed: isLoading ? null : _handleLogin,
                     border: 15,
-                    color: isLoading
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.primaryContainer.withOpacity(0.6)
-                        : Theme.of(context).colorScheme.primaryContainer,
+                    color:
+                        isLoading
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer.withOpacity(0.6)
+                            : Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ],
               ),
