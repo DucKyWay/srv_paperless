@@ -83,10 +83,10 @@ class _ProjectRequestScreenState extends ConsumerState<ProjectRequestScreen> {
               child: ProjectInfoCard(project: project!),
             ),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
-              child: _projectComments(context, ref),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+            //   child: _projectComments(context, ref),
+            // ),
 
             const SizedBox(height: 8),
             if (project!.status == ProjectStatus.pending) ...[
