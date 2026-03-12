@@ -101,13 +101,13 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เลือกสถานที่'),
-        backgroundColor: const Color(0xff3A9AB5),
+        title:  Text('เลือกสถานที่'),
+        backgroundColor:  Color(0xff3A9AB5),
         foregroundColor: Colors.white,
         actions: [
           if (!_isLoading)
             IconButton(
-              icon: const Icon(Icons.check_circle, size: 30),
+              icon:  Icon(Icons.check_circle, size: 30),
               onPressed: () {
                 Navigator.pop(
                   context,
@@ -132,7 +132,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             },
             markers: {
               Marker(
-                markerId: const MarkerId('picked'),
+                markerId: MarkerId('picked'),
                 position: _pickedLocation!,
               ),
             },
@@ -145,16 +145,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               elevation: 8,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding:  EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("สถานที่ที่เลือก:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 8),
-                    if (_isLoading) const LinearProgressIndicator()
-                    else Text(_address, style: const TextStyle(fontSize: 14, color: Colors.black87), maxLines: 3, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 8),
+                     Text("สถานที่ที่เลือก:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                     SizedBox(height: 8),
+                    if (_isLoading)  LinearProgressIndicator()
+                    else Text(_address, style:  TextStyle(fontSize: 14, color: Colors.black87), maxLines: 3, overflow: TextOverflow.ellipsis),
+                     SizedBox(height: 8),
                     Text("พิกัด: ${_pickedLocation!.latitude.toStringAsFixed(6)}, ${_pickedLocation!.longitude.toStringAsFixed(6)}",
                       style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                   ],

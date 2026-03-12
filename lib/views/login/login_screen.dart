@@ -30,16 +30,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    final width = context.screenWidth;
+    final height = context.screenHeight;
 
-    ref.listenManual(authProvider, (previous, next) {
+    final authAsync = ref.watch(authProvider);
+    final isLoading = authAsync.isLoading;
+
+    ref.listen(authProvider, (previous, next) {
       next.whenOrNull(
         data: (authState) {
           if (authState.error != null) {
             SnackBarWidget.error(context, authState.error!);
           }
-
           if (authState.message != null) {
             SnackBarWidget.success(context, authState.message!);
           }
@@ -49,15 +52,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         },
       );
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final width = context.screenWidth;
-    final height = context.screenHeight;
-
-    final authAsync = ref.watch(authProvider);
-    final isLoading = authAsync.isLoading;
 
     return Scaffold(
       body: SingleChildScrollView(
