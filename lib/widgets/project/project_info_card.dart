@@ -57,7 +57,7 @@ class _ProjectInfoCardState extends ConsumerState<ProjectInfoCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          margin: EdgeInsets.symmetric(vertical: 16, horizontal: width * 0.08),
+          margin: EdgeInsets.symmetric(vertical: 16),
           width: double.infinity,
           decoration: BoxDecoration(
             color: bgColor,

@@ -218,7 +218,7 @@ class _ProjectCreateScreenState extends ConsumerState<ProjectCreateScreen> {
       userId: user.id,
       pdfPath: _fileName ?? '',
       status: isDraft ? ProjectStatus.draft : ProjectStatus.pending,
-      budgetYear: thisBudgetYear ?? '',
+      budgetYear: thisBudgetYear ?? 'nY2YFUs7Waj6HaLotfQh',
     );
 
     try {
