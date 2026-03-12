@@ -214,7 +214,7 @@ class _ProjectApprovedSubmitScreenState
         children: [
           const TitleNormal(title: 'รายละเอียดโครงการ'),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+            padding: EdgeInsets.symmetric(vertical: 8),
             child: ProjectInfoCard(project: _project!),
           ),
           Padding(
