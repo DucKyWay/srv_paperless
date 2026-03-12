@@ -14,15 +14,16 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final fbUser = fb_auth.FirebaseAuth.instance.currentUser;
 
     if (fbUser == null) {
-      return AuthState(isLoading: false);
+      return AuthState();
     }
 
     try {
       final authService = ref.read(authServiceProvider);
       final user = await authService.getCurrentUser();
-      return AuthState(currentUser: user, isLoading: false);
-    } catch (e) {
-      return AuthState(isLoading: false);
+
+      return AuthState(currentUser: user, message: null, error: null);
+    } catch (_) {
+      return AuthState();
     }
   }
 
@@ -34,26 +35,21 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final user = await authService.login(username, password);
 
       state = AsyncData(
-        AuthState(
-          currentUser: user,
-          isLoading: false,
-          message: "เข้าสู่ระบบสำเร็จ",
-        ),
+        AuthState(currentUser: user, message: "เข้าสู่ระบบสำเร็จ"),
       );
     } on AuthException catch (e) {
-      state = AsyncData(AuthState(isLoading: false, error: e.message));
+      state = AsyncData(AuthState(error: e.message));
     } catch (e) {
-      state = AsyncData(
-        AuthState(isLoading: false, error: "เกิดข้อผิดพลาดบางอย่าง"),
-      );
+      state = AsyncData(AuthState(error: "เกิดข้อผิดพลาดบางอย่าง"));
     }
   }
 
   Future<void> logout() async {
     final authService = ref.read(authServiceProvider);
+
     await authService.logout();
 
-    state = AsyncData(AuthState(isLoading: false));
+    state = AsyncData(AuthState());
   }
 
   Future<void> refreshUser() async {
@@ -61,9 +57,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final authService = ref.read(authServiceProvider);
       final updatedUser = await authService.getCurrentUser();
 
-      state = AsyncData(AuthState(currentUser: updatedUser, isLoading: false));
-    } catch (e) {
-      debugPrint("Failed to refresh");
+      state = AsyncData(AuthState(currentUser: updatedUser));
+    } catch (_) {
+      debugPrint("Failed to refresh user");
     }
   }
 }
