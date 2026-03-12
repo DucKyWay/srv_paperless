@@ -60,7 +60,7 @@ class Project {
       userId: map['user_id'].toString(),
       projectName: map['project_name']?.toString(),
       chairman: map['chairman'],
-      budget: map['budget'],
+      budget: (map['budget'] as num?)?.toDouble(),
       pdfPath: map['pdf_path'],
       status: ProjectStatus.values.firstWhere(
         (e) => e.name == map['status'],

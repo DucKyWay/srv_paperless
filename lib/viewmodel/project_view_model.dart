@@ -210,6 +210,15 @@ final finishedProjectsCount = FutureProvider<int>((ref) {
       .getFinishedProjectsCount(budgetYear: selectedYear);
 });
 
+final usedBudgetProvider = FutureProvider<double>((ref) {
+  final year = ref.watch(selectedBudgetYearProvider);
+  return ref.watch(projectServiceProvider).getTotalBudgetUsed(budgetYear: year);
+});
+
+final finishedBudgetProvider = FutureProvider<double>((ref) {
+  final year = ref.watch(selectedBudgetYearProvider);
+  return ref.watch(projectServiceProvider).getFinishedBudget(budgetYear: year);
+});
 
 final projectByIdProvider = FutureProvider.family<Project?, String>((ref, id) {
   return ref.watch(projectServiceProvider).getProjectById(id);

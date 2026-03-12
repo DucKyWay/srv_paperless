@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:srv_paperless/core/utils/screen_size.dart';
 import 'package:srv_paperless/viewmodel/auth_view_model.dart';
 import 'package:srv_paperless/viewmodel/user_view_model.dart';
 import 'package:srv_paperless/widgets/menu_widget.dart';
@@ -28,6 +29,7 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = context.screenWidth;
     final authState = ref.watch(authProvider);
     final user = authState.value?.currentUser;
     final isUserDivisionBudget = user?.isBudget ?? false;
@@ -37,6 +39,8 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
     final pendingCount = ref.watch(pendingProjectsCount).value ?? 0;
     final rejectCount = ref.watch(rejectProjectsCount).value ?? 0;
     final finishedCount = ref.watch(finishedProjectsCount).value ?? 0;
+    final usedBudget = ref.watch(usedBudgetProvider).value ?? 0;
+    final finishedBudget = ref.watch(finishedBudgetProvider).value ?? 0;
 
     ref.listen<AsyncValue<void>>(userProvider, (previous, next) {
       next.whenOrNull(
@@ -55,10 +59,36 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
         decoration: BoxDecoration(color: Colors.grey[50]),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(vertical: 24),
+          padding: EdgeInsets.symmetric(horizontal: 4),
           child: Column(
             children: [
               const TitleNormal(title: "หน้าแรก", des: "สรุปผลการดำเนินงาน"),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _budgetCard(
+                        "งบประมาณที่ใช้ไป",
+                        usedBudget,
+                        Colors.orange,
+                        Icons.account_balance_wallet,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _budgetCard(
+                        "งบโครงการที่เสร็จสิ้น",
+                        finishedBudget,
+                        Colors.green,
+                        Icons.task_alt,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 12),
 
               _highlightCard(
@@ -272,6 +302,37 @@ class _UserHomePageState extends ConsumerState<UserHomePage> {
             Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _budgetCard(String title, double amount, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "${amount.toStringAsFixed(0)} บาท",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }

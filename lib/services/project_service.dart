@@ -88,18 +88,48 @@ class ProjectService {
         )
         .then((value) => value.length);
   }
+
   Future<int> getFinishedProjectsCount({String? budgetYear}) async {
     return await projectRepo
         .fetchProjectsByStatus(
-      ProjectStatus.finished.name,
-      budgetYear: budgetYear,
-    )
+          ProjectStatus.finished.name,
+          budgetYear: budgetYear,
+        )
         .then((value) => value.length);
   }
 
-
   Future<List<Project>> getDraftProjectsByUserId(String id) async {
     return await projectRepo.fetchProjectDraftByUserId(id);
+  }
+
+  Future<double> getTotalBudgetUsed({String? budgetYear}) async {
+    final projects = await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.started.name,
+      budgetYear: budgetYear,
+    );
+
+    double total = 0;
+
+    for (final project in projects) {
+      total += await project.budget ?? 0;
+    }
+
+    return total;
+  }
+
+  Future<double> getFinishedBudget({String? budgetYear}) async {
+    final projects = await projectRepo.fetchProjectsByStatus(
+      ProjectStatus.finished.name,
+      budgetYear: budgetYear,
+    );
+
+    double total = 0;
+
+    for (final project in projects) {
+      total += project.budget ?? 0;
+    }
+
+    return total;
   }
 
   Future<Project?> createProject(Project project) async {
